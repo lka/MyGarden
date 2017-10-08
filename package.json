@@ -1,0 +1,11 @@
+{
+    "name": "MyGarden",
+    "version": "0.0.0",
+    "devDependencies": {
+        "eslint": "^4.8.0",
+        "eslint-config-es": "^0.8.12"
+    },
+    "scripts": {
+        "analyse": "eslint lib test"
+    }
+}
