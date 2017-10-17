@@ -1,6 +1,7 @@
 {
     "name": "MyGarden",
     "version": "0.0.0",
+<<<<<<< HEAD
     "dependencies": {
         "express": "^4.16.2"
     },
@@ -9,6 +10,11 @@
         "eslint": "4.8.0",
         "eslint-config-es": "0.8.12",
         "supertest": "^3.0.0"
+=======
+    "devDependencies": {
+        "eslint": "^4.8.0",
+        "eslint-config-es": "^0.8.12"
+>>>>>>> 75922bfe8c45e726b844b56fb5a1f62ad459ab88
     },
     "scripts": {
         "analyse": "eslint lib test"
