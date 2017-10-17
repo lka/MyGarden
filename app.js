@@ -1,6 +1,9 @@
 'use strict';
 
-const http = require('http');
+const http = require('http'),
+      processenv = require('processenv');
+
+const port = processenv('PORT') || 3000;
 
 const getApp = require('./lib/getApp');
 
@@ -8,4 +11,6 @@ const app = getApp();
 
 const server = http.createServer(app);
 
-server.listen(3000);
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}.`)
+});

@@ -1,8 +1,4 @@
 node_modules
-<<<<<<< HEAD
 .idea
 package-lock.json
 .git
-=======
-.idea
->>>>>>> 75922bfe8c45e726b844b56fb5a1f62ad459ab88
