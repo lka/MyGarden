@@ -27,7 +27,7 @@ suite('upnpServer', () => {
       done();
     });
 
-    test('upnpServer is starting.', done => {
+    test.skip('upnpServer is starting.', done => {
       upnpServer({
         port: 8082,
         url: '/upnp/amazon-ha-bridge/setup.xml'

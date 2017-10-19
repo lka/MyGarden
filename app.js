@@ -5,12 +5,15 @@ const http = require('http'),
 
 const port = processenv('PORT') || 3000;
 
-const getApp = require('./lib/getApp');
+const getApp = require('./lib/getApp'),
+      getBacnetClient = require('./lib/getBacnetClient');
 
 const app = getApp();
 
 const server = http.createServer(app);
 
 server.listen(port, () => {
-  console.log(`Server listening on port ${port}.`)
+  console.log(`HTTP-Server listening on port ${port}.`)
 });
+
+const client = getBacnetClient();

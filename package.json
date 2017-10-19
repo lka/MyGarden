@@ -2,9 +2,14 @@
     "name": "MyGarden",
     "version": "0.0.0",
     "dependencies": {
+        "bacstack": "0.0.1-beta.11",
         "express": "^4.16.2",
         "peer-ssdp": "0.0.5",
         "processenv": "^0.1.1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lka/MyGarden.git"
     },
     "devDependencies": {
         "assertthat": "0.11.0",
