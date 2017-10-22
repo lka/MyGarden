@@ -11,6 +11,24 @@
       "type": "git",
       "url": "git+https://github.com/lka/MyGarden.git"
     },
+  "keywords": [
+    "garden",
+    "alexa",
+    "BACnet",
+    "automation"
+  ],
+  "author": {
+    "name": "Herbert Lischka",
+    "email": "mail@lischka-berlin.de"
+  },
+  "engines": {
+    "node": ">= 8.7.0"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lka/MyGarden/issues"
+  },
+  "homepage": "https://github.com/lka/MyGarden#readme",
     "devDependencies": {
         "assertthat": "0.11.0",
         "eslint": "4.8.0",
