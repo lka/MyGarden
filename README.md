@@ -1,5 +1,7 @@
 # MyGarden
 
+use alexa to voice control a bacnet device that switches garden watering valves on and off
+
 ## Installation
 
 ## Quick Start
