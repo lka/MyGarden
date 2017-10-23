@@ -1,8 +1,6 @@
 'use strict';
 
-const assert = require('assertthat'),
-      sinon = require('sinon'),
-      EventEmitter = require('events').EventEmitter;
+const assert = require('assertthat');
 
 const upnpServer = require('../lib/upnpServer');
 
@@ -34,25 +32,18 @@ suite('upnpServer', () => {
         port: 8082,
         url: '/upnp/amazon-ha-bridge/setup.xml'
       });
-      const spy = sinon.spy(),
-            emitter = new EventEmitter();
-      // request(peer)
-      // .get('search')
-      // .end((err, res) => {
-      //   assert.that(err).is.null();
-      //   done();
-      // });
-      emitter.on('ready', spy);
+      var eventFired = false;
+      setTimeout(function(){
+        assert.that(eventFired, 'Event did not fire in 100ms').is.true();
+        done();
+      }, 100);
+      peer.on('ready', function() {
+        eventFired = true;
+      });
+      peer.start();
       setTimeout(function(){
       	peer.close();
-      }, 5000);
-
-      // sinon.assert.calledOnce(spy);
-      setTimeout(function() {
-        sinon.assert.calledOnce(spy);
-        done();
-      }, 2000);
-      peer.start();
+      }, 150);
     });
   });
 });

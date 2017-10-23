@@ -1,21 +1,44 @@
 {
-    "name": "MyGarden",
-    "version": "0.0.0",
-    "dependencies": {
-        "express": "^4.16.2",
-        "peer-ssdp": "0.0.5",
-        "processenv": "^0.1.1"
-    },
-    "devDependencies": {
-        "assertthat": "0.11.0",
-        "eslint": "4.8.0",
-        "eslint-config-es": "0.8.12",
-        "events": "^1.1.1",
-        "pubsub-js": "^1.5.7",
-        "sinon": "^4.0.1",
-        "supertest": "^3.0.0"
-    },
-    "scripts": {
-        "analyse": "eslint lib test"
-    }
+  "name": "MyGarden",
+  "version": "0.0.0",
+  "dependencies": {
+    "bacstack": "0.0.1-beta.11",
+    "express": "^4.16.2",
+    "peer-ssdp": "0.0.5",
+    "processenv": "^0.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lka/MyGarden.git"
+  },
+  "keywords": [
+    "garden",
+    "alexa",
+    "BACnet",
+    "automation"
+  ],
+  "author": {
+    "name": "Herbert Lischka",
+    "email": "mail@lischka-berlin.de"
+  },
+  "engines": {
+    "node": ">= 8.7.0"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lka/MyGarden/issues"
+  },
+  "homepage": "https://github.com/lka/MyGarden#readme",
+  "devDependencies": {
+    "assertthat": "0.11.0",
+    "eslint": "4.8.0",
+    "eslint-config-es": "0.8.12",
+    "events": "^1.1.1",
+    "pubsub-js": "^1.5.7",
+    "sinon": "^4.0.1",
+    "supertest": "^3.0.0"
+  },
+  "scripts": {
+    "analyse": "eslint lib test"
+  }
 }
