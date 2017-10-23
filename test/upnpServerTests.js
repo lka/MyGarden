@@ -32,6 +32,7 @@ suite('upnpServer', () => {
         port: 8082,
         url: '/upnp/amazon-ha-bridge/setup.xml'
       });
+<<<<<<< HEAD
       var eventFired = false;
       setTimeout(function(){
         assert.that(eventFired, 'Event did not fire in 100ms').is.true();
@@ -39,11 +40,19 @@ suite('upnpServer', () => {
       }, 100);
       peer.on('ready', function() {
         eventFired = true;
+=======
+      peer.on('ready', function() {
+        done();
+>>>>>>> 8ff0290825669ca37c8858369430c828ec48c598
       });
       peer.start();
       setTimeout(function(){
       	peer.close();
+<<<<<<< HEAD
       }, 150);
+=======
+      }, 1000);
+>>>>>>> 8ff0290825669ca37c8858369430c828ec48c598
     });
   });
 });
