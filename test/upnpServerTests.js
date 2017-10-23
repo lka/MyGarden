@@ -34,25 +34,13 @@ suite('upnpServer', () => {
         port: 8082,
         url: '/upnp/amazon-ha-bridge/setup.xml'
       });
-      const spy = sinon.spy(),
-            emitter = new EventEmitter();
-      // request(peer)
-      // .get('search')
-      // .end((err, res) => {
-      //   assert.that(err).is.null();
-      //   done();
-      // });
-      emitter.on('ready', spy);
+      peer.on('ready', function() {
+        done();
+      });
+      peer.start();
       setTimeout(function(){
       	peer.close();
-      }, 5000);
-
-      // sinon.assert.calledOnce(spy);
-      setTimeout(function() {
-        sinon.assert.calledOnce(spy);
-        done();
-      }, 2000);
-      peer.start();
+      }, 1000);
     });
   });
 });
