@@ -21,7 +21,7 @@ suite('logger', () => {
 
   test('throws no error if Level set.', done => {
     assert.that(() =>{
-      logger({ level: 'high' });
+      logger({ level: 'high', selection: 'log' });
     }).is.not.throwing();
     done();
   });
