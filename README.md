@@ -7,9 +7,12 @@ I use Atom Editor...
 Configure it with eslint support (install linter-eslint) and substitution of Windows eol to unix style (install line-ending-converter and use LF only).
 Set in editor configuration TAB to soft-tabs with 2 spaces.
 
+<<<<<<< HEAD
 ## Environment
 use nvm and install node (32Bits) locally
 
+=======
+>>>>>>> e786621620bd56a406f4c661deb208caa1c14e5e
 ## Installation
 get project from github and use
 
