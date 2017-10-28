@@ -2,9 +2,24 @@
 
 use alexa to voice control a bacnet device that switches garden watering valves on and off
 
+## Editing
+I use Atom Editor...
+Configure it with eslint support (install linter-eslint) and substitution of Windows eol to unix style (install line-ending-converter and use LF only).
+Set in editor configuration TAB to soft-tabs with 2 spaces.
+
+## Environment
+use nvm and install node (32Bits) locally
+
 ## Installation
+get project from github and use
+
+> npm install
+
+to install all dependencies
 
 ## Quick Start
+
+> node app.js
 
 ## Usage
 
@@ -12,6 +27,9 @@ use alexa to voice control a bacnet device that switches garden watering valves 
 
 ## Test
 Test with mocca...
+install mocha globally and start with
+
+> mocha
 
 ## License
 

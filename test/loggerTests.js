@@ -6,22 +6,22 @@ const logger = require('../lib/logger');
 
 suite('logger', () => {
   test('throws an error if Options are missing.', done => {
-    assert.that(() =>{
+    assert.that(() => {
       logger();
     }).is.throwing('Options are missing!');
     done();
   });
 
   test('throws an error if Level missing.', done => {
-    assert.that(() =>{
+    assert.that(() => {
       logger({});
     }).is.throwing('Level is missing!');
     done();
   });
 
   test('throws no error if Level set.', done => {
-    assert.that(() =>{
-      logger({ level: 'high' });
+    assert.that(() => {
+      logger({ level: 'high', selection: 'log' });
     }).is.not.throwing();
     done();
   });
