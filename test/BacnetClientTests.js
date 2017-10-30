@@ -2,12 +2,12 @@
 
 const assert = require('assertthat');
 
-const getBacnetClient = require('../lib/getBacnetClient');
+const BacnetClient = require('../lib/BacnetClient');
 
-suite('getBacnetClient', () => {
+suite('BacnetClient', () => {
   suite('client', () => {
-    test.skip('getBacnetClient returns a function', done => {
-      const client = getBacnetClient();
+    test.skip('BacnetClient returns a function', done => {
+      const client = new BacnetClient();
 
       assert.that(typeof client).is.ofType('object');
       client.close();
@@ -15,7 +15,7 @@ suite('getBacnetClient', () => {
     });
 
     test('close releases port', done => {
-      const client = getBacnetClient();
+      const client = new BacnetClient();
       let eventFired = false;
 
       client.on('iAm', () => {
