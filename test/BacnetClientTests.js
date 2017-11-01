@@ -6,31 +6,48 @@ const BacnetClient = require('../lib/BacnetClient');
 
 suite('BacnetClient', () => {
   suite('client', () => {
-    test.skip('BacnetClient returns a function', done => {
-      const client = new BacnetClient();
+    const client = new BacnetClient();
 
+    teardown(() => {
+      setTimeout(() => {
+        client.close();
+      }, 2500);
+    });
+
+    test.skip('BacnetClient returns a function', done => {
       assert.that(typeof client).is.ofType('object');
-      client.close();
       done();
     });
 
-    test('close releases port', done => {
-      const client = new BacnetClient();
+    test('whoIs fires event iAm', done => {
       let eventFired = false;
 
-      client.on('iAm', () => {
+      // client.me.on('iAm', device => this.discoverDevice(device));
+      client.once('iAm', () => {
         eventFired = true;
+        done();
       });
 
       setTimeout(() => {
         assert.that(eventFired, 'Event did not fire within 2 seconds').is.true();
       }, 2000);
-      setTimeout(() => {
-        client.close();
-      }, 2500);
 
       client.whoIs();
-      done();
+    });
+
+    test('discoverDevice fires event', done => {
+      let eventFired1 = false;
+
+      client.once('gotDevice', () => {
+        eventFired1 = true;
+        done();
+      });
+
+      setTimeout(() => {
+        assert.that(eventFired1, 'Event did not fire within 2 seconds').is.true();
+      }, 2000);
+
+      client.whoIs();
     });
   });
 });
