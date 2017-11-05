@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assertthat'),
+      MockDgram = require('mock-dgram'),
       mockudp = require('mock-udp');
 const util = require('util');
 
@@ -37,10 +38,17 @@ suite('BacnetClient', () => {
     });
 
     test.skip('iAm was received', done => {
-      const udpclient = dgram.createSocket('udp4');
+      // const udpclient = dgram.createSocket('udp4');
+      const md = new MockDgram();
       const buffer = Buffer.from([ 0x81, 0x0b, 0x00, 0x18,
         0x01, 0x20, 0xff, 0xff, 0x00, 0xff,
         0x10, 0x00, 0xc4, 0x02, 0x00, 0x00, 0x63, 0x22, 0x01, 0xe0, 0x91, 0x00, 0x21, 0x27 ]);
+
+      const msgIn = {
+        ip: { src: '192.168.178.9' },
+        udp: { srcPort: 47807, dataLength: buffer.length },
+        data: buffer
+      };
 
       const rinfo = { address: '192.168.178.255',
         family: 'IPv4',
