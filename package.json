@@ -34,11 +34,9 @@
     "eslint": "4.8.0",
     "eslint-config-es": "0.8.12",
     "events": "^1.1.1",
-    "mock-dgram": "^0.1.2",
     "mock-udp": "^0.1.1",
     "pubsub-js": "^1.5.7",
     "sinon": "^4.0.1",
-    "socket.io": "^2.0.4",
     "supertest": "^3.0.0"
   },
   "scripts": {
