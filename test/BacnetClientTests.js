@@ -29,16 +29,36 @@ suite('BacnetClient', () => {
       done();
     });
 
+<<<<<<< HEAD
     test('iAm was received and readPropertyMultiple was sent', done => {
       const address = '192.168.178.9';
 
       // Create scope to capture UDP readPropertyMultiple request
       const scope = mockudp(`${address}:47808`);
 
+=======
+    test('iAm was received', done => {
+      // const udpclient = dgram.createSocket('udp4');
+      // const md = new MockDgram();
+>>>>>>> 3b17588774919c934faa36b3c56b354b321f260d
       const buffer = Buffer.from([ 0x81, 0x0b, 0x00, 0x18,
         0x01, 0x20, 0xff, 0xff, 0x00, 0xff,
         0x10, 0x00, 0xc4, 0x02, 0x00, 0x00, 0x63, 0x22, 0x01, 0xe0, 0x91, 0x00, 0x21, 0x27 ]);
 
+<<<<<<< HEAD
+=======
+      // const msgIn = {
+      //   ip: { src: '192.168.178.9' },
+      //   udp: { srcPort: 47808, dataLength: buffer.length },
+      //   data: buffer
+      // };
+
+      const rinfo = { address: '192.168.178.9',
+        family: 'IPv4',
+        port: 47808,
+        size: buffer.length };
+
+>>>>>>> 3b17588774919c934faa36b3c56b354b321f260d
       let eventFired = false;
 
       mockudp.intercept();
