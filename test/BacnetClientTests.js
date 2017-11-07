@@ -6,17 +6,16 @@ const assert = require('assertthat'),
 // const dgram = require('dgram');
 
 const BacnetClient = require('../lib/BacnetClient');
+const client = new BacnetClient();
 
 suite('BacnetClient', () => {
+  suiteTeardown(() => {
+    setTimeout(() => {
+      client.close();
+    }, 2500);
+  });
+
   suite('client', () => {
-    const client = new BacnetClient();
-
-    teardown(() => {
-      setTimeout(() => {
-        client.close();
-      }, 2500);
-    });
-
     test('whoIs was sent', done => {
       // Create scope to capture UDP requests
       const scope = mockudp('255.255.255.255:47808');
