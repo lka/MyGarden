@@ -4,6 +4,7 @@
   "dependencies": {
     "bacstack": "0.0.1-beta.11",
     "express": "^4.16.2",
+    "flaschenpost": "^0.15.6",
     "peer-ssdp": "0.0.5",
     "processenv": "^0.1.1"
   },
