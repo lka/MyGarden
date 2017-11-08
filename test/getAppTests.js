@@ -5,7 +5,7 @@ const assert = require('assertthat'),
 
 const getApp = require('../lib/getApp');
 
-suite('getApp', () => {
+suite.skip('getApp', () => {
   suite('GET /ping', () => {
     test('returns a status code 200.', done => {
       const app = getApp();
