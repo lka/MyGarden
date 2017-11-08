@@ -28,7 +28,7 @@ suite('File', () => {
       done();
     });
 
-    test('throws an error if Directory are missing.', done => {
+    test('throws an error if Directory is missing.', done => {
       assert.that(() => {
         /* eslint-disable no-unused-vars */
         const unused = new File({});
@@ -37,7 +37,7 @@ suite('File', () => {
       done();
     });
 
-    test('this.directory is set correctly', done => {
+    test('this.directory is set', done => {
       const fileStorage = new File({ directory: 'wrxlbrnft' });
 
       assert.that(fileStorage.directory).is.equalTo('wrxlbrnft');
@@ -91,6 +91,96 @@ suite('File', () => {
         passThrough.write('foo');
         passThrough.write('bar');
         passThrough.end();
+      });
+    });
+  });
+
+  suite('get', () => {
+    const fileStorage = new File({ directory: path.join(__dirname, '..', 'data') });
+
+    test('throws an error if Id is missing.', done => {
+      assert.that(() => {
+        fileStorage.get(undefined, null);
+      }).is.throwing('Id is missing!');
+      done();
+    });
+
+    test('throws an error if Callback is missing.', done => {
+      assert.that(() => {
+        fileStorage.get('08', undefined);
+      }).is.throwing('Callback is missing!');
+      done();
+    });
+
+    test('reads the given stream.', done => {
+      const id = uuid();
+
+      isolated((errIsolated, directory) => {
+        let theStr = '';
+
+        assert.that(errIsolated).is.null();
+
+        const file = new File({ directory });
+
+        /* eslint-disable no-sync */
+        fs.writeFileSync(path.join(directory, id), 'foobar');
+        /* eslint-enable no-sync */
+
+        file.get(id, (errGet, streamGet) => {
+          assert.that(errGet).is.null();
+          streamGet.on('data', val => {
+            theStr += val.toString();
+          });
+          streamGet.once('end', () => {
+            assert.that(theStr).is.equalTo('foobar');
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  suite('list', () => {
+    const fileStorage = new File({ directory: path.join(__dirname, '..', 'data') });
+
+    test('throws an error if Callback is missing.', done => {
+      assert.that(() => {
+        fileStorage.list(undefined);
+      }).is.throwing('Callback is missing!');
+      done();
+    });
+
+    test('lists the empty directory content.', done => {
+      isolated((errIsolated, directory) => {
+        assert.that(errIsolated).is.null();
+
+        const file = new File({ directory });
+
+        file.list((errList, arr) => {
+          assert.that(errList).is.null();
+          assert.that(arr).is.equalTo([]);
+          done();
+        });
+      });
+    });
+
+    test('lists the directory content.', done => {
+      const id = uuid();
+
+      isolated((errIsolated, directory) => {
+        assert.that(errIsolated).is.null();
+
+        const file = new File({ directory });
+
+        /* eslint-disable no-sync */
+        fs.writeFileSync(path.join(directory, id), 'foobar');
+        /* eslint-enable no-sync */
+
+        file.list((errList, arr) => {
+          assert.that(errList).is.null();
+          assert.that(arr).is.equalTo([ id ]);
+          done();
+        });
       });
     });
   });
