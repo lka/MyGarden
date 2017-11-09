@@ -163,14 +163,14 @@ suite('storage', () => {
           end((err, res) => {
             assert.that(err).is.null();
             assert.that(res.statusCode).is.equalTo(200);
-          });
 
-        request(app).
-          get(`/device/${id}`).
-          end((err, res) => {
-            assert.that(err).is.null();
-            assert.that(res.statusCode).is.equalTo(200);
-            done();
+            request(app).
+              get(`/device/${id}`).
+              end((errGet, resGet) => {
+                assert.that(errGet).is.null();
+                assert.that(resGet.statusCode).is.equalTo(200);
+                done();
+              });
           });
       });
     });
