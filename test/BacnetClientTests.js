@@ -60,6 +60,8 @@ suite('BacnetClient', () => {
     test.skip('whoIs fires event iAm', done => {
       let eventFired = false;
 
+      mockudp.revert();
+
       client.once('iAm', () => {
         eventFired = true;
         done();
