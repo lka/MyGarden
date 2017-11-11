@@ -15,6 +15,11 @@ suite('BacnetClient', () => {
     }, 2100);
   });
 
+  test('is a function', done => {
+    assert.that(client).is.ofType('function');
+    done();
+  });
+
   suite('client-simulation', () => {
     test('whoIs was sent', done => {
       // Create scope to capture UDP requests
@@ -127,6 +132,15 @@ suite('BacnetClient', () => {
       }, 2000);
 
       client.whoIs();
+    });
+  });
+
+  suite.skip('put(address, objectInstance, value)', () => {
+    suite('incorrect values', () => {
+      test('throws an error if address is unknown', done => {
+        assert.that(client.put('1234', 0, 1)).is.throwing('Device not found!');
+        done();
+      });
     });
   });
 });
