@@ -16,7 +16,7 @@ suite('BacnetClient', () => {
   });
 
   test('is a function', done => {
-    assert.that(client).is.ofType('function');
+    assert.that(BacnetClient).is.ofType('function');
     done();
   });
 
@@ -135,10 +135,35 @@ suite('BacnetClient', () => {
     });
   });
 
-  suite.skip('put(address, objectInstance, value)', () => {
+  suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
     suite('incorrect values', () => {
       test('throws an error if address is unknown', done => {
-        assert.that(client.put('1234', 0, 1)).is.throwing('Device not found!');
+        assert.that(() => {
+          BacnetClient.writeBinaryOutputValue(client, '1234', 0, 1);
+        }).is.throwing('Device not found!');
+        done();
+      });
+
+      test('throws an error if BinaryOutput is unknown', done => {
+        assert.that(() => {
+          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address, 1234, 1);
+        }).is.throwing('BinaryOutput not found!');
+        done();
+      });
+
+      test('throws an error if Value is too high', done => {
+        assert.that(() => {
+          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
+        }).is.throwing('Value not allowed!');
+        done();
+      });
+
+      test('throws no error if Value is 1', done => {
+        assert.that(() => {
+          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
+        }).is.not.throwing();
         done();
       });
     });
