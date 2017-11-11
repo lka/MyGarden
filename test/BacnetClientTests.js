@@ -12,7 +12,7 @@ suite('BacnetClient', () => {
   suiteTeardown(() => {
     setTimeout(() => {
       client.close();
-    }, 2500);
+    }, 2100);
   });
 
   suite('client-simulation', () => {
@@ -32,7 +32,7 @@ suite('BacnetClient', () => {
       const address = '192.168.178.9';
 
       // Create scope to capture UDP readPropertyMultiple request
-      const scope = mockudp(`${address}:47808`);
+      const scopeRPMReq = mockudp(`${address}:47808`);
 
       const iAmResponse = Buffer.from([ 0x81, 0x0b, 0x00, 0x18,
         0x01, 0x20, 0xff, 0xff, 0x00, 0xff,
@@ -73,8 +73,8 @@ suite('BacnetClient', () => {
 
       client.once('iAm', () => {
         eventFired = 1;
-        assert.that(scope.done()).is.true();
-        assert.that(new Uint8Array(scope.buffer)).is.equalTo(new Uint8Array(readPropertyMultipleRequest));
+        assert.that(scopeRPMReq.done()).is.true();
+        assert.that(new Uint8Array(scopeRPMReq.buffer)).is.equalTo(new Uint8Array(readPropertyMultipleRequest));
         const scopeReadProperty = mockudp(`${address}:47808`);
 
         client.receiveData(readPropertyMultipleResponse, address);
