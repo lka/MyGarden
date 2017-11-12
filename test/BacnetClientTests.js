@@ -159,10 +159,26 @@ suite('BacnetClient', () => {
         done();
       });
 
-      test('throws no error if Value is 1', done => {
+      test('throws no error if Value is 0', done => {
         assert.that(() => {
           BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
             client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
+        }).is.not.throwing();
+        done();
+      });
+
+      test('throws no error if Value is 1', done => {
+        assert.that(() => {
+          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1);
+        }).is.not.throwing();
+        done();
+      });
+
+      test('throws no error if Value is NULL', done => {
+        assert.that(() => {
+          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            client.devices[0].binaryOutputs[0].objectIdentifier.instance, null);
         }).is.not.throwing();
         done();
       });
