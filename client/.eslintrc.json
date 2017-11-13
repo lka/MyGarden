@@ -2,6 +2,17 @@
     "plugins": [
         "react"
     ],
+    "env": {
+        "browser": true,
+        "node": true
+    },
+
+    "globals": {
+        "React": true
+    },
+    "ecmaFeatures": {
+        "jsx": true
+    },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended"

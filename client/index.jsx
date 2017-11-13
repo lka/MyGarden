@@ -18,6 +18,8 @@ class ClassComponent extends React.Component {
     super(props);
 
     this.state = { counter: 0 };
+
+    this.handleClick = this.handleClick.bind(this);
   }
 
   componentDidMount() {
@@ -30,12 +32,17 @@ class ClassComponent extends React.Component {
     clearInterval(this.intervalId);
   }
 
+  handleClick() {
+
+  }
+
   render() {
     console.log('render(...)', this.state);
     return (
       <div>
         <h1>Counter</h1>
         <Count quantity={this.state.counter} />
+        <button onClick={this.handleClick}>Reset</button>
       </div>
     );
   }

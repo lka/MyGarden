@@ -6,6 +6,7 @@ use alexa to voice control a bacnet device that switches garden watering valves 
 I use Atom Editor...
 Configure it with eslint support (install linter-eslint) and substitution of Windows eol to unix style (install line-ending-converter and use LF only).
 Set in editor configuration TAB to soft-tabs with 2 spaces.
+add language-babel for the client
 
 ## Environment
 use nvm and install node (32Bits) locally
