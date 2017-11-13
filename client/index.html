@@ -1,9 +1,18 @@
 <!doctype html>
 <html>
   <head>
-    <title>Hallo Node.js</title>
+    <title>Hallo MyGarden</title>
   </head>
   <body>
-    <h1>Hallo Node.js!</h1>
+    <h1>Hallo MyGarden!</h1>
+    <p>Sie können die eingegebenen Daten an ein Script senden. Dabei werden keine Daten gespeichert.</p>
+    <form action="/device/new" method="post" autocomplete="off">
+      <label for="vorname">Vorname</label>
+      <input id="vorname" name="vorname" maxlength="100">
+      <label for="name">Name</label>
+      <input id="name" name="name" maxlength="100">
+      <button type="submit" name="action" value="0">IP-Adresse</button>
+      <button type="submit" name="action" value="1">Uhrzeit</button>
+    </form>
   </body>
 </html>
