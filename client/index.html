@@ -1,18 +1,20 @@
 <!doctype html>
 <html>
   <head>
-    <title>Hallo MyGarden</title>
+    <meta charset="utf8"></meta>
+    <title>Hallo MyGarden - React 16</title>
+    <link type="text/css" rel="stylesheet" href="index.css" />
+    <!-- <script src="https://unpkg.com/react@15.6.2/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@15.6.2/dist/react-dom.js"></script> -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   </head>
   <body>
-    <h1>Hallo MyGarden!</h1>
-    <p>Sie können die eingegebenen Daten an ein Script senden. Dabei werden keine Daten gespeichert.</p>
-    <form action="/device/new" method="post" autocomplete="off">
-      <label for="vorname">Vorname</label>
-      <input id="vorname" name="vorname" maxlength="100">
-      <label for="name">Name</label>
-      <input id="name" name="name" maxlength="100">
-      <button type="submit" name="action" value="0">IP-Adresse</button>
-      <button type="submit" name="action" value="1">Uhrzeit</button>
-    </form>
+
+    <div id="app"></div>
+
+    <script type="text/babel" src="index.js"></script>
   </body>
 </html>
