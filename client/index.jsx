@@ -2,14 +2,18 @@ function FunctionalComponent(props) {
   return <div>Hello, {props.name}</div>;
 }
 
-function formatAsBinary(dec) {
-  return dec.toString(2);
+class Count extends React.Component {
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return this.props.quantity !== nextProps.quantity;
+  // }
+
+  render() {
+    return <p className="quantity">{formatAsBinary(this.props.quantity.value)}</p>
+  }
 }
 
-class Count extends React.Component {
-  render() {
-    return <p className="quantity">{formatAsBinary(this.props.quantity)}</p>
-  }
+function formatAsBinary(dec) {
+  return dec.toString(2);
 }
 
 class ClassComponent extends React.Component {
@@ -17,14 +21,18 @@ class ClassComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { counter: 0 };
+    this.state = { counter: { value: 0} };
 
     this.handleClick = this.handleClick.bind(this);
   }
 
   componentDidMount() {
     this.intervalId = setInterval(() => {
-      this.setState((prevState, props) => ({counter: prevState.counter + 1}))
+      this.setState((prevState, props) => {
+        const newCounter = {...prevState.counter};
+        newCounter.value = newCounter.value + 1;
+        return {counter: newCounter};
+      })
     }, 1000);
   }
 
@@ -33,7 +41,7 @@ class ClassComponent extends React.Component {
   }
 
   handleClick() {
-
+    this.setState ({ counter: { value: 0} });
   }
 
   render() {

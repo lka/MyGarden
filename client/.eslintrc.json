@@ -11,7 +11,8 @@
         "React": true
     },
     "ecmaFeatures": {
-        "jsx": true
+        "jsx": true,
+        "experimentalObjectRestSpread": true
     },
     "extends": [
         "eslint:recommended",
