@@ -1,4 +1,4 @@
-function FunctionalComponent(props) {
+function FunctionalComponent (props) {
   return <div>Hello, {props.name}</div>;
 }
 
@@ -7,7 +7,7 @@ class Count extends React.Component {
   //   return this.props.quantity !== nextProps.quantity;
   // }
 
-  render() {
+  render () {
     return <p className="quantity">{formatAsBinary(this.props.quantity.value)}</p>
   }
 }
@@ -26,10 +26,11 @@ class ClassComponent extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.intervalId = setInterval(() => {
       this.setState((prevState, props) => {
-        const newCounter = {...prevState.counter};
+        const newCounter = { ...prevState.counter };
+
         newCounter.value = newCounter.value + 1;
         return {counter: newCounter};
       })

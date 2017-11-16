@@ -45,6 +45,7 @@
     "supertest": "^3.0.0"
   },
   "scripts": {
-    "analyse": "eslint lib test"
+    "analyse": "eslint lib test",
+    "test": "mocha"
   }
 }
