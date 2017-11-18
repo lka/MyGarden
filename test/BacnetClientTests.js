@@ -3,6 +3,9 @@
 const assert = require('assertthat'),
       mockudp = require('mock-udp');
 
+// const fs = require('fs'),
+//       path = require('path');
+
 // const dgram = require('dgram');
 
 const BacnetClient = require('../lib/BacnetClient');
@@ -33,11 +36,22 @@ suite('BacnetClient', () => {
       done();
     });
 
-    test('iAm was received, readPropertyMultiple(Device-Information), after receiving Device-Information, readProperty(BinaryObject) was sent', done => {
+    test.only('iAm was received, readPropertyMultiple(Device-Information), after receiving Device-Information, readProperty(BinaryObject) was sent', done => {
       const address = '192.168.178.9';
 
       // Create scope to capture UDP readPropertyMultiple request
       const scopeRPMReq = mockudp(`${address}:47808`);
+
+      // let iAmResponse = '';
+      //
+      // fs.readFile(path.join(__dirname, 'datagrams', 'iAmResp.bin'), (err, data) => {
+      //   if (err) {
+      //     throw new Error('Error: ', err);
+      //   }
+      //   iAmResponse = Buffer.from(data, 42, data.length);
+      //
+      //   console.log(iAmResponse);
+      // });
 
       const iAmResponse = Buffer.from([ 0x81, 0x0b, 0x00, 0x18,
         0x01, 0x20, 0xff, 0xff, 0x00, 0xff,
@@ -101,7 +115,7 @@ suite('BacnetClient', () => {
     });
   });
 
-  suite.skip('client-Test', () => {
+  suite('client-Test', () => {
     test('whoIs fires event iAm', done => {
       let eventFired = false;
 
@@ -151,54 +165,54 @@ suite('BacnetClient', () => {
       }).is.not.throwing();
       done();
     });
-  });
 
-  suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
-    suite('incorrect values', () => {
-      test('throws an error if address is unknown', done => {
-        assert.that(() => {
-          BacnetClient.writeBinaryOutputValue(client, '1234', 0, 1);
-        }).is.throwing('Device not found!');
-        done();
-      });
+    suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
+      suite('incorrect values', () => {
+        test('throws an error if address is unknown', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, '1234', 0, 1);
+          }).is.throwing('Device not found!');
+          done();
+        });
 
-      test('throws an error if BinaryOutput is unknown', done => {
-        assert.that(() => {
-          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address, 1234, 1);
-        }).is.throwing('BinaryOutput not found!');
-        done();
-      });
+        test('throws an error if BinaryOutput is unknown', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address, 1234, 1);
+          }).is.throwing('BinaryOutput not found!');
+          done();
+        });
 
-      test('throws an error if Value is too high', done => {
-        assert.that(() => {
-          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
-            client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
-        }).is.throwing('Value not allowed!');
-        done();
-      });
+        test('throws an error if Value is too high', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
+          }).is.throwing('Value not allowed!');
+          done();
+        });
 
-      test('throws no error if Value is 0', done => {
-        assert.that(() => {
-          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
-            client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
-        }).is.not.throwing();
-        done();
-      });
+        test('throws no error if Value is 0', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
+          }).is.not.throwing();
+          done();
+        });
 
-      test('throws no error if Value is 1', done => {
-        assert.that(() => {
-          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
-            client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1);
-        }).is.not.throwing();
-        done();
-      });
+        test('throws no error if Value is 1', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1);
+          }).is.not.throwing();
+          done();
+        });
 
-      test.skip('throws no error if Value is NULL', done => {
-        assert.that(() => {
-          BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
-            client.devices[0].binaryOutputs[0].objectIdentifier.instance, null);
-        }).is.throwing('BACnet writeProperty failed');
-        done();
+        test.skip('throws no error if Value is NULL', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, null);
+          }).is.throwing('BACnet writeProperty failed');
+          done();
+        });
       });
     });
   });
