@@ -86,6 +86,77 @@ suite('BacnetClient', () => {
 
       client.receiveData(getDatagram('iAmResponse'), address);
     });
+
+    suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
+      suite('incorrect values', () => {
+        test('throws an error if address is unknown', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, '1234', 0, 1);
+          }).is.throwing('Device not found!');
+          done();
+        });
+
+        test('throws an error if BinaryOutput is unknown', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address, 1234, 1);
+          }).is.throwing('BinaryOutput not found!');
+          done();
+        });
+
+        test('throws an error if Value is too high', done => {
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
+          }).is.throwing('Value not allowed!');
+          done();
+        });
+      });
+
+      suite('correct values', () => {
+        test('throws no error if Value is 0', done => {
+          const address = '192.168.178.9';
+
+          // Create scope to capture UDP readPropertyMultiple request
+          const scopeWPReq = mockudp(`${address}:47808`);
+
+          mockudp.intercept();
+
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, address, 0, 0);
+          }).is.not.throwing();
+          setTimeout(() => {
+            assert.that(scopeWPReq.done()).is.true();
+            assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(getDatagram('writePropertyReq')));
+            client.receiveData(getDatagram('writePropertyAck'), address);
+            mockudp.revert();
+            done();
+          }, 100);
+        });
+
+        test('throws no error if Value is 1', done => {
+          const address = '192.168.178.9';
+
+          // Create scope to capture UDP readPropertyMultiple request
+          const scopeWPReq = mockudp(`${address}:47808`);
+
+          mockudp.intercept();
+
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, address, 0, 1);
+          }).is.not.throwing();
+          setTimeout(() => {
+            const buf = getDatagram('writePropertyReq1');
+
+            buf.writeUInt8(3, 8);
+            assert.that(scopeWPReq.done()).is.true();
+            assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(buf));
+            client.receiveData(getDatagram('writePropertyAck'), address);
+            mockudp.revert();
+            done();
+          }, 100);
+        });
+      });
+    });
   });
 
   suite.skip('client-Test', () => {
@@ -140,29 +211,7 @@ suite('BacnetClient', () => {
     });
 
     suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
-      suite('incorrect values', () => {
-        test('throws an error if address is unknown', done => {
-          assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, '1234', 0, 1);
-          }).is.throwing('Device not found!');
-          done();
-        });
-
-        test('throws an error if BinaryOutput is unknown', done => {
-          assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address, 1234, 1);
-          }).is.throwing('BinaryOutput not found!');
-          done();
-        });
-
-        test('throws an error if Value is too high', done => {
-          assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
-              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
-          }).is.throwing('Value not allowed!');
-          done();
-        });
-
+      suite('correct values', () => {
         test('throws no error if Value is 0', done => {
           assert.that(() => {
             BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
