@@ -11,6 +11,14 @@ class Device extends React.Component {
       isLoaded: false,
       device: []
     };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(ev) {
+    // this.setState(prevState => ({
+    //   device[ev.target.key].state: !prevState.device[ev.target.key].state
+    // }));
+    console.log('Click happened', dev);
   }
 
   componentDidMount() {
@@ -19,7 +27,7 @@ class Device extends React.Component {
        .then(d => {
          this.setState({
            isLoaded: true,
-           device: d
+           device: d.map((v, index) => { return {'name': v, 'state': 0}; })
        });
      },
      error => {
@@ -37,18 +45,35 @@ class Device extends React.Component {
       } else if (!isLoaded) {
         return <div>Loading...</div>;
       } else {
-        return (
-          <ul>
-            {device.map(device => (
-              <li key={device.name}>
-                {device.name}
-              </li>
-            ))}
-          </ul>
-        );
+        const deviceList = device.map((dev, index) => { return <li key={index}> {dev.name} <button key={index} onClick={this.handleClick}> {dev.state ? 'Aus' : 'Ein'} </button></li>; });
+        return <ul> { deviceList } </ul>;
       }
     }
 }
+
+// class Toggle extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {isToggleOn: true};
+//
+//     // This binding is necessary to make `this` work in the callback
+//     this.handleClick = this.handleClick.bind(this);
+//   }
+//
+//   handleClick() {
+//     this.setState(prevState => ({
+//       isToggleOn: !prevState.isToggleOn
+//     }));
+//   }
+//
+//   render() {
+//     return (
+//       <button onClick={this.handleClick}>
+//         {this.state.isToggleOn ? 'ON' : 'OFF'}
+//       </button>
+//     );
+//   }
+// }
 
 ReactDOM.render(
   <Device />,
