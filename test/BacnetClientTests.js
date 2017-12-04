@@ -155,6 +155,29 @@ suite('BacnetClient', () => {
             done();
           }, 100);
         });
+
+        test('throws no error if Value is Null', done => {
+          const address = '192.168.178.9';
+
+          // Create scope to capture UDP readPropertyMultiple request
+          const scopeWPReq = mockudp(`${address}:47808`);
+
+          mockudp.intercept();
+
+          assert.that(() => {
+            BacnetClient.writeBinaryOutputValue(client, address, 0, null);
+          }).is.not.throwing();
+          setTimeout(() => {
+            const buf = getDatagram('writePropertyReqNull');
+
+            buf.writeUInt8(4, 8);
+            assert.that(scopeWPReq.done()).is.true();
+            assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(buf));
+            client.receiveData(getDatagram('writePropertyAck'), address);
+            mockudp.revert();
+            done();
+          }, 100);
+        });
       });
     });
   });
@@ -228,11 +251,11 @@ suite('BacnetClient', () => {
           done();
         });
 
-        test.skip('throws no error if Value is NULL', done => {
+        test('throws no error if Value is NULL', done => {
           assert.that(() => {
             BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, null);
-          }).is.throwing('BACnet writeProperty failed');
+          }).is.not.throwing('BACnet writeProperty failed');
           done();
         });
       });
