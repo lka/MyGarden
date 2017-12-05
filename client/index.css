@@ -1,5 +1,11 @@
-.quantity {
+td {
+  font-family: monospace;
   font-size: 20px;
   color: blue;
+}
+
+button {
+  font-family: monospace;
+  font-size: 20px;
   font-weight: bold;
 }

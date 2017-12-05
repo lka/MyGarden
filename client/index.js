@@ -3,7 +3,7 @@
 const urlForDevicesFromStorage = device =>
   `http://localhost:3000/${device}`
 
-class Device extends React.Component {
+class Device extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,20 +14,32 @@ class Device extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(ev) {
-    // this.setState(prevState => ({
-    //   device[ev.target.key].state: !prevState.device[ev.target.key].state
-    // }));
-    console.log('Click happened', dev);
+  handleClick(i) {
+    const device = this.state.device.map((v, index) => {
+      return {'id': v.id, 'name': v.name, 'val': index == i ? (v.val + 1) % 3 : v.val};
+    });
+    fetch(urlForDevicesFromStorage('binary'), {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: this.state.device.id,
+        val: this.state.device.val
+      })
+    })
+
+    this.setState({ device });
   }
 
   componentDidMount() {
-    fetch(urlForDevicesFromStorage('devices'))
+    fetch(urlForDevicesFromStorage('binaries'))
        .then(d => d.json())
        .then(d => {
          this.setState({
            isLoaded: true,
-           device: d.map((v, index) => { return {'name': v, 'state': 0}; })
+           device: d.map((v, index) => { return {'id': v.id, 'name': v.name, 'val': v.val}; })
        });
      },
      error => {
@@ -38,42 +50,23 @@ class Device extends React.Component {
      });
    }
 
-    render() {
-      const { error, isLoaded, device } = this.state;
-      if (error) {
-        return <div>Error: {error.message}</div>
-      } else if (!isLoaded) {
-        return <div>Loading...</div>;
-      } else {
-        const deviceList = device.map((dev, index) => { return <li key={index}> {dev.name} <button key={index} onClick={this.handleClick}> {dev.state ? 'Aus' : 'Ein'} </button></li>; });
-        return <ul> { deviceList } </ul>;
-      }
-    }
-}
+   renderButton(i) {
+     const buttonText = ['Aus ', 'Ein ', 'Auto'];
+     return <button key={i} onClick={() => this.handleClick(i)}> {buttonText[this.state.device[i].val]} </button>;
+   }
 
-// class Toggle extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {isToggleOn: true};
-//
-//     // This binding is necessary to make `this` work in the callback
-//     this.handleClick = this.handleClick.bind(this);
-//   }
-//
-//   handleClick() {
-//     this.setState(prevState => ({
-//       isToggleOn: !prevState.isToggleOn
-//     }));
-//   }
-//
-//   render() {
-//     return (
-//       <button onClick={this.handleClick}>
-//         {this.state.isToggleOn ? 'ON' : 'OFF'}
-//       </button>
-//     );
-//   }
-// }
+   render() {
+     const { error, isLoaded, device } = this.state;
+     if (error) {
+       return <div>Error: {error.message}</div>
+     } else if (!isLoaded) {
+       return <div>Loading...</div>;
+     } else {
+       const deviceList = device.map((dev, index) => { return <tr key={index}><td>{dev.name}</td><td>{this.renderButton(index)}</td></tr>; });
+       return <table><tbody>{deviceList}</tbody></table>;
+     }
+   }
+}
 
 ReactDOM.render(
   <Device />,
