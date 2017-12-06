@@ -18,16 +18,22 @@ class Device extends React.PureComponent {
     const device = this.state.device.map((v, index) => {
       return {'id': v.id, 'name': v.name, 'val': index == i ? (v.val + 1) % 3 : v.val};
     });
-    fetch(urlForDevicesFromStorage('binary'), {
+    fetch(urlForDevicesFromStorage('binary/' + device[i].id + '/' + device[i].val), {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         id: this.state.device.id,
         val: this.state.device.val
       })
+    })
+    // .then(json)
+    .then(data => {
+      console.log('Request succeeded with response', data);
+    })
+    .catch(error => {
+      console.log('Request failed', error);
     })
 
     this.setState({ device });
