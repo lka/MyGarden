@@ -1,107 +1,125 @@
-//import React, { Component } from 'react';
+const urlForSwitchesFromStorage = switches =>
+  `http://localhost:3000/${switches}`
+const buttonText = ['Aus ', 'Ein ', 'Auto'];
+const valueText = ['Aus ', 'Ein ', '---'];
+const DefaultSwitch = 2;
+const DefaultState = 2;
 
-const urlForDevicesFromStorage = device =>
-  `http://localhost:3000/${device}`
-
-class Device extends React.PureComponent {
+class Switches extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       error: null,
       isLoaded: false,
-      device: []
+      switches: []
     };
     this.handleClick = this.handleClick.bind(this);
-  }
-
-  setModifiedDevices(i, val, state) {
-    if (val != null) this.state.device[i].val = val;
-    if (state != null) this.state.device[i].state = state;
-    const newdev = Object.assign({}, this.state.device);
-    this.setState({ newdev });
+    this.getUpdatedValues = this.getUpdatedValues.bind(this);
   }
 
   handleClick(i) {
-    // const device = this.state.device.map((v, index) => {
-    //   return {'id': v.id, 'name': v.name, 'val': index == i ? (v.val + 1) % 3 : v.val, 'state': v.state};
-    // });
-    this.setModifiedDevices(i, (this.state.device[i].val + 1) % 3, null);
-    // fetch(urlForDevicesFromStorage('binary/' + device[i].id + '/' + device[i].val), {
-    fetch(urlForDevicesFromStorage('binary'), {
+    this.setModifiedSwitch(i, (this.state.switches[i].val + 1) % valueText.length, null);
+    fetch(urlForSwitchesFromStorage('binary'), {
       method: 'POST',
       headers: {
-        // 'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        id: this.state.device[i].id,
-        val: this.state.device[i].val
+        id: this.state.switches[i].id,
+        val: this.state.switches[i].val
       })
     })
-    // .then(json => {
-    //   console.log(json);
-    // })
     .then(data => {
       if (!data.ok) {
-        this.setModifiedDevices(i, null, 2);
+        this.setModifiedSwitch(i, null, DefaultState);
       }
       console.log('Request succeeded with response', data);
     })
     .catch(error => {
-      this.setModifiedDevices(i, null, 2);
+      this.setModifiedSwitch(i, null, DefaultState);
       console.log('Request failed', error);
     })
   }
 
   componentDidMount() {
-    fetch(urlForDevicesFromStorage('binaries'))
-       .then(d => d.json())
-       .then(d => {
-         this.setState({
-           isLoaded: true,
-           device: d.map(v => { return {'id': v.id, 'name': v.name, 'val': 2, 'state': 2}; })
-       });
-     },
-     error => {
-       this.setState({
-         isLoaded: true,
-         error
-       })
-     });
-   }
+    fetch(urlForSwitchesFromStorage('binaries'))
+    .then(d => d.json())
+    .then(d => {
+      this.setState({
+        isLoaded: true,
+        switches: d.map(v => { return {'id': v.id, 'name': v.name, 'val': DefaultSwitch, 'state': DefaultState}; })
+      });
+      this.timer = setInterval(this.getUpdatedValues, 5000);
+    },
+    error => {
+      this.setState({
+        isLoaded: true,
+        error
+      })
+    });
+  }
 
-   renderName(name) {
-     return <td>{name}</td>
-   }
+  componentWillClose() {
+    clearInterval(this.timer);
+  }
 
-   renderButton(i, val) {
-     const buttonText = ['Aus ', 'Ein ', 'Auto'];
-     return <td><button key={i} onClick={() => this.handleClick(i)}> {buttonText[val]} </button></td>;
-   }
-
-   renderValue(val) {
-     const valueText = ['Aus ', 'Ein ', '---'];
-     return <td>{valueText[val]}</td>;
-   }
-
-   render() {
-     const { error, isLoaded, device } = this.state;
-     if (error) {
+  render() {
+    const { error, isLoaded, switches } = this.state;
+    if (error) {
        return <div>Error: {error.message}</div>
-     } else if (!isLoaded) {
+    } else if (!isLoaded) {
        return <div>Loading...</div>;
-     } else {
-       const deviceList = device.map((dev, index) => { return <tr  key={index}>
-         {this.renderName(dev.name)}
-         {this.renderButton(index, dev.val)}
-         {this.renderValue(dev.state)}
+    } else {
+       const switchList = switches.map((dest, index) => { return <tr  key={index}>
+         {this.renderName(dest.name)}
+         {this.renderButton(index, dest.val)}
+         {this.renderValue(dest.state)}
          </tr>; });
-       return <table><tbody>{deviceList}</tbody></table>;
-     }
-   }
+      return <table><tbody>{switchList}</tbody></table>;
+    }
+  }
+
+  // the helpers
+  getUpdatedValues() {
+    fetch(urlForSwitchesFromStorage('changes'))
+    .then(d => d.json())
+    .then(d => {
+      d.forEach(x => {
+        const i = this.state.switches.findIndex(z => z.id === x.id);
+        this.state.switches[i].state = x.state;
+      });
+      this.setModifiedSwitch(0, null, null);
+    },
+    error => {
+      for (let i = 0; i < this.state.switches.length; i++) {
+        if (this.state.switches[i].state != DefaultState) {
+          this.setModifiedSwitch(i, DefaultSwitch, DefaultState);
+        }
+      }
+    });
+  }
+
+  setModifiedSwitch(index, val, state) {
+    if (val != null) this.state.switches[index].val = val;
+    if (state != null) this.state.switches[index].state = state;
+    const newSwitch = Object.assign({}, this.state.switches);
+    this.setState({ newSwitch });
+  }
+
+  renderName(name) {
+    return <td>{name}</td>
+  }
+
+  renderButton(i, value) {
+    return <td><button key={i} onClick={() => this.handleClick(i)}> {buttonText[value]} </button></td>;
+  }
+
+  renderValue(val) {
+    return <td>{valueText[val]}</td>;
+  }
 }
 
 ReactDOM.render(
-  <Device />,
+  <Switches />,
   document.getElementById('app')
 )
