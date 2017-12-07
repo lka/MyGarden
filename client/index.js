@@ -14,23 +14,43 @@ class Device extends React.PureComponent {
     this.handleClick = this.handleClick.bind(this);
   }
 
+  setModifiedDevices(i, val, state) {
+    if (val != null) this.state.device[i].val = val;
+    if (state != null) this.state.device[i].state = state;
+    const newdev = Object.assign({}, this.state.device);
+    this.setState({ newdev });
+  }
+
   handleClick(i) {
-    const device = this.state.device.map((v, index) => {
-      return {'id': v.id, 'name': v.name, 'val': index == i ? (v.val + 1) % 3 : v.val};
-    });
+    // const device = this.state.device.map((v, index) => {
+    //   return {'id': v.id, 'name': v.name, 'val': index == i ? (v.val + 1) % 3 : v.val, 'state': v.state};
+    // });
+    this.setModifiedDevices(i, (this.state.device[i].val + 1) % 3, null);
+    // fetch(urlForDevicesFromStorage('binary/' + device[i].id + '/' + device[i].val), {
     fetch(urlForDevicesFromStorage('binary'), {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        // 'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        id: this.state.device.id,
-        val: this.state.device.val
+        id: this.state.device[i].id,
+        val: this.state.device[i].val
       })
     })
-
-    this.setState({ device });
+    // .then(json => {
+    //   console.log(json);
+    // })
+    .then(data => {
+      if (!data.ok) {
+        this.setModifiedDevices(i, null, 2);
+      }
+      console.log('Request succeeded with response', data);
+    })
+    .catch(error => {
+      this.setModifiedDevices(i, null, 2);
+      console.log('Request failed', error);
+    })
   }
 
   componentDidMount() {
@@ -39,7 +59,7 @@ class Device extends React.PureComponent {
        .then(d => {
          this.setState({
            isLoaded: true,
-           device: d.map((v, index) => { return {'id': v.id, 'name': v.name, 'val': v.val}; })
+           device: d.map(v => { return {'id': v.id, 'name': v.name, 'val': 2, 'state': 2}; })
        });
      },
      error => {
@@ -50,9 +70,18 @@ class Device extends React.PureComponent {
      });
    }
 
-   renderButton(i) {
+   renderName(name) {
+     return <td>{name}</td>
+   }
+
+   renderButton(i, val) {
      const buttonText = ['Aus ', 'Ein ', 'Auto'];
-     return <button key={i} onClick={() => this.handleClick(i)}> {buttonText[this.state.device[i].val]} </button>;
+     return <td><button key={i} onClick={() => this.handleClick(i)}> {buttonText[val]} </button></td>;
+   }
+
+   renderValue(val) {
+     const valueText = ['Aus ', 'Ein ', '---'];
+     return <td>{valueText[val]}</td>;
    }
 
    render() {
@@ -62,7 +91,11 @@ class Device extends React.PureComponent {
      } else if (!isLoaded) {
        return <div>Loading...</div>;
      } else {
-       const deviceList = device.map((dev, index) => { return <tr key={index}><td>{dev.name}</td><td>{this.renderButton(index)}</td></tr>; });
+       const deviceList = device.map((dev, index) => { return <tr  key={index}>
+         {this.renderName(dev.name)}
+         {this.renderButton(index, dev.val)}
+         {this.renderValue(dev.state)}
+         </tr>; });
        return <table><tbody>{deviceList}</tbody></table>;
      }
    }
