@@ -84,11 +84,14 @@ class Switches extends React.PureComponent {
     fetch(urlForSwitchesFromStorage('changes'))
     .then(d => d.json())
     .then(d => {
-      d.forEach(x => {
-        const i = this.state.switches.findIndex(z => z.id === x.id);
-        this.state.switches[i].state = x.state;
-      });
-      this.setModifiedSwitch(0, null, null);
+      if (d.length > 0) {
+        d.forEach(x => {
+          const i = this.state.switches.findIndex(z => z.id === x.id);
+          this.state.switches[i].state = x.state;
+        });
+        this.setModifiedSwitch(0, null, null);
+      }
+      console.log('Request succeeded with response', d);
     },
     error => {
       for (let i = 0; i < this.state.switches.length; i++) {

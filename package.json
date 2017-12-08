@@ -7,9 +7,11 @@
     "express": "^4.16.2",
     "flaschenpost": "^0.15.6",
     "morgan": "^1.9.0",
+    "os": "^0.1.1",
     "peer-ssdp": "0.0.5",
     "processenv": "^0.1.1",
     "require-dir": "^0.3.2",
+    "stream-array": "^1.1.2",
     "uuidv4": "^0.5.0"
   },
   "repository": {
