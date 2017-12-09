@@ -1,13 +1,18 @@
 'use strict';
 
+const bodyParser = require('body-parser'),
+      express = require('express');
 const assert = require('assertthat'),
       isolated = require('isolated'),
       request = require('supertest'),
       uuid = require('uuidv4');
 
 const storage = require('../lib/storage');
+const app = express();
 
 suite('storage', () => {
+  app.use(bodyParser.json());
+
   suite('options', () => {
     test('throws an error if Options are missing.', done => {
       assert.that(() => {
@@ -31,31 +36,34 @@ suite('storage', () => {
     });
   });
 
-  suite('POST /device/new', () => {
-    test('returns a status code 500.', done => {
-      const app = storage({
+  suite('POST /binary', () => {
+    test('returns a status code 400 with wrong uuid.', done => {
+      app.use('/', storage({
         storage: 'File',
         options: { directory: '/wrxl' }
-      });
+      }));
 
       request(app).
-        post('/device/new').
+        post('/binary').
+        send({ id: '0', val: 1 }).
+        set({ 'Content-Type': 'application/json' }).
         end((err, res) => {
           assert.that(err).is.null();
-          assert.that(res.statusCode).is.equalTo(500);
+          assert.that(res.statusCode).is.equalTo(400);
           done();
         });
     });
 
     test('returns a status code 200.', done => {
       isolated((errIsolated, directory) => {
-        const app = storage({
+        app.use('/', storage({
           storage: 'File',
           options: { directory }
-        });
+        }));
 
         request(app).
-          post('/device/new').
+          post('/binary').
+          send({ id: '20acb396-4d73-4262-8fc6-9c64c1318d62', val: 1 }).
           end((err, res) => {
             assert.that(err).is.null();
             assert.that(res.statusCode).is.equalTo(200);
@@ -67,10 +75,10 @@ suite('storage', () => {
 
   suite('POST /device/:id', () => {
     test('returns a status code 400.', done => {
-      const app = storage({
+      app.use('/', storage({
         storage: 'File',
         options: { directory: '/wrxl' }
-      });
+      }));
 
       request(app).
         post('/device/0815').
@@ -82,10 +90,10 @@ suite('storage', () => {
     });
 
     test('returns a status code 500.', done => {
-      const app = storage({
+      app.use('/', storage({
         storage: 'File',
         options: { directory: '/wrxl' }
-      });
+      }));
       const id = uuid();
 
       request(app).
@@ -99,10 +107,10 @@ suite('storage', () => {
 
     test('returns a status code 200.', done => {
       isolated((errIsolated, directory) => {
-        const app = storage({
+        app.use('/', storage({
           storage: 'File',
           options: { directory }
-        });
+        }));
         const id = uuid();
 
         request(app).
@@ -118,10 +126,10 @@ suite('storage', () => {
 
   suite('GET /device/:id', () => {
     test('returns a status code 400.', done => {
-      const app = storage({
+      app.use('/', storage({
         storage: 'File',
         options: { directory: '/wrxl' }
-      });
+      }));
 
       request(app).
         get('/device/0815').
@@ -134,10 +142,10 @@ suite('storage', () => {
 
     test('returns a status code 404.', done => {
       isolated((errIsolated, directory) => {
-        const app = storage({
+        app.use('/', storage({
           storage: 'File',
           options: { directory }
-        });
+        }));
         const id = uuid();
 
         request(app).
@@ -152,10 +160,10 @@ suite('storage', () => {
 
     test('returns a status code 200.', done => {
       isolated((errIsolated, directory) => {
-        const app = storage({
+        app.use('/', storage({
           storage: 'File',
           options: { directory }
-        });
+        }));
         const id = uuid();
 
         request(app).
@@ -178,10 +186,10 @@ suite('storage', () => {
 
   suite('GET /devices', () => {
     test('returns a status code 500.', done => {
-      const app = storage({
+      app.use('/', storage({
         storage: 'File',
         options: { directory: '/wrxl' }
-      });
+      }));
 
       request(app).
         get('/devices').
@@ -194,10 +202,10 @@ suite('storage', () => {
 
     test('returns a status code 200.', done => {
       isolated((errIsolated, directory) => {
-        const app = storage({
+        app.use('/', storage({
           storage: 'File',
           options: { directory }
-        });
+        }));
 
         request(app).
           get('/devices').

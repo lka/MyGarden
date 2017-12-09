@@ -7,7 +7,7 @@ const fs = require('fs'),
       path = require('path');
 
 const BacnetClient = require('../lib/BacnetClient');
-const client = new BacnetClient();
+const client = new BacnetClient({ transmitWhoIs: false });
 
 // Helper function getDatagram for real bacnet frames (buffers them in global datagrams)
 // the bacnet part starts always at offset 42 from the beginning of the wireshark frame
@@ -91,21 +91,21 @@ suite('BacnetClient', () => {
       suite('incorrect values', () => {
         test('throws an error if address is unknown', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, '1234', 0, 1);
+            BacnetClient.writeBinaryOutput(client, '1234', 0, 1);
           }).is.throwing('Device not found!');
           done();
         });
 
         test('throws an error if BinaryOutput is unknown', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address, 1234, 1);
+            BacnetClient.writeBinaryOutput(client, client.devices[0].address, 1234, 1);
           }).is.throwing('BinaryOutput not found!');
           done();
         });
 
         test('throws an error if Value is too high', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
           }).is.throwing('Value not allowed!');
           done();
@@ -122,7 +122,7 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, address, 0, 0);
+            BacnetClient.writeBinaryOutput(client, address, 0, 0);
           }).is.not.throwing();
           setTimeout(() => {
             assert.that(scopeWPReq.done()).is.true();
@@ -142,7 +142,7 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, address, 0, 1);
+            BacnetClient.writeBinaryOutput(client, address, 0, 1);
           }).is.not.throwing();
           setTimeout(() => {
             const buf = getDatagram('writePropertyReq1');
@@ -165,7 +165,7 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, address, 0, null);
+            BacnetClient.writeBinaryOutput(client, address, 0, null);
           }).is.not.throwing();
           setTimeout(() => {
             const buf = getDatagram('writePropertyReqNull');
@@ -182,7 +182,7 @@ suite('BacnetClient', () => {
     });
   });
 
-  suite.skip('client-Test', () => {
+  suite('client-Test', () => {
     test('whoIs fires event iAm', done => {
       let eventFired = false;
 
@@ -237,7 +237,7 @@ suite('BacnetClient', () => {
       suite('correct values', () => {
         test('throws no error if Value is 0', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
           }).is.not.throwing();
           done();
@@ -245,7 +245,7 @@ suite('BacnetClient', () => {
 
         test('throws no error if Value is 1', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1);
           }).is.not.throwing();
           done();
@@ -253,9 +253,21 @@ suite('BacnetClient', () => {
 
         test('throws no error if Value is NULL', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutputValue(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, null);
           }).is.not.throwing('BACnet writeProperty failed');
+          done();
+        });
+      });
+    });
+
+    suite('subscribeCOVBinaryOutput(address, objectInstance, nr)', () => {
+      suite('correct values', () => {
+        test('throws no error if Value is 0', done => {
+          assert.that(() => {
+            BacnetClient.subscribeCOVBinaryOutput(client, client.devices[0].address,
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
+          }).is.not.throwing();
           done();
         });
       });
