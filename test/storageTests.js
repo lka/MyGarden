@@ -2,10 +2,10 @@
 
 const bodyParser = require('body-parser'),
       express = require('express');
+const path = require('path');
 const assert = require('assertthat'),
       isolated = require('isolated'),
-      request = require('supertest'),
-      uuid = require('uuidv4');
+      request = require('supertest');
 
 const storage = require('../lib/storage');
 const app = express();
@@ -54,8 +54,10 @@ suite('storage', () => {
         });
     });
 
-    test('returns a status code 200.', done => {
+    test('returns a status code 400 with wrong value.', done => {
       isolated((errIsolated, directory) => {
+        assert.that(errIsolated).is.null();
+
         app.use('/', storage({
           storage: 'File',
           options: { directory }
@@ -63,93 +65,28 @@ suite('storage', () => {
 
         request(app).
           post('/binary').
-          send({ id: '20acb396-4d73-4262-8fc6-9c64c1318d62', val: 1 }).
+          send({ id: '20acb396-4d73-4262-8fc6-9c64c1318d62', val: 3 }).
           end((err, res) => {
             assert.that(err).is.null();
-            assert.that(res.statusCode).is.equalTo(200);
+            assert.that(res.statusCode).is.equalTo(400);
             done();
           });
       });
     });
   });
 
-  suite('POST /device/:id', () => {
-    test('returns a status code 400.', done => {
-      app.use('/', storage({
-        storage: 'File',
-        options: { directory: '/wrxl' }
-      }));
-
-      request(app).
-        post('/device/0815').
-        end((err, res) => {
-          assert.that(err).is.null();
-          assert.that(res.statusCode).is.equalTo(400);
-          done();
-        });
-    });
-
-    test('returns a status code 500.', done => {
-      app.use('/', storage({
-        storage: 'File',
-        options: { directory: '/wrxl' }
-      }));
-      const id = uuid();
-
-      request(app).
-        post(`/device/${id}`).
-        end((err, res) => {
-          assert.that(err).is.null();
-          assert.that(res.statusCode).is.equalTo(500);
-          done();
-        });
-    });
-
-    test('returns a status code 200.', done => {
-      isolated((errIsolated, directory) => {
-        app.use('/', storage({
-          storage: 'File',
-          options: { directory }
-        }));
-        const id = uuid();
-
-        request(app).
-          post(`/device/${id}`).
-          end((err, res) => {
-            assert.that(err).is.null();
-            assert.that(res.statusCode).is.equalTo(200);
-            done();
-          });
-      });
-    });
-  });
-
-  suite('GET /device/:id', () => {
-    test('returns a status code 400.', done => {
-      app.use('/', storage({
-        storage: 'File',
-        options: { directory: '/wrxl' }
-      }));
-
-      request(app).
-        get('/device/0815').
-        end((err, res) => {
-          assert.that(err).is.null();
-          assert.that(res.statusCode).is.equalTo(400);
-          done();
-        });
-    });
-
+  suite('GET /binaries', () => {
     test('returns a status code 404.', done => {
       isolated((errIsolated, directory) => {
+        assert.that(errIsolated).is.null();
+
         app.use('/', storage({
           storage: 'File',
           options: { directory }
         }));
-        const id = uuid();
 
         request(app).
-          get(`/device/${id}`).
+          get('/binaries').
           end((err, res) => {
             assert.that(err).is.null();
             assert.that(res.statusCode).is.equalTo(404);
@@ -159,61 +96,63 @@ suite('storage', () => {
     });
 
     test('returns a status code 200.', done => {
-      isolated((errIsolated, directory) => {
+      isolated({ files: path.join(__dirname, '..', 'data', 'binaries') }, (errIsolated, directory) => {
+        assert.that(errIsolated).is.null();
         app.use('/', storage({
           storage: 'File',
           options: { directory }
         }));
-        const id = uuid();
 
-        request(app).
-          post(`/device/${id}`).
-          end((err, res) => {
-            assert.that(err).is.null();
-            assert.that(res.statusCode).is.equalTo(200);
-
-            request(app).
-              get(`/device/${id}`).
-              end((errGet, resGet) => {
-                assert.that(errGet).is.null();
-                assert.that(resGet.statusCode).is.equalTo(200);
-                done();
-              });
-          });
+        // initialization of storage needs 100 ms, so test it after this
+        setTimeout(() => {
+          request(app).
+            get(`/binaries`).
+            end((err, res) => {
+              assert.that(err).is.null();
+              assert.that(res.statusCode).is.equalTo(200);
+              done();
+            });
+        }, 100);
       });
     });
   });
 
-  suite('GET /devices', () => {
-    test('returns a status code 500.', done => {
+  suite('GET /changes', () => {
+    test('returns a status code 200 without data.', done => {
       app.use('/', storage({
         storage: 'File',
         options: { directory: '/wrxl' }
       }));
 
-      request(app).
-        get('/devices').
-        end((err, res) => {
-          assert.that(err).is.null();
-          assert.that(res.statusCode).is.equalTo(500);
-          done();
-        });
+      setTimeout(() => {
+        request(app).
+          get('/changes').
+          end((err, res) => {
+            assert.that(err).is.null();
+            assert.that(res.statusCode).is.equalTo(200);
+            assert.that(res.body).is.equalTo({});
+            done();
+          });
+      }, 100);
     });
 
     test('returns a status code 200.', done => {
-      isolated((errIsolated, directory) => {
+      isolated({ files: path.join(__dirname, '..', 'data', 'binaries') }, (errIsolated, directory) => {
         app.use('/', storage({
           storage: 'File',
           options: { directory }
         }));
 
-        request(app).
-          get('/devices').
-          end((err, res) => {
-            assert.that(err).is.null();
-            assert.that(res.statusCode).is.equalTo(200);
-            done();
-          });
+        setTimeout(() => {
+          request(app).
+            get('/changes').
+            end((err, res) => {
+              assert.that(err).is.null();
+              assert.that(res.statusCode).is.equalTo(200);
+              assert.that(res.text).is.containing('id');
+              done();
+            });
+        }, 100);
       });
     });
   });

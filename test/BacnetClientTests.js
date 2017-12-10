@@ -182,7 +182,7 @@ suite('BacnetClient', () => {
     });
   });
 
-  suite('client-Test', () => {
+  suite.skip('client-Test', () => {
     test('whoIs fires event iAm', done => {
       let eventFired = false;
 
