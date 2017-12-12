@@ -182,7 +182,7 @@ suite('BacnetClient', () => {
     });
   });
 
-  suite.skip('client-Test', () => {
+  suite.only('client-Test', () => {
     test('whoIs fires event iAm', done => {
       let eventFired = false;
 
@@ -238,26 +238,75 @@ suite('BacnetClient', () => {
         test('throws no error if Value is 0', done => {
           assert.that(() => {
             BacnetClient.writeBinaryOutput(client, client.devices[0].address,
-              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0, err => {
+                if (err) {
+                  console.log(err.message);
+                }
+                done();
+              });
           }).is.not.throwing();
-          done();
+        });
+
+        test('reads binaryOutputValue', done => {
+          assert.that(() => {
+            BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
+              if (err) {
+                console.log(err.message);
+              }
+              console.log('readBinaryOutputValue:', val);
+              done();
+            });
+          }).is.not.throwing();
         });
 
         test('throws no error if Value is 1', done => {
           assert.that(() => {
             BacnetClient.writeBinaryOutput(client, client.devices[0].address,
-              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1);
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1, err => {
+                if (err) {
+                  console.log(err.message);
+                }
+                done();
+              });
           }).is.not.throwing();
-          done();
+        });
+
+        test('reads binaryOutputValue', done => {
+          assert.that(() => {
+            BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
+              if (err) {
+                console.log(err.message);
+              }
+              console.log('readBinaryOutputValue:', val);
+              done();
+            });
+          }).is.not.throwing();
         });
 
         test('throws no error if Value is NULL', done => {
           assert.that(() => {
             BacnetClient.writeBinaryOutput(client, client.devices[0].address,
-              client.devices[0].binaryOutputs[0].objectIdentifier.instance, null);
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, null, err => {
+                if (err) {
+                  console.log(err.message);
+                }
+                done();
+              });
           }).is.not.throwing('BACnet writeProperty failed');
-          done();
         });
+
+        test('reads binaryOutputValue', done => {
+          assert.that(() => {
+            BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
+              if (err) {
+                console.log(err.message);
+              }
+              console.log('readBinaryOutputValue:', val);
+              done();
+            });
+          }).is.not.throwing();
+        });
+
       });
     });
 
@@ -266,9 +315,13 @@ suite('BacnetClient', () => {
         test('throws no error if Value is 0', done => {
           assert.that(() => {
             BacnetClient.subscribeCOVBinaryOutput(client, client.devices[0].address,
-              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0);
+              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0, err => {
+                if (err) {
+                  console.log(err.message);
+                }
+                done();
+              });
           }).is.not.throwing();
-          done();
         });
       });
     });
