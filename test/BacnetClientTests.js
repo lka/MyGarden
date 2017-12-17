@@ -228,9 +228,9 @@ suite('BacnetClient', () => {
             }
             console.log('returns:', value);
             /* eslint-enable no-console */
+            done();
           });
       }).is.not.throwing();
-      done();
     });
 
     suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
@@ -240,20 +240,23 @@ suite('BacnetClient', () => {
             BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0, err => {
                 if (err) {
-                  console.log(err.message);
+                  throw new Error(err);
                 }
                 done();
               });
           }).is.not.throwing();
         });
 
-        test('reads binaryOutputValue', done => {
+        test('reads binaryOutputValue: 0', done => {
           assert.that(() => {
             BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
               if (err) {
-                console.log(err.message);
+                throw new Error(err);
               }
-              console.log('readBinaryOutputValue:', val);
+              /* eslint-disable no-console */
+              console.log('returns:', val);
+              /* eslint-enable no-console */
+              assert.that(val.valueList[0].value).is.equalTo(0);
               done();
             });
           }).is.not.throwing();
@@ -264,20 +267,20 @@ suite('BacnetClient', () => {
             BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1, err => {
                 if (err) {
-                  console.log(err.message);
+                  throw new Error(err);
                 }
                 done();
               });
           }).is.not.throwing();
         });
 
-        test('reads binaryOutputValue', done => {
+        test('reads binaryOutputValue: 1', done => {
           assert.that(() => {
             BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
               if (err) {
-                console.log(err.message);
+                throw new Error(err);
               }
-              console.log('readBinaryOutputValue:', val);
+              assert.that(val.valueList[0].value).is.equalTo(1);
               done();
             });
           }).is.not.throwing();
@@ -288,36 +291,37 @@ suite('BacnetClient', () => {
             BacnetClient.writeBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, null, err => {
                 if (err) {
-                  console.log(err.message);
+                  throw new Error(err);
                 }
                 done();
               });
           }).is.not.throwing('BACnet writeProperty failed');
         });
 
-        test('reads binaryOutputValue', done => {
+        test('reads binaryOutputValue: 0 or 1', done => {
           assert.that(() => {
             BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
               if (err) {
-                console.log(err.message);
+                throw new Error(err);
               }
-              console.log('readBinaryOutputValue:', val);
+              assert.that(val.valueList[0].value).is.between(0, 1);
               done();
             });
           }).is.not.throwing();
         });
-
       });
     });
 
     suite('subscribeCOVBinaryOutput(address, objectInstance, nr)', () => {
       suite('correct values', () => {
-        test('throws no error if Value is 0', done => {
+        test('throws no error', done => {
           assert.that(() => {
             BacnetClient.subscribeCOVBinaryOutput(client, client.devices[0].address,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0, err => {
                 if (err) {
-                  console.log(err.message);
+                  /* eslint-disable no-console */
+                  console.log('Err:', err.message);
+                  /* eslint-enable no-console */
                 }
                 done();
               });
