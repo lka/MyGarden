@@ -73,7 +73,7 @@ suite('BacnetClient with the real Device', () => {
       suite('correct values', () => {
         test('throws no error if Value is 0', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0, err => {
                 if (err) {
                   throw new Error(err);
@@ -85,7 +85,7 @@ suite('BacnetClient with the real Device', () => {
 
         test('reads binaryOutputValue: 0', done => {
           assert.that(() => {
-            BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
+            BacnetClient.readBinaryOutputValue(client, client.devices[0].deviceId, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
               if (err) {
                 throw new Error(err);
               }
@@ -100,7 +100,7 @@ suite('BacnetClient with the real Device', () => {
 
         test('throws no error if Value is 1', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 1, err => {
                 if (err) {
                   throw new Error(err);
@@ -112,7 +112,7 @@ suite('BacnetClient with the real Device', () => {
 
         test('reads binaryOutputValue: 1', done => {
           assert.that(() => {
-            BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
+            BacnetClient.readBinaryOutputValue(client, client.devices[0].deviceId, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
               if (err) {
                 throw new Error(err);
               }
@@ -124,7 +124,7 @@ suite('BacnetClient with the real Device', () => {
 
         test('throws no error if Value is NULL', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, null, err => {
                 if (err) {
                   throw new Error(err);
@@ -136,7 +136,7 @@ suite('BacnetClient with the real Device', () => {
 
         test('reads binaryOutputValue: 0 or 1', done => {
           assert.that(() => {
-            BacnetClient.readBinaryOutputValue(client, client.devices[0].address, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
+            BacnetClient.readBinaryOutputValue(client, client.devices[0].deviceId, client.devices[0].binaryOutputs[0].objectIdentifier.instance, (err, val) => {
               if (err) {
                 throw new Error(err);
               }
@@ -148,11 +148,11 @@ suite('BacnetClient with the real Device', () => {
       });
     });
 
-    suite('subscribeCOVBinaryOutput(address, objectInstance, nr)', () => {
+    suite('subscribeCOVBinaryOutput(deviceId, objectInstance, nr)', () => {
       suite('correct values', () => {
         test('throws no error', done => {
           assert.that(() => {
-            BacnetClient.subscribeCOVBinaryOutput(client, client.devices[0].address,
+            BacnetClient.subscribeCOVBinaryOutput(client, client.devices[0].deviceId,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 0, err => {
                 if (err) {
                   /* eslint-disable no-console */

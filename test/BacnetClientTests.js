@@ -87,7 +87,7 @@ suite('BacnetClient', () => {
       client.receiveData(getDatagram('iAmResponse'), address);
     });
 
-    suite('writeBinaryOutputValue(address, objectInstance, value)', () => {
+    suite('writeBinaryOutputValue(deviceId, objectInstance, value)', () => {
       suite('incorrect values', () => {
         test('throws an error if address is unknown', done => {
           assert.that(() => {
@@ -98,14 +98,14 @@ suite('BacnetClient', () => {
 
         test('throws an error if BinaryOutput is unknown', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].address, 1234, 1);
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 1234, 1);
           }).is.throwing('BinaryOutput not found!');
           done();
         });
 
         test('throws an error if Value is too high', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].address,
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId,
               client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
           }).is.throwing('Value not allowed!');
           done();
@@ -122,7 +122,7 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, address, 0, 0);
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 0, 0);
           }).is.not.throwing();
           setTimeout(() => {
             assert.that(scopeWPReq.done()).is.true();
@@ -142,7 +142,7 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, address, 0, 1);
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 0, 1);
           }).is.not.throwing();
           setTimeout(() => {
             const buf = getDatagram('writePropertyReq1');
@@ -165,7 +165,7 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, address, 0, null);
+            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 0, null);
           }).is.not.throwing();
           setTimeout(() => {
             const buf = getDatagram('writePropertyReqNull');
