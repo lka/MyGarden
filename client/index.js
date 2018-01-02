@@ -87,13 +87,16 @@ class Switches extends React.PureComponent {
       if (d.length > 0) {
         d.forEach(x => {
           const i = this.state.switches.findIndex(z => z.id === x.id);
-          this.state.switches[i].state = x.state;
+          if (i != -1) {
+            console.log('Request succeeded with response', d);
+            this.state.switches[i].state = x.state;
+          }
         });
         this.setModifiedSwitch(0, null, null);
       }
-      console.log('Request succeeded with response', d);
     },
     error => {
+      console.log('Request has error response', error);
       for (let i = 0; i < this.state.switches.length; i++) {
         if (this.state.switches[i].state != DefaultState) {
           this.setModifiedSwitch(i, DefaultSwitch, DefaultState);
