@@ -30,7 +30,8 @@ to install all dependencies
 Test with mocca...
 install mocha globally and start with
 
-> mocha
+> npm run test
+> npm run testdevice
 
 ## License
 

@@ -53,7 +53,7 @@ suite('BacnetClient', () => {
       done();
     });
 
-    test('iAm was received, readPropertyMultiple(Device-Information), after receiving Device-Information, readProperty(BinaryObject) was sent', done => {
+    test('iAm was received, readPropertyMultiple(Device-Information) was sent', done => {
       const address = '192.168.178.9';
 
       // Create scope to capture UDP readPropertyMultiple request
@@ -67,17 +67,13 @@ suite('BacnetClient', () => {
         eventFired = 1;
         assert.that(scopeRPMReq.done()).is.true();
         assert.that(new Uint8Array(scopeRPMReq.buffer)).is.equalTo(new Uint8Array(getDatagram('readPropertyMultipleReq')));
-        const scopeReadProperty = mockudp(`${address}:47808`);
-
-        client.receiveData(getDatagram('readPropertyMultipleAck'), address);
-        assert.that(new Uint8Array(scopeReadProperty.buffer)).is.equalTo(new Uint8Array(getDatagram('readPropertyReq')));
         eventFired = false;
         client.once('gotDevice', () => {
           eventFired = 2;
           mockudp.revert();
           done();
         });
-        client.receiveData(getDatagram('readPropertyAck'), address);
+        client.receiveData(getDatagram('readPropertyMultipleAck'), address);
       });
 
       setTimeout(() => {
@@ -87,26 +83,18 @@ suite('BacnetClient', () => {
       client.receiveData(getDatagram('iAmResponse'), address);
     });
 
-    suite('writeBinaryOutputValue(deviceId, objectInstance, value)', () => {
+    suite('write(deviceId, objectType, objectInstance, value)', () => {
       suite('incorrect values', () => {
         test('throws an error if address is unknown', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, '1234', 0, 1);
+            BacnetClient.write(client, '1234', 4, 0, 1);
           }).is.throwing('Device not found!');
-          done();
-        });
-
-        test('throws an error if BinaryOutput is unknown', done => {
-          assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 1234, 1);
-          }).is.throwing('BinaryOutput not found!');
           done();
         });
 
         test('throws an error if Value is too high', done => {
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId,
-              client.devices[0].binaryOutputs[0].objectIdentifier.instance, 2);
+            BacnetClient.write(client, client.devices[0].deviceId, 4, 0, 2);
           }).is.throwing('Value not allowed!');
           done();
         });
@@ -122,11 +110,14 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 0, 0);
+            BacnetClient.write(client, client.devices[0].deviceId, 4, 0, 0);
           }).is.not.throwing();
           setTimeout(() => {
+            const buf = getDatagram('writePropertyReq');
+
+            buf.writeUInt8(1, 8);
             assert.that(scopeWPReq.done()).is.true();
-            assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(getDatagram('writePropertyReq')));
+            assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(buf));
             client.receiveData(getDatagram('writePropertyAck'), address);
             mockudp.revert();
             done();
@@ -142,12 +133,12 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 0, 1);
+            BacnetClient.write(client, client.devices[0].deviceId, 4, 0, 1);
           }).is.not.throwing();
           setTimeout(() => {
             const buf = getDatagram('writePropertyReq1');
 
-            buf.writeUInt8(3, 8);
+            buf.writeUInt8(2, 8);
             assert.that(scopeWPReq.done()).is.true();
             assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(buf));
             client.receiveData(getDatagram('writePropertyAck'), address);
@@ -165,12 +156,12 @@ suite('BacnetClient', () => {
           mockudp.intercept();
 
           assert.that(() => {
-            BacnetClient.writeBinaryOutput(client, client.devices[0].deviceId, 0, null);
+            BacnetClient.write(client, client.devices[0].deviceId, 4, 0, null);
           }).is.not.throwing();
           setTimeout(() => {
             const buf = getDatagram('writePropertyReqNull');
 
-            buf.writeUInt8(4, 8);
+            buf.writeUInt8(3, 8);
             assert.that(scopeWPReq.done()).is.true();
             assert.that(new Uint8Array(scopeWPReq.buffer)).is.equalTo(new Uint8Array(buf));
             client.receiveData(getDatagram('writePropertyAck'), address);

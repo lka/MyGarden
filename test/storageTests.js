@@ -130,7 +130,7 @@ suite('storage', () => {
           end((err, res) => {
             assert.that(err).is.null();
             assert.that(res.statusCode).is.equalTo(200);
-            assert.that(res.body).is.equalTo({});
+            assert.that(res.body).is.equalTo({ ok: 'OK' });
             done();
           });
       }, 100);
