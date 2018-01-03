@@ -146,7 +146,7 @@ suite('BacnetClient with the real Device', () => {
     });
 
     suite('observe(deviceId, objectType, objectInstance, nr)', () => {
-      suite('correct values', () => {
+      suite('start observation', () => {
         test('throws no error', done => {
           assert.that(() => {
             BacnetClient.observe(client, client.devices[0].deviceId, 4, 0, 0, err => {
@@ -155,6 +155,22 @@ suite('BacnetClient with the real Device', () => {
                   console.log('Err:', err.message);
                   /* eslint-enable no-console */
                 }
+                assert.that(client.timers.length).is.equalTo(1);
+                done();
+              });
+          }).is.not.throwing();
+        });
+      });
+      suite('cancel observation', () => {
+        test('throws no error', done => {
+          assert.that(() => {
+            BacnetClient.cancelObservation(client, client.devices[0].deviceId, 4, 0, 0, err => {
+                if (err) {
+                  /* eslint-disable no-console */
+                  console.log('Err:', err.message);
+                  /* eslint-enable no-console */
+                }
+                assert.that(client.timers.length).is.equalTo(0);
                 done();
               });
           }).is.not.throwing();
