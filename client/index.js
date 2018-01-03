@@ -49,6 +49,7 @@ class Switches extends React.PureComponent {
         isLoaded: true,
         switches: d.map(v => { return {'id': v.id, 'name': v.name, 'val': DefaultSwitch, 'state': DefaultState}; })
       });
+      this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
     },
     error => {
@@ -59,8 +60,21 @@ class Switches extends React.PureComponent {
     });
   }
 
-  componentWillClose() {
+  componentWillUnmount() {
+    this.cancelObservation();
     clearInterval(this.timer);
+  }
+
+  cancelObservation() {
+    fetch(urlForSwitchesFromStorage('cancel'), {
+      method: 'PUT'
+    })
+    .then(data => {
+      console.log('Request succeeded with response', data);
+    })
+    .catch(error => {
+      console.log('Request failed', error);
+    })
   }
 
   render() {
@@ -75,7 +89,13 @@ class Switches extends React.PureComponent {
          {this.renderButton(index, dest.val)}
          {this.renderValue(dest.state)}
          </tr>; });
-      return <table><tbody>{switchList}</tbody></table>;
+      return (
+        <div>
+          <div className='page-header'><h1 align='center'>MyGarden</h1></div>
+          <div className='page-body'><table className='container'><tbody>{switchList}</tbody></table></div>
+          <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
+        </div>
+      );
     }
   }
 
@@ -85,10 +105,10 @@ class Switches extends React.PureComponent {
     .then(d => d.json())
     .then(d => {
       if (d.length > 0) {
+        console.log('Request succeeded with response', d);
         d.forEach(x => {
           const i = this.state.switches.findIndex(z => z.id === x.id);
           if (i != -1) {
-            console.log('Request succeeded with response', d);
             this.state.switches[i].state = x.state;
           }
         });
@@ -122,6 +142,16 @@ class Switches extends React.PureComponent {
 
   renderValue(val) {
     return <td>{valueText[val]}</td>;
+  }
+
+  renderHeader() {
+    // The click event on this button will bubble up to parent,
+    // because there is no 'onClick' attribute defined
+    return (
+      <div className="header">
+      <button>Click</button>
+      </div>
+    );
   }
 }
 
