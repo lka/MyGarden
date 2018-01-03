@@ -58,12 +58,9 @@ suite('BacnetClient with the real Device', () => {
         client.readPropertyMultiple(address,
           [{ objectIdentifier: { type: 4, instance: 0 },
             propertyReferences: [{ propertyIdentifier: 8 }]}], (err, value) => {
-            /* eslint-disable no-console */
             if (err) {
-              console.log(err, err.message);
+              throw new Error(err);
             }
-            console.log('returns:', value);
-            /* eslint-enable no-console */
             done();
           });
       }).is.not.throwing();
@@ -88,9 +85,6 @@ suite('BacnetClient with the real Device', () => {
               if (err) {
                 throw new Error(err);
               }
-              /* eslint-disable no-console */
-              console.log('returns:', val);
-              /* eslint-enable no-console */
               assert.that(val.valueList[0].value).is.equalTo(0);
               done();
             });
@@ -151,9 +145,7 @@ suite('BacnetClient with the real Device', () => {
           assert.that(() => {
             BacnetClient.observe(client, client.devices[0].deviceId, 4, 0, 0, err => {
                 if (err) {
-                  /* eslint-disable no-console */
-                  console.log('Err:', err.message);
-                  /* eslint-enable no-console */
+                  throw new Error(err);
                 }
                 assert.that(client.timers.length).is.equalTo(1);
                 done();
@@ -166,9 +158,7 @@ suite('BacnetClient with the real Device', () => {
           assert.that(() => {
             BacnetClient.cancelObservation(client, client.devices[0].deviceId, 4, 0, 0, err => {
                 if (err) {
-                  /* eslint-disable no-console */
-                  console.log('Err:', err.message);
-                  /* eslint-enable no-console */
+                  throw new Error(err);
                 }
                 assert.that(client.timers.length).is.equalTo(0);
                 done();
