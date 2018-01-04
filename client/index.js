@@ -1,13 +1,58 @@
 const urlForSwitchesFromStorage = switches =>
   `http://localhost:3000/${switches}`
-const buttonText = ['Aus ', 'Ein ', 'Auto'];
-const valueText = ['Aus ', 'Ein ', '---'];
+const buttonText = ['Off ', 'On ', 'Auto'];
+const valueText = ['Off ', 'On ', '---'];
 const DefaultSwitch = 2;
 const DefaultState = 2;
 
 // These two containers are siblings in the DOM
 const app = document.getElementById('app');
 const modalRoot = document.getElementById('modal-root');
+
+class Checkbox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isChecked: this.props.val
+    }
+    this.toggleCheckboxChange = this.toggleCheckboxChange.bind(this);
+  }
+
+  toggleCheckboxChange() {
+    const { handleCheckboxChange, label, index } = this.props;
+
+    this.setState(({ isChecked }) => (
+      {
+        isChecked: !isChecked,
+      }
+    ));
+    handleCheckboxChange(index, !this.state.isChecked);
+  }
+
+  render() {
+    const { label } = this.props;
+    const { isChecked } = this.state;
+
+    return (
+      <div className="checkbox">
+        <label>
+          <input
+            type="checkbox"
+            value={label}
+            checked={isChecked}
+            onChange={this.toggleCheckboxChange}
+          />
+          {label}
+        </label>
+      </div>
+    );
+  }
+}
+
+// Checkbox.propTypes = {
+//   label: React.PropTypes.string.isRequired,
+//   handleCheckboxChange: React.PropTypes.func.isRequired
+// };
 
 class Modal extends React.PureComponent {
   constructor(props) {
@@ -48,10 +93,12 @@ class Switches extends React.PureComponent {
       isLoaded: false,
       switches: []
     };
+    this.myObjects = [];
 
     this.handleShow = this.handleShow.bind(this);
     this.handleHide = this.handleHide.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.toggleCheckbox = this.toggleCheckbox.bind(this);
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this.setModifiedSwitch = this.setModifiedSwitch.bind(this);
   }
@@ -66,11 +113,34 @@ class Switches extends React.PureComponent {
   }
 
   handleShow() {
-    this.setState({ showModal: true });
+    console.log('handleShow 1:', this.myObjects);
+    fetch(urlForSwitchesFromStorage('objects'))
+    .then(d => d.json())
+    .then(d => {
+        this.myObjects = d.map(v => { return {'id': v.id, 'name': v.name, 'val': v.val }; });
+        console.log('handleShow 2:', this.myObjects);
+        this.setState({ showModal: true });
+      },
+      error => {
+        this.setState({ error })
+    });
   }
 
   handleHide() {
     this.setState({ showModal: false });
+    fetch(urlForSwitchesFromStorage('objects'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.myObjects)
+    })
+    .then(data => {
+      console.log('Request succeeded with response', data);
+    })
+    .catch(error => {
+      console.log('Request failed', error);
+    })
   }
 
   handleClick(i) {
@@ -95,6 +165,12 @@ class Switches extends React.PureComponent {
       this.setModifiedSwitch(i, null, DefaultState);
       console.log('Request failed', error);
     })
+  }
+
+  toggleCheckbox(i, val) {
+    // http://react.tips/checkboxes-in-react/
+    console.log(`toggleCheckbox(${i}, ${val})`);
+    this.myObjects[i].val = val;
   }
 
   componentDidMount() {
@@ -135,7 +211,6 @@ class Switches extends React.PureComponent {
   }
 
   render() {
-    // const { showModal, error, isLoaded, switches } = this.state;
     if (this.state.error) {
        return <div>Error: {this.state.error.message}</div>
     } else if (!this.state.isLoaded) {
@@ -144,18 +219,7 @@ class Switches extends React.PureComponent {
       // Show a Modal on click.
       // (In a real app, don't forget to use ARIA attributes
       // for accessibility!)
-      const modal = this.state.showModal ? (
-        <Modal>
-          <div className="modal">
-            <div>
-              With a portal, we can render content into a different
-              part of the DOM, as if it were any other React child.
-            </div>
-            This is being rendered inside the #modal-container div.
-            <button onClick={this.handleHide}>Hide modal</button>
-          </div>
-        </Modal>
-      ) : null;
+      const modal = this.state.showModal ? this.renderObjectList() : null;
       const switchList = this.state.switches.length > 0 ? this.state.switches.map((dest, index) => { return <tr  key={index}>
         {this.renderName(dest.name)}
         {this.renderButton(index, dest.val)}
@@ -164,7 +228,7 @@ class Switches extends React.PureComponent {
       return (
         <div>
           <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
-          <div className='page-header'><h1 align='center'>MyGarden</h1></div>
+          <h1 align='center'>MyGarden</h1>
           <div className='page-body'><table className='container'><tbody>{switchList}</tbody></table></div>
           <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
           {modal}
@@ -206,6 +270,38 @@ class Switches extends React.PureComponent {
     this.setState({ date: new Date()});
     // const newSwitch = Object.assign({}, this.state.switches);
     // this.setState({ switches: newSwitch });
+  }
+
+  renderObjectList() {
+    console.log('renderObjectList has objects', this.myObjects);
+    const objectList = this.myObjects.length > 0 ? this.myObjects.map((dest, index) => { return (
+      <div key={index}>{this.renderCheckbox(dest.name, index, dest.val)}</div>
+    )}) : [];
+
+    return (
+    <Modal>
+      <div className="modal">
+        <div className='section'>
+          <div className='live-preview'>
+            {objectList}
+          </div>
+       </div>
+       <div align='right'><button onClick={this.handleHide} className='page-header__button'>OK</button></div>
+      </div>
+    </Modal>
+   );
+  }
+
+  renderCheckbox(label, index, val) {
+    return (<div>
+      <Checkbox
+            label={label}
+            handleCheckboxChange={this.toggleCheckbox}
+            key={index}
+            index={index}
+            val={val}
+        />
+        </div>);
   }
 
   renderName(name) {
