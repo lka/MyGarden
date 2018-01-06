@@ -84,6 +84,18 @@ class Modal extends React.PureComponent {
   }
 }
 
+class Switch extends React.Component {
+  render() {
+    return (
+      <tr>
+      <td>{this.props.name}</td>
+      <td><button onClick={() => this.props.onClick()}> {this.props.buttonText} </button></td>
+      <td>{this.props.valueText}</td>
+      </tr>
+    );
+  }
+}
+
 class Switches extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -220,11 +232,8 @@ class Switches extends React.PureComponent {
       // (In a real app, don't forget to use ARIA attributes
       // for accessibility!)
       const modal = this.state.showModal ? this.renderObjectList() : null;
-      const switchList = this.state.switches.length > 0 ? this.state.switches.map((dest, index) => { return <tr  key={index}>
-        {this.renderName(dest.name)}
-        {this.renderButton(index, dest.val)}
-        {this.renderValue(dest.state)}
-        </tr>; }) : [];
+      const switchList = this.state.switches.length > 0 ? this.state.switches.map((dest, index) => {
+        return this.renderSwitch(dest.name, buttonText[dest.val], valueText[dest.state], index) }) : [];
       return (
         <div>
           <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
@@ -293,7 +302,7 @@ class Switches extends React.PureComponent {
   }
 
   renderCheckbox(label, index, val) {
-    return (<div>
+    return (
       <Checkbox
             label={label}
             handleCheckboxChange={this.toggleCheckbox}
@@ -301,19 +310,18 @@ class Switches extends React.PureComponent {
             index={index}
             val={val}
         />
-        </div>);
+      );
   }
 
-  renderName(name) {
-    return <td>{name}</td>
-  }
-
-  renderButton(i, value) {
-    return <td><button key={i} onClick={() => this.handleClick(i)}> {buttonText[value]} </button></td>;
-  }
-
-  renderValue(val) {
-    return <td>{valueText[val]}</td>;
+  renderSwitch(name, buttonText, valueText, i) {
+    return (
+      <Switch
+        name = {name}
+        valueText = {valueText}
+        buttonText = {buttonText}
+        onClick = {() => this.handleClick(i)}
+      />
+    );
   }
 }
 
