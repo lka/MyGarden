@@ -1,9 +1,9 @@
 const urlForSwitchesFromStorage = switches =>
   `http://localhost:3000/${switches}`
-const buttonText = ['Off ', 'On ', 'Auto'];
 const valueText = ['Off ', 'On ', '---'];
-const DefaultSwitch = 2;
 const DefaultState = 2;
+const buttonText = ['Off ', 'On ', 'Auto'];
+const DefaultSwitch = 2;
 
 // These two containers are siblings in the DOM
 const app = document.getElementById('app');
@@ -85,11 +85,46 @@ class Modal extends React.PureComponent {
 }
 
 class Switch extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      val: DefaultSwitch
+    };
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
+    setTimeout(() => {
+      fetch(urlForSwitchesFromStorage('binary'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: this.props.id,
+          val: this.state.val
+        })
+      })
+      .then(data => {
+        if (!data.ok) {
+          this.setState({ val: DefaultSwitch });
+        }
+        console.log('Request succeeded with response', data);
+      })
+      .catch(error => {
+        this.setState({ val: DefaultSwitch });
+        console.log('Request failed', error);
+      })
+    }, 100);
+  }
+
   render() {
     return (
-      <tr>
+      <tr key={this.props.index}>
       <td>{this.props.name}</td>
-      <td><button onClick={() => this.props.onClick()}> {this.props.buttonText} </button></td>
+      <td><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></td>
       <td>{this.props.valueText}</td>
       </tr>
     );
@@ -103,16 +138,15 @@ class Switches extends React.PureComponent {
       showModal: false,
       error: null,
       isLoaded: false,
-      switches: []
+      triggerView: false
     };
+    this.switches = [];
     this.myObjects = [];
 
     this.handleShow = this.handleShow.bind(this);
     this.handleHide = this.handleHide.bind(this);
-    this.handleClick = this.handleClick.bind(this);
     this.toggleCheckbox = this.toggleCheckbox.bind(this);
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
-    this.setModifiedSwitch = this.setModifiedSwitch.bind(this);
   }
 
   componentDidCatch(error, info) {
@@ -126,20 +160,56 @@ class Switches extends React.PureComponent {
 
   handleShow() {
     console.log('handleShow 1:', this.myObjects);
-    fetch(urlForSwitchesFromStorage('objects'))
-    .then(d => d.json())
-    .then(d => {
-        this.myObjects = d.map(v => { return {'id': v.id, 'name': v.name, 'val': v.val }; });
-        console.log('handleShow 2:', this.myObjects);
-        this.setState({ showModal: true });
-      },
-      error => {
-        this.setState({ error })
-    });
+    this.readObjects();
   }
 
   handleHide() {
     this.setState({ showModal: false });
+    this.sendObjects();
+  }
+
+  toggleCheckbox(i, val) {
+    // http://react.tips/checkboxes-in-react/
+    console.log(`toggleCheckbox(${i}, ${val})`);
+    this.myObjects[i].val = val;
+  }
+
+  componentDidMount() {
+    console.log('componentDidMount');
+    this.readBinaries();
+  }
+
+  componentWillUnmount() {
+    this.cancelObservation();
+    clearInterval(this.timer);
+  }
+
+  render() {
+    if (this.state.error) {
+       return <div>Error: {this.state.error.message}</div>
+    } else if (!this.state.isLoaded) {
+       return <div>Loading...</div>;
+    } else {
+      // Show a Modal on click.
+      // (In a real app, don't forget to use ARIA attributes
+      // for accessibility!)
+      const modal = this.state.showModal ? this.renderObjectList() : null;
+      const switchList = this.switches.length > 0 ? this.switches.map((item, index) => {
+        return this.renderSwitch(item.id, item.name, item.val, valueText[item.state], index) }) : [];
+      return (
+        <div>
+          <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
+          <h1 align='center'>MyGarden</h1>
+          <div className='page-body'><table className='container'><tbody>{switchList}</tbody></table></div>
+          <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
+          {modal}
+        </div>
+      );
+    }
+  }
+
+  // the helpers
+  sendObjects() {
     fetch(urlForSwitchesFromStorage('objects'), {
       method: 'POST',
       headers: {
@@ -155,45 +225,27 @@ class Switches extends React.PureComponent {
     })
   }
 
-  handleClick(i) {
-    this.setModifiedSwitch(i, (this.state.switches[i].val + 1) % valueText.length, null);
-    fetch(urlForSwitchesFromStorage('binary'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+  readObjects() {
+    fetch(urlForSwitchesFromStorage('objects'))
+    .then(d => d.json())
+    .then(d => {
+        this.myObjects = d.map(v => { return {'id': v.id, 'name': v.name, 'val': v.val }; });
+        console.log('handleShow 2:', this.myObjects);
+        this.setState({ showModal: true });
       },
-      body: JSON.stringify({
-        id: this.state.switches[i].id,
-        val: this.state.switches[i].val
-      })
-    })
-    .then(data => {
-      if (!data.ok) {
-        this.setModifiedSwitch(i, null, DefaultState);
-      }
-      console.log('Request succeeded with response', data);
-    })
-    .catch(error => {
-      this.setModifiedSwitch(i, null, DefaultState);
-      console.log('Request failed', error);
-    })
+      error => {
+        this.setState({ error })
+    });
   }
 
-  toggleCheckbox(i, val) {
-    // http://react.tips/checkboxes-in-react/
-    console.log(`toggleCheckbox(${i}, ${val})`);
-    this.myObjects[i].val = val;
-  }
-
-  componentDidMount() {
-    console.log('componentDidMount');
+  readBinaries() {
     fetch(urlForSwitchesFromStorage('binaries'))
     .then(d => d.json())
     .then(d => {
       this.setState({
-        isLoaded: true,
-        switches: d.map(v => { return {'id': v.id, 'name': v.name, 'val': DefaultSwitch, 'state': DefaultState}; })
+        isLoaded: true
       });
+      this.switches = d.map(v => { return {'id': v.id, 'name': v.name, 'state': -1}; })
       this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
     },
@@ -205,9 +257,26 @@ class Switches extends React.PureComponent {
     });
   }
 
-  componentWillUnmount() {
-    this.cancelObservation();
-    clearInterval(this.timer);
+  getUpdatedValues() {
+    fetch(urlForSwitchesFromStorage('changes'))
+    .then(d => d.json())
+    .then(d => {
+      if (d.length > 0) {
+        console.log('getUpdatedValues succeeded with response', d);
+        d.forEach(x => {
+          const i = this.switches.findIndex(z => z.id === x.id);
+          if (i != -1) {
+            this.switches[i].state = x.state;
+          }
+        });
+        this.setState(prevState => ({ toggleView: !prevState.toggleView }));
+      }
+    },
+    error => {
+      console.log('getUpdatedValues has error response', error);
+      this.switches.forEach(item => { if (item.state !== DefaultState) { item.state = DefaultState; item.val = DefaultSwitch; } });
+      this.setState(prevState => ({ toggleView: !prevState.toggleView }));
+    });
   }
 
   cancelObservation() {
@@ -220,65 +289,6 @@ class Switches extends React.PureComponent {
     .catch(error => {
       console.log('Request failed', error);
     })
-  }
-
-  render() {
-    if (this.state.error) {
-       return <div>Error: {this.state.error.message}</div>
-    } else if (!this.state.isLoaded) {
-       return <div>Loading...</div>;
-    } else {
-      // Show a Modal on click.
-      // (In a real app, don't forget to use ARIA attributes
-      // for accessibility!)
-      const modal = this.state.showModal ? this.renderObjectList() : null;
-      const switchList = this.state.switches.length > 0 ? this.state.switches.map((dest, index) => {
-        return this.renderSwitch(dest.name, buttonText[dest.val], valueText[dest.state], index) }) : [];
-      return (
-        <div>
-          <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
-          <h1 align='center'>MyGarden</h1>
-          <div className='page-body'><table className='container'><tbody>{switchList}</tbody></table></div>
-          <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
-          {modal}
-        </div>
-      );
-    }
-  }
-
-  // the helpers
-  getUpdatedValues() {
-    fetch(urlForSwitchesFromStorage('changes'))
-    .then(d => d.json())
-    .then(d => {
-      if (d.length > 0) {
-        console.log('getUpdatedValues succeeded with response', d);
-        d.forEach(x => {
-          const i = this.state.switches.findIndex(z => z.id === x.id);
-          if (i != -1) {
-            this.state.switches[i].state = x.state;
-          }
-        });
-        this.setModifiedSwitch(0, null, null);
-        console.log('getUpdatedValues After:', this.state);
-      }
-    },
-    error => {
-      console.log('getUpdatedValues has error response', error);
-      for (let i = 0; i < this.state.switches.length; i++) {
-        if (this.state.switches[i].state != DefaultState) {
-          this.setModifiedSwitch(i, DefaultSwitch, DefaultState);
-        }
-      }
-    });
-  }
-
-  setModifiedSwitch(index, val, state) {
-    if (val != null) this.state.switches[index].val = val;
-    if (state != null) this.state.switches[index].state = state;
-    this.setState({ date: new Date()});
-    // const newSwitch = Object.assign({}, this.state.switches);
-    // this.setState({ switches: newSwitch });
   }
 
   renderObjectList() {
@@ -313,13 +323,14 @@ class Switches extends React.PureComponent {
       );
   }
 
-  renderSwitch(name, buttonText, valueText, i) {
+  renderSwitch(id, name, status, valueText, i) {
     return (
       <Switch
+        id = {id}
         name = {name}
+        index = {i}
         valueText = {valueText}
-        buttonText = {buttonText}
-        onClick = {() => this.handleClick(i)}
+        status = {status}
       />
     );
   }
