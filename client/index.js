@@ -122,11 +122,7 @@ class Switch extends React.Component {
 
   render() {
     return (
-      <tr key={this.props.index}>
-      <td>{this.props.name}</td>
       <td><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></td>
-      <td>{this.props.valueText}</td>
-      </tr>
     );
   }
 }
@@ -159,18 +155,27 @@ class Switches extends React.PureComponent {
   }
 
   handleShow() {
-    console.log('handleShow 1:', this.myObjects);
-    this.readObjects();
+    console.log('handleShow:', this.myObjects);
+    this.setState({ objectChanged: false });
+    if (this.myObjects.length === 0) {
+      this.readObjects();
+    } else {
+      this.setState({ showModal: true });
+    }
   }
 
   handleHide() {
+    console.log('handleHide');
     this.setState({ showModal: false });
-    this.sendObjects();
+    if (this.state.objectChanged) {
+      this.sendObjects();
+    }
   }
 
   toggleCheckbox(i, val) {
     // http://react.tips/checkboxes-in-react/
     console.log(`toggleCheckbox(${i}, ${val})`);
+    this.setState({ objectChanged: true }) ;
     this.myObjects[i].val = val;
   }
 
@@ -194,8 +199,7 @@ class Switches extends React.PureComponent {
       // (In a real app, don't forget to use ARIA attributes
       // for accessibility!)
       const modal = this.state.showModal ? this.renderObjectList() : null;
-      const switchList = this.switches.length > 0 ? this.switches.map((item, index) => {
-        return this.renderSwitch(item.id, item.name, item.val, valueText[item.state], index) }) : [];
+      const switchList = this.switches.length > 0 ? this.renderSwitchList() : [];
       return (
         <div>
           <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
@@ -323,13 +327,22 @@ class Switches extends React.PureComponent {
       );
   }
 
-  renderSwitch(id, name, status, valueText, i) {
+  renderSwitchList() {
+    return this.switches.map((item, index) => {
+      return (
+        <tr key={index}>
+        <td>{item.name}</td>
+        {this.renderSwitch(item.id, item.val)}
+        <td>{valueText[item.state]}</td>
+        </tr>
+      );
+    });
+  }
+
+  renderSwitch(id, status) {
     return (
       <Switch
         id = {id}
-        name = {name}
-        index = {i}
-        valueText = {valueText}
         status = {status}
       />
     );
