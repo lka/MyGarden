@@ -168,7 +168,9 @@ class Switches extends React.PureComponent {
     console.log('handleHide');
     this.setState({ showModal: false });
     if (this.state.objectChanged) {
+      this.cancelObservation();
       this.sendObjects();
+      this.readBinaries();
     }
   }
 
@@ -203,8 +205,8 @@ class Switches extends React.PureComponent {
       return (
         <div>
           <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
-          <h1 align='center'>MyGarden</h1>
-          <div className='page-body'><table className='container'><tbody>{switchList}</tbody></table></div>
+          <div className='page-header'><h1 align='center'>MyGarden</h1></div>
+          <div className='page-body'>{switchList}</div>
           <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
           {modal}
         </div>
@@ -309,7 +311,7 @@ class Switches extends React.PureComponent {
             {objectList}
           </div>
        </div>
-       <div align='right'><button onClick={this.handleHide} className='page-header__button'>OK</button></div>
+       <button onClick={this.handleHide} className='page-header__button'>OK</button>
       </div>
     </Modal>
    );
@@ -328,15 +330,20 @@ class Switches extends React.PureComponent {
   }
 
   renderSwitchList() {
-    return this.switches.map((item, index) => {
-      return (
-        <tr key={index}>
-        <td>{item.name}</td>
-        {this.renderSwitch(item.id, item.val)}
-        <td>{valueText[item.state]}</td>
-        </tr>
-      );
-    });
+    return (
+      <table className='container'>
+        <thead><tr><th>Object Name</th><th>Switch</th><th>Value</th></tr></thead>
+        <tbody>
+        {this.switches.map((item, index) => (
+          <tr key={index}>
+            <td>{item.name}</td>
+            {this.renderSwitch(item.id, item.val)}
+            <td>{valueText[item.state]}</td>
+          </tr>
+        ))}
+        </tbody>
+      </table>
+    )
   }
 
   renderSwitch(id, status) {
