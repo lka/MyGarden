@@ -46,20 +46,6 @@ h1, h2, h3 {
 
 // header
 
-.myheader {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-}
-
-.myheadline{
-  display: table;
-}
-
-.myheadlineitem{
-  float: left;
-}
-
 .page-header {
 	background-color: @header-bg-color;
 	color: @header-color;

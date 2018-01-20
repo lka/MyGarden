@@ -204,8 +204,10 @@ class Switches extends React.PureComponent {
       const switchList = this.switches.length > 0 ? this.renderSwitchList() : [];
       return (
         <div>
-          <div align='right'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
-          <div className='page-header'><h1 align='center'>MyGarden</h1></div>
+        <div className='page-header'>
+          <div className='page-subheader__button'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
+          <div className='page-subheader'><h1 align='center'>MyGarden</h1></div>
+        </div>
           <div className='page-body'>{switchList}</div>
           <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
           {modal}
