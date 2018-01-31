@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 const urlForSwitchesFromStorage = switches =>
   `http://localhost:3000/${switches}`
 const valueText = ['Off ', 'On ', '---'];
