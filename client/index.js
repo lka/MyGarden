@@ -1,5 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import AppBarIcon from './AppBarIcon';
+import LeftNav from './LeftNav';
+import AboutDlg from './AboutDlg';
+import HelpDlg from './HelpDlg';
+import SelectObjectsDlg from './SelectObjectsDlg';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableFooter,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 
 const urlForSwitchesFromStorage = switches =>
   `http://localhost:3000/${switches}`
@@ -57,36 +73,6 @@ class Checkbox extends React.Component {
 //   handleCheckboxChange: React.PropTypes.func.isRequired
 // };
 
-class Modal extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.el = document.createElement('div');
-  }
-
-  componentDidMount() {
-    // The portal element is inserted in the DOM tree after
-    // the Modal's children are mounted, meaning that children
-    // will be mounted on a detached DOM node. If a child
-    // component requires to be attached to the DOM tree
-    // immediately when mounted, for example to measure a
-    // DOM node, or uses 'autoFocus' in a descendant, add
-    // state to Modal and only render the children when Modal
-    // is inserted in the DOM tree.
-    modalRoot.appendChild(this.el);
-  }
-
-  componentWillUnmount() {
-    modalRoot.removeChild(this.el);
-  }
-
-  render() {
-    return ReactDOM.createPortal(
-      this.props.children,
-      this.el
-    );
-  }
-}
-
 class Switch extends React.Component {
   constructor(props) {
     super(props);
@@ -125,7 +111,7 @@ class Switch extends React.Component {
 
   render() {
     return (
-      <td><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></td>
+      <TableRowColumn><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></TableRowColumn>
     );
   }
 }
@@ -146,6 +132,10 @@ class Switches extends React.PureComponent {
     this.handleHide = this.handleHide.bind(this);
     this.toggleCheckbox = this.toggleCheckbox.bind(this);
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
+    this._handleClick = this._handleClick.bind(this);
+    this._showAbout = this._showAbout.bind(this);
+    this._showHelp = this._showHelp.bind(this);
+    this._showSelectObjects = this._showSelectObjects.bind(this);
   }
 
   componentDidCatch(error, info) {
@@ -155,6 +145,31 @@ class Switches extends React.PureComponent {
     }
     // You can also log the error to an error reporting service
     // logErrorToMyService(error, info);
+  }
+
+  _handleClick(e) {
+    e.preventDefault();
+
+    // Show/Hide the Left Menu
+    this.refs.leftNav.setState({open: true});
+  }
+
+  _showAbout(e) {
+    e.preventDefault();
+    // Show the About Dlg
+    this.refs.aboutDlg.setState({open: true});
+  }
+
+  _showSelectObjects(e) {
+    e.preventDefault();
+    // Show the SelectObjects Dlg
+    this.refs.selectObjectsDlg.setState({open: true});
+  }
+
+  _showHelp(e) {
+    e.preventDefault();
+    // Show the Help Dlg
+    this.refs.helpDlg.setState({open: true});
   }
 
   handleShow() {
@@ -187,6 +202,9 @@ class Switches extends React.PureComponent {
   componentDidMount() {
     console.log('componentDidMount');
     this.readBinaries();
+    if (this.myObjects.length === 0) {
+      this.readObjects();
+    }
   }
 
   componentWillUnmount() {
@@ -200,21 +218,31 @@ class Switches extends React.PureComponent {
     } else if (!this.state.isLoaded) {
        return <div>Loading...</div>;
     } else {
-      // Show a Modal on click.
-      // (In a real app, don't forget to use ARIA attributes
-      // for accessibility!)
-      const modal = this.state.showModal ? this.renderObjectList() : null;
-      const switchList = this.switches.length > 0 ? this.renderSwitchList() : [];
+      const switchList = this.switches.length > 0 ? this.renderSwitchList() : null;
+      console.log('myObjects sent: ', this.myObjects);
       return (
-        <div>
-        <div className='page-header'>
-          <div className='page-subheader__button'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
-          <div className='page-subheader'><h1 align='center'>MyGarden</h1></div>
-        </div>
-          <div className='page-body'>{switchList}</div>
-          <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
-          {modal}
-        </div>
+        <MuiThemeProvider>
+          <LeftNav
+            ref='leftNav'
+             />
+          <AboutDlg
+            ref='aboutDlg'
+            />
+          <HelpDlg
+            ref='helpDlg'
+            />
+          <SelectObjectsDlg
+            ref='selectObjectsDlg'
+            myObjects={this.myObjects}
+            />
+          <AppBarIcon
+            onLeftIconButtonClick={this._handleClick}
+            showAbout={this._showAbout}
+            showHelp={this._showHelp}
+            showSelectObjects={this._showSelectObjects}
+          />
+          {switchList}
+        </MuiThemeProvider>
       );
     }
   }
@@ -242,7 +270,6 @@ class Switches extends React.PureComponent {
     .then(d => {
         this.myObjects = d.map(v => { return {'id': v.id, 'name': v.name, 'val': v.val }; });
         console.log('handleShow 2:', this.myObjects);
-        this.setState({ showModal: true });
       },
       error => {
         this.setState({ error })
@@ -336,18 +363,37 @@ class Switches extends React.PureComponent {
 
   renderSwitchList() {
     return (
-      <table className='container'>
-        <thead><tr><th>Object Name</th><th>Switch</th><th>Value</th></tr></thead>
-        <tbody>
+      <Table
+        selectable={false}
+      >
+        <TableHeader
+          displaySelectAll={false}
+        >
+          <TableRow>
+            <TableHeaderColumn>Object Name</TableHeaderColumn>
+            <TableHeaderColumn>Switch</TableHeaderColumn>
+            <TableHeaderColumn>Value</TableHeaderColumn>
+          </TableRow>
+        </TableHeader>
+        <TableBody
+          displayRowCheckbox={false}
+        >
         {this.switches.map((item, index) => (
-          <tr key={index}>
-            <td>{item.name}</td>
+          <TableRow key={index}>
+            <TableRowColumn>{item.name}</TableRowColumn>
             {this.renderSwitch(item.id, item.val)}
-            <td>{valueText[item.state]}</td>
-          </tr>
+            <TableRowColumn>{valueText[item.state]}</TableRowColumn>
+          </TableRow>
         ))}
-        </tbody>
-      </table>
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
+            H.Lischka, 2018
+            </TableRowColumn>
+          </TableRow>
+        </TableFooter>
+      </Table>
     )
   }
 
