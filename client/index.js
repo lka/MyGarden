@@ -1,5 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import AppBarIcon from './AppBarIcon';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableFooter,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 
 const urlForSwitchesFromStorage = switches =>
   `http://localhost:3000/${switches}`
@@ -125,7 +137,7 @@ class Switch extends React.Component {
 
   render() {
     return (
-      <td><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></td>
+      <TableRowColumn><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></TableRowColumn>
     );
   }
 }
@@ -204,17 +216,15 @@ class Switches extends React.PureComponent {
       // (In a real app, don't forget to use ARIA attributes
       // for accessibility!)
       const modal = this.state.showModal ? this.renderObjectList() : null;
-      const switchList = this.switches.length > 0 ? this.renderSwitchList() : [];
+      const switchList = this.switches.length > 0 ? this.renderSwitchList() : null;
       return (
-        <div>
-        <div className='page-header'>
-          <div className='page-subheader__button'><button onClick={this.handleShow} className='page-header__button'>⚙</button></div>
-          <div className='page-subheader'><h1 align='center'>MyGarden</h1></div>
-        </div>
-          <div className='page-body'>{switchList}</div>
-          <div className='page-footer'><h3 align='center'>H.Lischka, 2018</h3></div>
+        <MuiThemeProvider>
+          <AppBarIcon
+            onLeftIconButtonClick={this.handleShow}
+          />
+          {switchList}
           {modal}
-        </div>
+        </MuiThemeProvider>
       );
     }
   }
@@ -336,18 +346,37 @@ class Switches extends React.PureComponent {
 
   renderSwitchList() {
     return (
-      <table className='container'>
-        <thead><tr><th>Object Name</th><th>Switch</th><th>Value</th></tr></thead>
-        <tbody>
+      <Table
+        selectable={false}
+      >
+        <TableHeader
+          displaySelectAll={false}
+        >
+          <TableRow>
+            <TableHeaderColumn>Object Name</TableHeaderColumn>
+            <TableHeaderColumn>Switch</TableHeaderColumn>
+            <TableHeaderColumn>Value</TableHeaderColumn>
+          </TableRow>
+        </TableHeader>
+        <TableBody
+          displayRowCheckbox={false}
+        >
         {this.switches.map((item, index) => (
-          <tr key={index}>
-            <td>{item.name}</td>
+          <TableRow key={index}>
+            <TableRowColumn>{item.name}</TableRowColumn>
             {this.renderSwitch(item.id, item.val)}
-            <td>{valueText[item.state]}</td>
-          </tr>
+            <TableRowColumn>{valueText[item.state]}</TableRowColumn>
+          </TableRow>
         ))}
-        </tbody>
-      </table>
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
+            H.Lischka, 2018
+            </TableRowColumn>
+          </TableRow>
+        </TableFooter>
+      </Table>
     )
   }
 
