@@ -9,18 +9,16 @@ import TableOfObjects from './TableOfObjects';
 export default class SelectObjectsDlg extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      open: false
-    };
     this.handleClose = this.handleClose.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
   }
 
   handleOpen(){
-    this.setState({open: true});
+    this.props.toggle();
   };
 
   handleClose() {
-    this.setState({open: false});
+    this.props.toggle();
   };
 
   render() {
@@ -37,7 +35,7 @@ export default class SelectObjectsDlg extends React.Component {
         onClick={this.handleClose}
       />,
     ];
-    console.log('myObjects received: ', this.props.myObjects);
+    console.log('SelectObjectsDlg render called ');
 
     return (
       <div>
@@ -45,12 +43,12 @@ export default class SelectObjectsDlg extends React.Component {
           title="Select objects to be presented"
           actions={actions}
           modal={false}
-          open={this.state.open}
+          open={true}
           onRequestClose={this.handleClose}
           autoScrollBodyContent={true}
         >
         <TableOfObjects
-          myObjects={this.props.myObjects}
+          data={this.props.data}
         />
         </Dialog>
       </div>

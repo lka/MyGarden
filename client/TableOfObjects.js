@@ -12,40 +12,30 @@ export default class TableOfObjects extends React.Component {
   constructor(props) {
     super(props);
 
-    this.isSelected = this.isSelected.bind(this);
-    this.handleRowSelection = this.handleRowSelection.bind(this);
   }
 
-  isSelected(index) {
-    return this.state.selected.indexOf(index) !== -1;
-  };
-
-  handleRowSelection(selectedRows) {
-    this.setState({
-      selected: selectedRows,
-    });
-  };
-
   render() {
-    console.log('myObjects received: ', this.props.myObjects);
-    const tableRowItems = this.props.myObjects.map((dest, index) => {
-      return (
-        <TableRow key={index} selected={dest.val}>
-          <TableRowColumn>{dest.name}</TableRowColumn>
-        </TableRow>
-        )});
+    console.log('TableOfObjects render called: ', this.props.data);
 
     return (
-      <Table multiSelectable={true} onRowSelection={this.handleRowSelection}>
-        <TableHeader>
-          <TableRow>
-            <TableHeaderColumn>Name</TableHeaderColumn>
+      <Table multiSelectable={true} selectable={true} >
+        <TableHeader
+          displaySelectAll={true}
+          adjustForCheckbox={true}
+          enableSelectAll={true}
+        >
+          <TableRow >
+            <TableHeaderColumn tooltip="The Name">Name</TableHeaderColumn>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {tableRowItems}
+        <TableBody displayRowCheckbox={true} deselectOnClickaway={false} >
+          {this.props.data.map((row, index) => (
+              <TableRow key={index} selectable={true} selected={row.val}>
+                <TableRowColumn>{row.name}</TableRowColumn>
+              </TableRow>
+              ))}
         </TableBody>
       </Table>
-    );
+    )
   }
 }
