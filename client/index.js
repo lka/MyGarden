@@ -6,7 +6,11 @@ import AppBarIcon from './AppBarIcon';
 import LeftNav from './LeftNav';
 import AboutDlg from './AboutDlg';
 import HelpDlg from './HelpDlg';
+import withDataFetching from './withDataFetching';
 import SelectObjectsDlg from './SelectObjectsDlg';
+import Switch from './Switch';
+import urlForSwitchesFromStorage from './urlForSwitches';
+
 import {
   Table,
   TableBody,
@@ -17,110 +21,17 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-const urlForSwitchesFromStorage = switches =>
-  `http://localhost:3000/${switches}`
 const valueText = ['Off ', 'On ', '---'];
 const DefaultState = 2;
-const buttonText = ['Off ', 'On ', 'Auto'];
-const DefaultSwitch = 2;
 
-// These two containers are siblings in the DOM
+// This container is a sibling in the DOM
 const app = document.getElementById('app');
-const modalRoot = document.getElementById('modal-root');
-
-class Checkbox extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isChecked: this.props.val
-    }
-    this.toggleCheckboxChange = this.toggleCheckboxChange.bind(this);
-  }
-
-  toggleCheckboxChange() {
-    const { handleCheckboxChange, label, index } = this.props;
-
-    this.setState(({ isChecked }) => (
-      {
-        isChecked: !isChecked,
-      }
-    ));
-    handleCheckboxChange(index, !this.state.isChecked);
-  }
-
-  render() {
-    const { label } = this.props;
-    const { isChecked } = this.state;
-
-    return (
-      <div className="checkbox">
-        <label>
-          <input
-            type="checkbox"
-            value={label}
-            checked={isChecked}
-            onChange={this.toggleCheckboxChange}
-          />
-          {label}
-        </label>
-      </div>
-    );
-  }
-}
-
-// Checkbox.propTypes = {
-//   label: React.PropTypes.string.isRequired,
-//   handleCheckboxChange: React.PropTypes.func.isRequired
-// };
-
-class Switch extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      val: DefaultSwitch
-    };
-
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick() {
-    this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
-    setTimeout(() => {
-      fetch(urlForSwitchesFromStorage('binary'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id: this.props.id,
-          val: this.state.val
-        })
-      })
-      .then(data => {
-        if (!data.ok) {
-          this.setState({ val: DefaultSwitch });
-        }
-        console.log('Request succeeded with response', data);
-      })
-      .catch(error => {
-        this.setState({ val: DefaultSwitch });
-        console.log('Request failed', error);
-      })
-    }, 100);
-  }
-
-  render() {
-    return (
-      <TableRowColumn><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></TableRowColumn>
-    );
-  }
-}
 
 class Switches extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
+      showSelectObjects: false,
       error: null,
       isLoaded: false,
       triggerView: false
@@ -130,7 +41,6 @@ class Switches extends React.PureComponent {
 
     this.handleShow = this.handleShow.bind(this);
     this.handleHide = this.handleHide.bind(this);
-    this.toggleCheckbox = this.toggleCheckbox.bind(this);
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
     this._showAbout = this._showAbout.bind(this);
@@ -161,9 +71,10 @@ class Switches extends React.PureComponent {
   }
 
   _showSelectObjects(e) {
-    e.preventDefault();
+    // e.preventDefault();
     // Show the SelectObjects Dlg
-    this.refs.selectObjectsDlg.setState({open: true});
+    this.setState({showSelectObjects: !this.state.showSelectObjects});
+    // SelectObjectsDlg.handleOpen();
   }
 
   _showHelp(e) {
@@ -192,19 +103,9 @@ class Switches extends React.PureComponent {
     }
   }
 
-  toggleCheckbox(i, val) {
-    // http://react.tips/checkboxes-in-react/
-    console.log(`toggleCheckbox(${i}, ${val})`);
-    this.setState({ objectChanged: true }) ;
-    this.myObjects[i].val = val;
-  }
-
   componentDidMount() {
     console.log('componentDidMount');
     this.readBinaries();
-    if (this.myObjects.length === 0) {
-      this.readObjects();
-    }
   }
 
   componentWillUnmount() {
@@ -219,7 +120,10 @@ class Switches extends React.PureComponent {
        return <div>Loading...</div>;
     } else {
       const switchList = this.switches.length > 0 ? this.renderSwitchList() : null;
-      console.log('myObjects sent: ', this.myObjects);
+      const SelectObjectsWrapper = withDataFetching(SelectObjectsDlg,
+        urlForSwitchesFromStorage('objects'),
+        this._showSelectObjects);
+      console.log('Switches: ', this.state.showSelectObjects);
       return (
         <MuiThemeProvider>
           <LeftNav
@@ -231,10 +135,7 @@ class Switches extends React.PureComponent {
           <HelpDlg
             ref='helpDlg'
             />
-          <SelectObjectsDlg
-            ref='selectObjectsDlg'
-            myObjects={this.myObjects}
-            />
+          {this.state.showSelectObjects ? <SelectObjectsWrapper /> : null}
           <AppBarIcon
             onLeftIconButtonClick={this._handleClick}
             showAbout={this._showAbout}
@@ -248,34 +149,6 @@ class Switches extends React.PureComponent {
   }
 
   // the helpers
-  sendObjects() {
-    fetch(urlForSwitchesFromStorage('objects'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.myObjects)
-    })
-    .then(data => {
-      console.log('Request succeeded with response', data);
-    })
-    .catch(error => {
-      console.log('Request failed', error);
-    })
-  }
-
-  readObjects() {
-    fetch(urlForSwitchesFromStorage('objects'))
-    .then(d => d.json())
-    .then(d => {
-        this.myObjects = d.map(v => { return {'id': v.id, 'name': v.name, 'val': v.val }; });
-        console.log('handleShow 2:', this.myObjects);
-      },
-      error => {
-        this.setState({ error })
-    });
-  }
-
   readBinaries() {
     fetch(urlForSwitchesFromStorage('binaries'))
     .then(d => d.json())
@@ -327,38 +200,6 @@ class Switches extends React.PureComponent {
     .catch(error => {
       console.log('Request failed', error);
     })
-  }
-
-  renderObjectList() {
-    console.log('renderObjectList has objects', this.myObjects);
-    const objectList = this.myObjects.length > 0 ? this.myObjects.map((dest, index) => { return (
-      <div key={index}>{this.renderCheckbox(dest.name, index, dest.val)}</div>
-    )}) : [];
-
-    return (
-    <Modal>
-      <div className="modal">
-        <div className='section'>
-          <div className='live-preview'>
-            {objectList}
-          </div>
-       </div>
-       <button onClick={this.handleHide} className='page-header__button'>OK</button>
-      </div>
-    </Modal>
-   );
-  }
-
-  renderCheckbox(label, index, val) {
-    return (
-      <Checkbox
-            label={label}
-            handleCheckboxChange={this.toggleCheckbox}
-            key={index}
-            index={index}
-            val={val}
-        />
-      );
   }
 
   renderSwitchList() {
