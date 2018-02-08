@@ -28,7 +28,7 @@ export default class Switches extends React.Component {
         >
           <TableRow>
             <TableHeaderColumn>Object Name</TableHeaderColumn>
-            <TableHeaderColumn>Switch</TableHeaderColumn>
+            <TableHeaderColumn>Set Value To</TableHeaderColumn>
             <TableHeaderColumn>Value</TableHeaderColumn>
           </TableRow>
         </TableHeader>

@@ -14,7 +14,10 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
         .then(res => res.json())
         .then(data => {
           this.setState({ data });
-        });
+        })
+        .catch(error => {
+          console.log('GET Request failed', error);
+        })
     }
 
     componentWillUnmount() {
@@ -27,10 +30,10 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
           body: JSON.stringify(this.state.data)
         })
         .then(data => {
-          console.log('Request succeeded with response', data);
+          console.log('POST Request succeeded with response', data);
         })
         .catch(error => {
-          console.log('Request failed', error);
+          console.log('POST Request failed', error);
         })
       }
     }

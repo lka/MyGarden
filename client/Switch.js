@@ -1,11 +1,21 @@
 import React, {Component} from 'react';
 import urlForSwitchesFromStorage from './urlForSwitches';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-const buttonText = ['Off ', 'On ', 'Auto'];
+const styles = {
+  block: {
+    maxWidth: 8,
+  },
+  radioButton: {
+    marginBottom: 6,
+  },
+};
+
+// const buttonText = ['Off ', 'On ', 'Auto'];
 const DefaultSwitch = 2;
 
 export default class Switch extends React.Component {
@@ -18,8 +28,9 @@ export default class Switch extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
-    this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
+  handleClick(e, value) {
+    // this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
+    this.setState({ val: parseInt(value)});
     setTimeout(() => {
       fetch(urlForSwitchesFromStorage('binary'), {
         method: 'POST',
@@ -46,7 +57,26 @@ export default class Switch extends React.Component {
 
   render() {
     return (
-      <TableRowColumn><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></TableRowColumn>
+      <TableRowColumn>
+        <RadioButtonGroup name="Switch" defaultSelected="2" onChange={this.handleClick} >
+          <RadioButton
+            value="0"
+            label="Off"
+            style={styles.radioButton}
+          />
+          <RadioButton
+            value="1"
+            label="On"
+            style={styles.radioButton}
+          />
+          <RadioButton
+            value="2"
+            label="Auto"
+            style={styles.radioButton}
+          />
+        </RadioButtonGroup>
+      </TableRowColumn>
+      // <TableRowColumn><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></TableRowColumn>
     );
   }
 }

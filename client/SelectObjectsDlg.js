@@ -36,7 +36,6 @@ export default class SelectObjectsDlg extends React.Component {
         onClick={this.handleClose}
       />,
     ];
-    console.log('SelectObjectsDlg render called ');
 
     return (
       <div>
