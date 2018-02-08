@@ -5,6 +5,8 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
     constructor() {
       super();
       this.state = { data: [] };
+      this.handleClick = this.handleClick.bind(this);
+      this.handleCancel = this.handleCancel.bind(this);
     }
 
     componentDidMount() {
@@ -15,11 +17,42 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
         });
     }
 
+    componentWillUnmount() {
+      if (this.state.dataChanged) {
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(this.state.data)
+        })
+        .then(data => {
+          console.log('Request succeeded with response', data);
+        })
+        .catch(error => {
+          console.log('Request failed', error);
+        })
+      }
+    }
+
+    handleClick(num) {
+      for (let i = 0; i < this.state.data.length; i++) {
+          this.state.data[i].val = (num === 'all') || (num.indexOf(i) !== -1);
+      }
+      this.setState({ dataChanged: true });
+    }
+
+    handleCancel() {
+      this.setState({ dataChanged: false })
+    }
+
     render() {
       return (
         <WrappedComponent
           data={ this.state.data }
           toggle={toggle}
+          handleClick={this.handleClick}
+          handleCancel={this.handleCancel}
          />
        )
     }

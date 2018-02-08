@@ -10,10 +10,11 @@ export default class SelectObjectsDlg extends React.Component {
   constructor(props) {
     super(props);
     this.handleClose = this.handleClose.bind(this);
-    this.handleOpen = this.handleOpen.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
-  handleOpen(){
+  handleCancel(){
+    this.props.handleCancel();
     this.props.toggle();
   };
 
@@ -49,6 +50,7 @@ export default class SelectObjectsDlg extends React.Component {
         >
         <TableOfObjects
           data={this.props.data}
+          handleClick={this.props.handleClick}
         />
         </Dialog>
       </div>

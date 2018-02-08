@@ -18,7 +18,7 @@ export default class TableOfObjects extends React.Component {
     console.log('TableOfObjects render called: ', this.props.data);
 
     return (
-      <Table multiSelectable={true} selectable={true} >
+      <Table multiSelectable={true} selectable={true} onRowSelection={this.props.handleClick}>
         <TableHeader
           displaySelectAll={true}
           adjustForCheckbox={true}
