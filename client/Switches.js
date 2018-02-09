@@ -38,7 +38,7 @@ export default class Switches extends React.Component {
         {this.props.switches.map((item, index) => (
           <TableRow key={index}>
             <TableRowColumn>{item.name}</TableRowColumn>
-            {this.renderSwitch(item.id, item.val)}
+            {this.renderObject(item)}
             <TableRowColumn>{valueText[item.state]}</TableRowColumn>
           </TableRow>
         ))}
@@ -52,6 +52,16 @@ export default class Switches extends React.Component {
         </TableFooter>
       </Table>
     )
+  }
+
+  renderObject(item) {
+    console.log('Switches.renderObject: ', item)
+    switch (item.objectType) {
+      case 4: // Binary-Output
+        return this.renderSwitch(item.id, item.val);
+      default:
+        return <TableRowColumn />
+    }
   }
 
   renderSwitch(id, status) {

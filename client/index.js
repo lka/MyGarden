@@ -31,6 +31,7 @@ class App extends React.PureComponent {
     this._showAbout = this._showAbout.bind(this);
     this._showHelp = this._showHelp.bind(this);
     this._showSelectObjects = this._showSelectObjects.bind(this);
+    this._selectedObjectsChanged = this._selectedObjectsChanged.bind(this);
   }
 
   componentDidCatch(error, info) {
@@ -66,7 +67,6 @@ class App extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     this.readBinaries();
   }
 
@@ -75,10 +75,17 @@ class App extends React.PureComponent {
     clearInterval(this.timer);
   }
 
+  _selectedObjectsChanged() {
+    this.cancelObservation();
+    clearInterval(this.timer);
+    this.readBinaries();
+    // this.setState(prevState => ({ triggerView: !prevState.triggerView }))
+  }
+
   renderOverlays() {
     const SelectObjectsWrapper = withDataFetching(SelectObjectsDlg,
       urlForSwitchesFromStorage('objects'),
-      this._showSelectObjects);
+      this._showSelectObjects, this._selectedObjectsChanged);
     switch (true) {
       case this.state.error:
         return <div>Error: {this.state.error.message}</div>;
@@ -124,7 +131,7 @@ class App extends React.PureComponent {
     fetch(urlForSwitchesFromStorage('binaries'))
     .then(d => d.json())
     .then(d => {
-      this.switches = d.map(v => { return {'id': v.id, 'name': v.name, 'state': -1}; })
+      this.switches = d.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1}; })
       this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
       this.setState({ isLoaded: true });

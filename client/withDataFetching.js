@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-const withDataFetching = (WrappedComponent, url, toggle) => {
+const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
   return class extends React.Component {
     constructor() {
       super();
@@ -31,6 +31,7 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
         })
         .then(data => {
           console.log('POST Request succeeded with response', data);
+          objectsChanged();
         })
         .catch(error => {
           console.log('POST Request failed', error);
@@ -56,6 +57,7 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
           toggle={toggle}
           handleClick={this.handleClick}
           handleCancel={this.handleCancel}
+          objectsChanged={objectsChanged}
          />
        )
     }
