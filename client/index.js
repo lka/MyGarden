@@ -66,7 +66,6 @@ class App extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     this.readBinaries();
   }
 
