@@ -1,7 +1,7 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import TableOfObjects from './TableOfObjects';
+import Table from './Table';
 
 /**
  * Dialog content can be scrollable.
@@ -9,8 +9,12 @@ import TableOfObjects from './TableOfObjects';
 export default class SelectObjectsDlg extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { disableButtons: false };
+
     this.handleClose = this.handleClose.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.startEditing = this.startEditing.bind(this);
+    this.stopEditing = this.stopEditing.bind(this);
   }
 
   handleCancel(){
@@ -22,18 +26,30 @@ export default class SelectObjectsDlg extends React.Component {
     this.props.toggle();
   };
 
+  startEditing(i) {
+    this.setState({disableButtons: true})
+    this.props.startEditing(i);
+  }
+
+  stopEditing() {
+    this.setState({disableButtons: false})
+    this.props.stopEditing();
+  }
+
   render() {
     const actions = [
       <FlatButton
         label="Cancel"
         primary={true}
         onClick={this.handleClose}
+        disabled={this.state.disableButtons}
       />,
       <FlatButton
         label="Submit"
         primary={true}
         keyboardFocused={true}
         onClick={this.handleClose}
+        disabled={this.state.disableButtons}
       />,
     ];
 
@@ -47,9 +63,14 @@ export default class SelectObjectsDlg extends React.Component {
           onRequestClose={this.handleClose}
           autoScrollBodyContent={true}
         >
-        <TableOfObjects
+        <Table
           data={this.props.data}
-          handleClick={this.props.handleClick}
+          header={this.props.header}
+          handleRowSelection={this.props.handleRowSelection}
+          startEditing={this.startEditing}
+          editIdx={this.props.editIdx}
+          handleChange={this.props.handleChange}
+          stopEditing={this.stopEditing}
         />
         </Dialog>
       </div>
