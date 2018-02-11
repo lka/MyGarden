@@ -42601,12 +42601,20 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
 
 const styles = {
+<<<<<<< HEAD
   radioButtonGroup: {
     display: 'flex'
   },
   radioButton: {
     width: 'auto',
     marginRight: '26px'
+=======
+  block: {
+    maxWidth: 8
+  },
+  radioButton: {
+    marginBottom: 6
+>>>>>>> 9f6a449d17517099d4afd15368951d21d900c3c5
   }
 };
 
@@ -42654,7 +42662,11 @@ class Switch extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
       null,
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_2_material_ui_RadioButton__["RadioButtonGroup"],
+<<<<<<< HEAD
         { name: 'Switch', defaultSelected: '2', onChange: this.handleClick, style: styles.radioButtonGroup },
+=======
+        { name: 'Switch', defaultSelected: '2', onChange: this.handleClick },
+>>>>>>> 9f6a449d17517099d4afd15368951d21d900c3c5
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_RadioButton__["RadioButton"], {
           value: '0',
           label: 'Off',
