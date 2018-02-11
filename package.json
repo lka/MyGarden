@@ -2,7 +2,7 @@
   "name": "MyGarden",
   "version": "0.0.0",
   "dependencies": {
-    "bacstack": "0.0.1-beta.12",
+    "bacstack": "^0.0.1-beta.12",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "flaschenpost": "^0.15.6",
