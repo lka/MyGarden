@@ -8361,7 +8361,7 @@ exports.default = TableHeaderColumn;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const urlForSwitchesFromStorage = switches => `http://localhost:3000/${switches}`;
+const urlForSwitchesFromStorage = switches => "http://localhost:3000/".concat(switches);
 
 /* harmony default export */ __webpack_exports__["a"] = (urlForSwitchesFromStorage);
 

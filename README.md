@@ -24,7 +24,7 @@ to install all dependencies
 
 ## Usage
 
-use Google Chrome or IE11 or Edge Browser with
+use a modern browser like Google Chrome, Firefox or Edge with
 
 > http://localhost:3000
 
