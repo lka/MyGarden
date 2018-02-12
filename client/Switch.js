@@ -7,11 +7,12 @@ import {
 } from 'material-ui/Table';
 
 const styles = {
-  block: {
-    maxWidth: 8,
+  radioButtonGroup: {
+    display: 'flex',
   },
   radioButton: {
-    marginBottom: 6,
+    width: 'auto',
+    marginRight: '26px'
   },
 };
 
@@ -58,7 +59,7 @@ export default class Switch extends React.Component {
   render() {
     return (
       <TableRowColumn>
-        <RadioButtonGroup name="Switch" defaultSelected="2" onChange={this.handleClick} >
+        <RadioButtonGroup name="Switch" defaultSelected="2" onChange={this.handleClick} style={styles.radioButtonGroup}>
           <RadioButton
             value="0"
             label="Off"

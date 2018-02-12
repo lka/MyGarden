@@ -1,6 +1,6 @@
 # MyGarden
 
-use alexa to voice control a bacnet device that switches garden watering valves on and off
+control a bacnet device that switches garden watering valves on and off
 
 ## Editing
 I use Atom Editor...
@@ -26,11 +26,14 @@ to install all dependencies
 
 ## Running the build
 
+> npm run build
+
 ## Test
 Test with mocca...
 install mocha globally and start with
 
 > npm run test
+
 > npm run testdevice
 
 ## License

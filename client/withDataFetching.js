@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 
-const withDataFetching = (WrappedComponent, url, toggle) => {
+const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
   return class extends React.Component {
     constructor() {
       super();
-      this.state = { data: [] };
-      this.handleClick = this.handleClick.bind(this);
+      this.state = { data: [],  editIdx: -1 };
+      this.handleRowSelection = this.handleRowSelection.bind(this);
       this.handleCancel = this.handleCancel.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.startEditing = this.startEditing.bind(this);
+      this.stopEditing = this.stopEditing.bind(this);
     }
 
     componentDidMount() {
@@ -31,6 +34,7 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
         })
         .then(data => {
           console.log('POST Request succeeded with response', data);
+          objectsChanged();
         })
         .catch(error => {
           console.log('POST Request failed', error);
@@ -38,24 +42,58 @@ const withDataFetching = (WrappedComponent, url, toggle) => {
       }
     }
 
-    handleClick(num) {
-      for (let i = 0; i < this.state.data.length; i++) {
-          this.state.data[i].val = (num === 'all') || (num.indexOf(i) !== -1);
+    handleRowSelection(num) {
+      if (this.state.editIdx === -1) {
+        this.setState(prevState => ({
+          data: prevState.data.map(
+            (row, i) => ( {...row, 'val': (num === 'all') || (num.indexOf(i) !== -1) } )
+          )
+        }))
+        this.setState({ dataChanged: true });
       }
-      this.setState({ dataChanged: true });
     }
 
     handleCancel() {
       this.setState({ dataChanged: false })
+      this.setState({ editIdx: -1 });
+    }
+
+    handleChange(e, name, i) {
+      const { value } = e.target;
+      this.setState(prevState => ({
+        data: prevState.data.map(
+          (row, j) => (j === i ? { ...row, [name]: value } : row)
+        )
+      }));
+      this.setState({ dataChanged: true });
+    }
+
+    startEditing(i) {
+      this.setState({ editIdx: i });
+    }
+
+    stopEditing() {
+      this.setState({ editIdx: -1 });
     }
 
     render() {
       return (
         <WrappedComponent
           data={ this.state.data }
+          header={[
+            {
+              name: "Object Name",
+              prop: "name"
+            }
+          ]}
           toggle={toggle}
-          handleClick={this.handleClick}
+          handleRowSelection={this.handleRowSelection}
           handleCancel={this.handleCancel}
+          objectsChanged={objectsChanged}
+          handleChange={this.handleChange}
+          stopEditing={this.stopEditing}
+          editIdx={this.state.editIdx}
+          startEditing={this.startEditing}
          />
        )
     }
