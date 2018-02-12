@@ -2,11 +2,10 @@ import React, {Component} from 'react';
 import {
   Table,
   TableBody,
-  TableHeader,
+  TableHead,
   TableFooter,
-  TableHeaderColumn,
   TableRow,
-  TableRowColumn,
+  TableCell,
 } from 'material-ui/Table';
 import Switch from './Switch';
 
@@ -21,33 +20,33 @@ export default class Switches extends React.Component {
   render() {
     return (
       <Table
-        selectable={false}
+        // selectable={false}
       >
-        <TableHeader
-          displaySelectAll={false}
+        <TableHead
+          // displaySelectAll={false}
         >
           <TableRow>
-            <TableHeaderColumn>Object Name</TableHeaderColumn>
-            <TableHeaderColumn>Set Value To</TableHeaderColumn>
-            <TableHeaderColumn>Value</TableHeaderColumn>
+            <TableCell>Object Name</TableCell>
+            <TableCell>Set Value To</TableCell>
+            <TableCell>Value</TableCell>
           </TableRow>
-        </TableHeader>
+        </TableHead>
         <TableBody
-          displayRowCheckbox={false}
+          // displayRowCheckbox={false}
         >
         {this.props.switches.map((item, index) => (
           <TableRow key={index}>
-            <TableRowColumn>{item.name}</TableRowColumn>
+            <TableCell>{item.name}</TableCell>
             {this.renderObject(item)}
-            <TableRowColumn>{valueText[item.state]}</TableRowColumn>
+            <TableCell>{valueText[item.state]}</TableCell>
           </TableRow>
         ))}
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
+            <TableCell colSpan="3" style={{textAlign: 'center'}}>
             H.Lischka, 2018
-            </TableRowColumn>
+            </TableCell>
           </TableRow>
         </TableFooter>
       </Table>
@@ -60,7 +59,7 @@ export default class Switches extends React.Component {
       case 4: // Binary-Output
         return this.renderSwitch(item.id, item.val);
       default:
-        return <TableRowColumn />
+        return <TableCell />
     }
   }
 

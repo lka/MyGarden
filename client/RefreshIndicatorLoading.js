@@ -1,5 +1,5 @@
 import React from 'react';
-import RefreshIndicator from 'material-ui/RefreshIndicator';
+import { CircularProgress } from 'material-ui/Progress';
 
 const style = {
   container: {
@@ -13,7 +13,7 @@ const style = {
 
 const RefreshIndicatorLoading = () => (
   <div style={style.container}>
-    <RefreshIndicator
+    <CircularProgress
       size={40}
       left={10}
       top={0}

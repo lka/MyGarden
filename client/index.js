@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import AppBarIcon from './AppBarIcon';
 import LeftNav from './LeftNav';
@@ -103,7 +103,7 @@ class App extends React.PureComponent {
 
   render() {
       return (
-        <MuiThemeProvider>
+        // <MuiThemeProvider>
         <div>
           <LeftNav
             ref='leftNav'
@@ -121,7 +121,7 @@ class App extends React.PureComponent {
             switches={this.switches}
           />
           </div>
-        </MuiThemeProvider>
+        // </MuiThemeProvider>
       );
   }
 

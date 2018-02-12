@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
+import Menu, {MenuItem} from 'material-ui/Menu';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
+// import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import NavigationClose from 'material-ui-icons/Close';
 import Divider from 'material-ui/Divider';
 
 export default class LeftNav extends React.Component {

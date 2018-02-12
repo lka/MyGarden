@@ -1,6 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import Button from 'material-ui/Button';
 
 /**
  * A modal dialog can only be closed by selecting the action.
@@ -20,7 +20,7 @@ export default class HelpDlg extends React.Component {
 
   render() {
     const actions = [
-      <FlatButton
+      <Button
         label="OK"
         primary={true}
         onClick={this.handleClose}

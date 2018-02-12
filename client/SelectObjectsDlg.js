@@ -1,6 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import Button from 'material-ui/Button';
 import Table from './Table';
 
 /**
@@ -38,13 +38,13 @@ export default class SelectObjectsDlg extends React.Component {
 
   render() {
     const actions = [
-      <FlatButton
+      <Button
         label="Cancel"
         primary={true}
         onClick={this.handleClose}
         disabled={this.state.disableButtons}
       />,
-      <FlatButton
+      <Button
         label="Submit"
         primary={true}
         keyboardFocused={true}

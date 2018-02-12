@@ -1,4 +1,4 @@
 const urlForSwitchesFromStorage = switches =>
-   "http://localhost:3000/".concat(switches);
+   `http://localhost:3000/${switches}`
 
 export default urlForSwitchesFromStorage;
