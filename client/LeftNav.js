@@ -6,7 +6,6 @@ import IconButton from 'material-ui/IconButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Divider from 'material-ui/Divider';
 
-
 export default class LeftNav extends React.Component {
 
   constructor(props) {
@@ -22,7 +21,7 @@ export default class LeftNav extends React.Component {
 
 render() {
   return (
-    <Drawer open={this.state.open}>
+    <Drawer open={this.state.open} containerStyle={{ margin: 8+'px' }}>
       <AppBar
         title="MyGarden"
         iconElementLeft={<IconButton onClick={this.handleToggle}><NavigationClose /></IconButton>}
