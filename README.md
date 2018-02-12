@@ -24,6 +24,10 @@ to install all dependencies
 
 ## Usage
 
+use Google Chrome or IE11 or Edge Browser with
+
+> http://localhost:3000
+
 ## Running the build
 
 > npm run build
