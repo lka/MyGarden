@@ -79,7 +79,6 @@ class App extends React.PureComponent {
     this.cancelObservation();
     clearInterval(this.timer);
     this.readBinaries();
-    // this.setState(prevState => ({ triggerView: !prevState.triggerView }))
   }
 
   renderOverlays() {
@@ -135,6 +134,7 @@ class App extends React.PureComponent {
       this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
       this.setState({ isLoaded: true });
+      this.setState(prevState => ({ triggerView: !prevState.triggerView }))
     },
     error => {
       this.setState({

@@ -8749,7 +8749,6 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     this.cancelObservation();
     clearInterval(this.timer);
     this.readBinaries();
-    // this.setState(prevState => ({ triggerView: !prevState.triggerView }))
   }
 
   renderOverlays() {
@@ -8810,6 +8809,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
       this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
       this.setState({ isLoaded: true });
+      this.setState(prevState => ({ triggerView: !prevState.triggerView }));
     }, error => {
       this.setState({
         isLoaded: true,
