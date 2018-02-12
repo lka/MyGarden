@@ -83,7 +83,19 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
           header={[
             {
               name: "Object Name",
-              prop: "name"
+              prop: "name",
+              key: "name",
+              numeric: false,
+              padding: false,
+              label: "Object Name"
+            },
+            {
+              name: "",
+              prop: "edit",
+              key: "edit",
+              numeric: false,
+              padding: false,
+              label: "Edit"
             }
           ]}
           toggle={toggle}

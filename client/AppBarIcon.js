@@ -1,10 +1,9 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import Divider from 'material-ui/Divider';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import MenuIcon from 'material-ui-icons/Menu';
 
 export default class AppBarIcon extends React.Component {
   constructor(props) {
@@ -13,10 +12,18 @@ export default class AppBarIcon extends React.Component {
 
   render() {
     return(
-      <AppBar
-        title="MyGarden"
-        onLeftIconButtonClick={this.props.onLeftIconButtonClick}
-        />
+      <div>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton color="inherit" aria-label="Menu" onClick={this.props.onLeftIconButtonClick}>
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="title" color="inherit" >
+              MyGarden
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </div>
     );
   }
 }

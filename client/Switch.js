@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import urlForSwitchesFromStorage from './urlForSwitches';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import Radio, {RadioGroup} from 'material-ui/Radio';
 
-import {
-  TableRowColumn,
-} from 'material-ui/Table';
+import Table, {TableCell} from 'material-ui/Table';
 
 const styles = {
   radioButtonGroup: {
@@ -58,26 +56,26 @@ export default class Switch extends React.Component {
 
   render() {
     return (
-      <TableRowColumn>
-        <RadioButtonGroup name="Switch" defaultSelected="2" onChange={this.handleClick} style={styles.radioButtonGroup}>
-          <RadioButton
+      <TableCell>
+        <RadioGroup name="Switch" defaultSelected="2" onChange={this.handleClick} style={styles.radioButtonGroup}>
+          <Radio
             value="0"
             label="Off"
             style={styles.radioButton}
           />
-          <RadioButton
+          <Radio
             value="1"
             label="On"
             style={styles.radioButton}
           />
-          <RadioButton
+          <Radio
             value="2"
             label="Auto"
             style={styles.radioButton}
           />
-        </RadioButtonGroup>
-      </TableRowColumn>
+        </RadioGroup>
+      </TableCell>
       // <TableRowColumn><button onClick={() => this.handleClick()}> {buttonText[this.state.val]} </button></TableRowColumn>
-    );
+    )
   }
 }
