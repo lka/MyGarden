@@ -87,6 +87,7 @@ export default class MyTable extends React.Component {
     }
 
     this.setState({ selected: newSelected });
+    // onRowSelection={this.props.handleRowSelection}
   };
 
   handleChangePage(event, page) {
@@ -100,21 +101,12 @@ export default class MyTable extends React.Component {
   isSelected(id) {this.state.selected.indexOf(id) !== -1};
 
   render() {
-
-// const row = (
-//   x,
-//   i,
-//   header,
-//   startEditing,
-//   editIdx,
-//   handleChange,
-//   stopEditing
-// ) => {
   const { selected, rowsPerPage, page } = this.state;
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.props.data.length - page * rowsPerPage);
+  console.log('Mytable:', this.props.data)
 
   return (
-    <Table multiSelectable={true} onRowSelection={this.props.handleRowSelection}>
+    <Table>
       <EnhancedTableHead
         header={this.props.header}
         numSelected={this.state.selected.length}
@@ -122,7 +114,7 @@ export default class MyTable extends React.Component {
         rowCount={this.props.data.length}
       />
       <TableBody>
-      {this.props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(n => {
+      {this.props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n, i) => {
         const currentlyEditing = this.props.editIdx === n.id;
         const isSelected = this.isSelected(n.id);
         return (
@@ -138,19 +130,17 @@ export default class MyTable extends React.Component {
           <TableCell padding="checkbox">
             <Checkbox checked={isSelected} />
           </TableCell>
-          {this.props.header.map((y, k) => (
-            <TableCell key={`trc-${k}`}>
+            <TableCell key={`tc-${i}`}>
               {currentlyEditing ? (
                 <TextField
-                  name={y.prop}
-                  onChange={e => this.props.handleChange(e, y.prop, n.id)}
-                  value={n[y.prop]}
+                  name={`name-${i}`}
+                  onChange={e => this.props.handleChange(e, 'name', n.id)}
+                  value={n.name}
                 />
               ) : (
-                n[y.prop]
+                n.name
               )}
             </TableCell>
-          ))}
           <TableCell>
             {currentlyEditing ? (
               <CheckIcon onClick={() => this.props.stopEditing()} />
