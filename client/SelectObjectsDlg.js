@@ -64,6 +64,7 @@ export default class SelectObjectsDlg extends React.Component {
               editIdx={this.props.editIdx}
               handleChange={this.props.handleChange}
               stopEditing={this.stopEditing}
+              selections={this.props.selections}
             />
           </DialogContent>
           <DialogActions>

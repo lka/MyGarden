@@ -28,11 +28,6 @@ class EnhancedTableHead extends React.Component {
       <TableHead>
         <TableRow>
           <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={numSelected === rowCount}
-              onChange={onSelectAllClick}
-            />
           </TableCell>
           {header.map((column, i) => (
               <TableCell
@@ -50,19 +45,21 @@ class EnhancedTableHead extends React.Component {
 }
 
 export default class MyTable extends React.Component {
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
 
     this.state = {
-      selected: [],
+      selected: this.props.selections,
       page: 0,
-      rowsPerPage: 10
+      rowsPerPage: 5
     }
+    this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    this.handleChangePage = this.handleChangePage.bind(this);
   }
 
   handleSelectAllClick(event, checked) {
     if (checked) {
-      this.setState({ selected: this.state.data.map(n => n.id) });
+      this.setState({ selected: this.props.data.map(n => n.id) });
       return;
     }
     this.setState({ selected: [] });
@@ -87,7 +84,7 @@ export default class MyTable extends React.Component {
     }
 
     this.setState({ selected: newSelected });
-    // onRowSelection={this.props.handleRowSelection}
+    this.props.handleRowSelection(this.state.selected);
   };
 
   handleChangePage(event, page) {
@@ -98,12 +95,11 @@ export default class MyTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
-  isSelected(id) {this.state.selected.indexOf(id) !== -1};
+  isSelected(id) {return this.state.selected.indexOf(id) !== -1};
 
   render() {
   const { selected, rowsPerPage, page } = this.state;
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.props.data.length - page * rowsPerPage);
-  console.log('Mytable:', this.props.data)
 
   return (
     <Table>
