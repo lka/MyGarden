@@ -26,11 +26,13 @@ export default class SelectObjectsDlg extends React.Component {
   }
 
   handleCancel(){
+    console.log('handleCancel', this.state)
     this.props.handleCancel();
-    this.props.toggle();
+    setTimeout(this.props.toggle,50);
   };
 
   handleClose() {
+    console.log('handleClose', this.state)
     this.props.toggle();
   };
 
@@ -71,7 +73,7 @@ export default class SelectObjectsDlg extends React.Component {
             <Button
               color='primary'
               disabled={this.state.disableButtons}
-              onClick={this.handleClose}>
+              onClick={this.handleCancel}>
               Cancel
             </Button>
             <Button

@@ -42478,10 +42478,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
-  return class extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
+  return class extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     constructor() {
       super();
-      this.state = { data: [], editIdx: -1 };
+      this.state = { data: [], editIdx: -1, dataChanged: false };
       this.handleRowSelection = this.handleRowSelection.bind(this);
       this.handleCancel = this.handleCancel.bind(this);
       this.handleChange = this.handleChange.bind(this);
@@ -42514,10 +42514,11 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
       }
     }
 
-    handleRowSelection(num) {
+    handleRowSelection(selections) {
+      console.log('handleRowSelection', selections);
       if (this.state.editIdx === -1) {
         this.setState(prevState => ({
-          data: prevState.data.map((row, i) => _extends({}, row, { 'val': num.indexOf(row.id) !== -1 }))
+          data: prevState.data.map((row, i) => _extends({}, row, { 'val': selections.indexOf(row.id) !== -1 }))
         }));
         this.setState({ dataChanged: true });
       }
@@ -42526,12 +42527,13 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
     handleCancel() {
       this.setState({ dataChanged: false });
       this.setState({ editIdx: -1 });
+      console.log('handleCancel', this.state);
     }
 
-    handleChange(e, name, i) {
+    handleChange(e, name, id) {
       const { value } = e.target;
       this.setState(prevState => ({
-        data: prevState.data.map((row, j) => j === i ? _extends({}, row, { [name]: value }) : row)
+        data: prevState.data.map(row => row.id === id ? _extends({}, row, { [name]: value }) : row)
       }));
       this.setState({ dataChanged: true });
     }
@@ -43149,11 +43151,13 @@ class SelectObjectsDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Com
   }
 
   handleCancel() {
+    console.log('handleCancel', this.state);
     this.props.handleCancel();
-    this.props.toggle();
+    setTimeout(this.props.toggle, 50);
   }
 
   handleClose() {
+    console.log('handleClose', this.state);
     this.props.toggle();
   }
 
@@ -43207,7 +43211,7 @@ class SelectObjectsDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Com
           {
             color: 'primary',
             disabled: this.state.disableButtons,
-            onClick: this.handleClose },
+            onClick: this.handleCancel },
           'Cancel'
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -43257,7 +43261,6 @@ class EnhancedTableHead extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Co
 
   render() {
     const { header,
-      onSelectAllClick,
       numSelected,
       rowCount } = this.props;
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -43288,37 +43291,33 @@ class MyTable extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     this.state = {
       selected: this.props.selections,
       page: 0,
-      rowsPerPage: 5
+      rowsPerPage: 5,
+      editing: false
     };
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.handleChangePage = this.handleChangePage.bind(this);
-  }
-
-  handleSelectAllClick(event, checked) {
-    if (checked) {
-      this.setState({ selected: this.props.data.map(n => n.id) });
-      return;
-    }
-    this.setState({ selected: [] });
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick(event, id) {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
+    if (this.state.editing === false) {
+      const { selected } = this.state;
+      const selectedIndex = selected.indexOf(id);
+      let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(selected, id);
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1));
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1));
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      }
+
+      this.setState({ selected: newSelected });
+      this.props.handleRowSelection(newSelected);
     }
-
-    this.setState({ selected: newSelected });
-    this.props.handleRowSelection(this.state.selected);
   }
 
   handleChangePage(event, page) {
@@ -43380,7 +43379,11 @@ class MyTable extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
               null,
-              currentlyEditing ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_material_ui_icons_Check___default.a, { onClick: () => this.props.stopEditing() }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_material_ui_icons_Edit___default.a, { onClick: () => this.props.startEditing(n.id) })
+              currentlyEditing ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_material_ui_icons_Check___default.a, { onClick: () => {
+                  this.setState({ editing: false });this.props.stopEditing();
+                } }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_material_ui_icons_Edit___default.a, { onClick: () => {
+                  this.setState({ editing: true });this.props.startEditing(n.id);
+                } })
             )
           );
         }),

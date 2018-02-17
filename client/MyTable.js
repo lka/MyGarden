@@ -21,7 +21,6 @@ class EnhancedTableHead extends React.Component {
 
   render() {
     const {header,
-    onSelectAllClick,
     numSelected,
     rowCount} = this.props;
     return (
@@ -51,40 +50,36 @@ export default class MyTable extends React.Component {
     this.state = {
       selected: this.props.selections,
       page: 0,
-      rowsPerPage: 5
+      rowsPerPage: 5,
+      editing: false
     }
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.handleChangePage = this.handleChangePage.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  handleSelectAllClick(event, checked) {
-    if (checked) {
-      this.setState({ selected: this.props.data.map(n => n.id) });
-      return;
-    }
-    this.setState({ selected: [] });
-  };
-
   handleClick(event, id) {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
+    if (this.state.editing === false) {
+      const { selected } = this.state;
+      const selectedIndex = selected.indexOf(id);
+      let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(selected, id);
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1));
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1));
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(
+          selected.slice(0, selectedIndex),
+          selected.slice(selectedIndex + 1)
+        );
+      }
+
+      this.setState({ selected: newSelected });
+      this.props.handleRowSelection(newSelected);
     }
-
-    this.setState({ selected: newSelected });
-    this.props.handleRowSelection(this.state.selected);
   };
 
   handleChangePage(event, page) {
@@ -139,9 +134,9 @@ export default class MyTable extends React.Component {
             </TableCell>
           <TableCell>
             {currentlyEditing ? (
-              <CheckIcon onClick={() => this.props.stopEditing()} />
+              <CheckIcon onClick={() => {this.setState({ editing: false }); this.props.stopEditing();}} />
             ) : (
-              <EditIcon onClick={() => this.props.startEditing(n.id)} />
+              <EditIcon onClick={() => {this.setState({ editing: true }); this.props.startEditing(n.id);}} />
             )}
           </TableCell>
         </TableRow>

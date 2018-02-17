@@ -1,11 +1,11 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import RefreshIndicatorLoading from './RefreshIndicatorLoading';
 
 const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
-  return class extends React.PureComponent {
+  return class extends React.Component {
     constructor() {
       super();
-      this.state = { data: [],  editIdx: -1 };
+      this.state = { data: [],  editIdx: -1, dataChanged: false };
       this.handleRowSelection = this.handleRowSelection.bind(this);
       this.handleCancel = this.handleCancel.bind(this);
       this.handleChange = this.handleChange.bind(this);
@@ -43,11 +43,12 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
       }
     }
 
-    handleRowSelection(num) {
+    handleRowSelection(selections) {
+      console.log('handleRowSelection', selections)
       if (this.state.editIdx === -1) {
         this.setState(prevState => ({
           data: prevState.data.map(
-            (row, i) => ( {...row, 'val': (num.indexOf(row.id) !== -1) } )
+            (row, i) => ( {...row, 'val': (selections.indexOf(row.id) !== -1) } )
           )
         }))
         this.setState({ dataChanged: true });
@@ -55,15 +56,16 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
     }
 
     handleCancel() {
-      this.setState({ dataChanged: false })
+      this.setState({ dataChanged: false });
       this.setState({ editIdx: -1 });
+      console.log('handleCancel', this.state)
     }
 
-    handleChange(e, name, i) {
+    handleChange(e, name, id) {
       const { value } = e.target;
       this.setState(prevState => ({
         data: prevState.data.map(
-          (row, j) => (j === i ? { ...row, [name]: value } : row)
+          row => (row.id === id ? { ...row, [name]: value } : row)
         )
       }));
       this.setState({ dataChanged: true });
