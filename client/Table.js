@@ -7,8 +7,10 @@ import {
   TableRow,
   TableRowColumn
 } from "material-ui/Table";
-import EditIcon from "material-ui/svg-icons/image/edit";
-import CheckIcon from "material-ui/svg-icons/navigation/check";
+// import EditIcon from "material-ui/svg-icons/image/edit";
+// import CheckIcon from "material-ui/svg-icons/navigation/check";
+import EditIcon from "material-ui-icons/Edit";
+import CheckIcon from "material-ui-icons/Check";
 import TextField from "material-ui/TextField";
 
 const row = (

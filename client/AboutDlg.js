@@ -1,6 +1,11 @@
 import React from 'react';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from 'material-ui/Dialog';
+import Button from 'material-ui/Button';
 
 /**
  * A modal dialog can only be closed by selecting the action.
@@ -19,22 +24,26 @@ export default class AboutDlg extends React.Component {
   };
 
   render() {
-    const actions = [
-      <FlatButton
-        label="OK"
-        primary={true}
-        onClick={this.handleClose}
-      />,
-    ];
-
     return (
         <Dialog
-          title="About"
-          actions={actions}
-          modal={true}
           open={this.state.open}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
         >
-          Copyright H.Lischka, 2018
+          <DialogTitle id="alert-dialog-title">About</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Copyright H.Lischka, 2018
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              color='primary'
+              autoFocus
+              onClick={this.handleClose}>
+              OK
+            </Button>
+          </DialogActions>
         </Dialog>
     );
   }

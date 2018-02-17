@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import {
-  Table,
+import Table, {
   TableBody,
-  TableHeader,
+  TableHead,
   TableFooter,
-  TableHeaderColumn,
   TableRow,
-  TableRowColumn,
+  TableCell,
 } from 'material-ui/Table';
+import Paper from 'material-ui/Paper';
+
 import Switch from './Switch';
 
 const valueText = ['Off ', 'On ', '---'];
@@ -20,56 +20,54 @@ export default class Switches extends React.Component {
 
   render() {
     return (
-      <Table
-        selectable={false}
-      >
-        <TableHeader
-          displaySelectAll={false}
-        >
-          <TableRow>
-            <TableHeaderColumn>Object Name</TableHeaderColumn>
-            <TableHeaderColumn>Set Value To</TableHeaderColumn>
-            <TableHeaderColumn>Value</TableHeaderColumn>
-          </TableRow>
-        </TableHeader>
-        <TableBody
-          displayRowCheckbox={false}
-        >
-        {this.props.switches.map((item, index) => (
-          <TableRow key={index}>
-            <TableRowColumn>{item.name}</TableRowColumn>
-            {this.renderObject(item)}
-            <TableRowColumn>{valueText[item.state]}</TableRowColumn>
-          </TableRow>
-        ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
-            H.Lischka, 2018
-            </TableRowColumn>
-          </TableRow>
-        </TableFooter>
-      </Table>
+      <Paper>
+        <Table
+            // selectable={false}
+          >
+            <TableHead
+              // displaySelectAll={false}
+            >
+              <TableRow>
+                <TableCell>Object Name</TableCell>
+                <TableCell>Set Value To</TableCell>
+                <TableCell>Value</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody
+              // displayRowCheckbox={false}
+            >
+            {this.props.switches.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item.name}</TableCell>
+                {this.renderObject(item)}
+                <TableCell>{valueText[item.state]}</TableCell>
+              </TableRow>
+            ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan="3" style={{textAlign: 'center'}}>
+                H.Lischka, 2018
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </Paper>
     )
   }
 
   renderObject(item) {
-    console.log('Switches.renderObject: ', item)
+    console.log('Switches.renderObject: ', item);
     switch (item.objectType) {
       case 4: // Binary-Output
-        return this.renderSwitch(item.id, item.val);
+        return (
+          <Switch
+            id = {item.id}
+            status = {item.val}
+          />
+        );
       default:
-        return <TableRowColumn />
+        return <TableCell />
     }
-  }
-
-  renderSwitch(id, status) {
-    return (
-      <Switch
-        id = {id}
-        status = {status}
-      />
-    );
   }
 }

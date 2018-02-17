@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+
+// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import AppBarIcon from './AppBarIcon';
 import LeftNav from './LeftNav';
@@ -14,6 +16,7 @@ import RefreshIndicatorLoading from './RefreshIndicatorLoading';
 
 // This container is a sibling in the DOM
 const app = document.getElementById('app');
+const theme = createMuiTheme();
 
 class App extends React.PureComponent {
   constructor(props) {
@@ -103,7 +106,7 @@ class App extends React.PureComponent {
 
   render() {
       return (
-        <MuiThemeProvider>
+        <MuiThemeProvider theme={theme}>
         <div>
           <LeftNav
             ref='leftNav'
@@ -120,7 +123,7 @@ class App extends React.PureComponent {
           <Switches
             switches={this.switches}
           />
-          </div>
+        </div>
         </MuiThemeProvider>
       );
   }

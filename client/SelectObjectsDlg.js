@@ -1,7 +1,12 @@
 import React from 'react';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import Table from './Table';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from 'material-ui/Dialog';
+import Button from 'material-ui/Button';
+import MyTable from './MyTable';
 
 /**
  * Dialog content can be scrollable.
@@ -9,7 +14,10 @@ import Table from './Table';
 export default class SelectObjectsDlg extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { disableButtons: false };
+    this.state = {
+      disableButtons: false,
+      open: true
+    };
 
     this.handleClose = this.handleClose.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -37,43 +45,42 @@ export default class SelectObjectsDlg extends React.Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.handleClose}
-        disabled={this.state.disableButtons}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.handleClose}
-        disabled={this.state.disableButtons}
-      />,
-    ];
-
     return (
-      <div>
         <Dialog
-          title="Select objects to be presented"
-          actions={actions}
-          modal={false}
-          open={true}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
+          open={this.state.open}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
         >
-        <Table
-          data={this.props.data}
-          header={this.props.header}
-          handleRowSelection={this.props.handleRowSelection}
-          startEditing={this.startEditing}
-          editIdx={this.props.editIdx}
-          handleChange={this.props.handleChange}
-          stopEditing={this.stopEditing}
-        />
+          <DialogTitle id="alert-dialog-title">Configuration</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+            Select objects to be presented
+            </DialogContentText>
+            <MyTable
+              data={this.props.data}
+              header={this.props.header}
+              handleRowSelection={this.props.handleRowSelection}
+              startEditing={this.startEditing}
+              editIdx={this.props.editIdx}
+              handleChange={this.props.handleChange}
+              stopEditing={this.stopEditing}
+              selections={this.props.selections}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              color='primary'
+              disabled={this.state.disableButtons}
+              onClick={this.handleClose}>
+              Cancel
+            </Button>
+            <Button
+              disabled={this.state.disableButtons}
+              onClick={this.handleClose}>
+              Submit
+            </Button>
+          </DialogActions>
         </Dialog>
-      </div>
     );
   }
 }
