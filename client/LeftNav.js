@@ -24,7 +24,7 @@ export default class LeftNav extends React.Component {
 
 render() {
   return (
-    <Drawer open={this.state.open} style={{ margin: 8+'px' }}>
+    <Drawer open={this.state.open}>
       <AppBar position="static">
         <Toolbar>
           <IconButton color="inherit" aria-label="Menu" onClick={this.handleToggle}>

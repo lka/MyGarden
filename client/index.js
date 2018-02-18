@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
 import AppBarIcon from './AppBarIcon';
 import LeftNav from './LeftNav';
 import AboutDlg from './AboutDlg';
@@ -16,7 +14,15 @@ import RefreshIndicatorLoading from './RefreshIndicatorLoading';
 
 // This container is a sibling in the DOM
 const app = document.getElementById('app');
-const theme = createMuiTheme();
+const theme = createMuiTheme({
+  overrides: {
+    MuiDrawer: {
+      paper: {
+        top: '8px'
+      }
+    }
+  }
+});
 
 class App extends React.PureComponent {
   constructor(props) {
