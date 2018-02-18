@@ -9,6 +9,7 @@ import Table, {
 import Paper from 'material-ui/Paper';
 
 import Switch from './Switch';
+import Schedule from './Schedule';
 
 const valueText = ['Off ', 'On ', '---'];
 const DefaultState = 2;
@@ -64,6 +65,12 @@ export default class Switches extends React.Component {
           <Switch
             id = {item.id}
             status = {item.val}
+          />
+        );
+      case 17: // Schedule
+        return (
+          <Schedule
+            id = {item.id}
           />
         );
       default:

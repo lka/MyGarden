@@ -3,6 +3,7 @@
 const assert = require('assertthat'),
       mockudp = require('mock-udp');
 
+const baEnum = require('bacstack/lib/bacnet-enum');
 const BacnetClient = require('../lib/BacnetClient');
 const client = new BacnetClient({ transmitWhoIs: false });
 
@@ -136,6 +137,22 @@ suite('BacnetClient with the real Device', () => {
             });
           }).is.not.throwing();
         });
+      });
+    });
+
+    suite('read(address,  objectType, objectInstance, property)', () => {
+      test('reads scheduler', done => {
+        assert.that(() => {
+          BacnetClient.read(client, client.devices[0].deviceId, baEnum.BacnetObjectTypes.OBJECT_SCHEDULE,
+             0, baEnum.BacnetPropertyIds.PROP_WEEKLY_SCHEDULE, (err, val) => {
+            if (err) {
+              throw new Error(err);
+            }
+            console.log('values: ', val.valueList)
+            assert.that(val.valueList.length).is.equalTo(4);
+            done();
+          });
+        }).is.not.throwing();
       });
     });
 

@@ -5,13 +5,23 @@ const bodyParser = require('body-parser'),
 const path = require('path');
 const assert = require('assertthat'),
       isolated = require('isolated'),
+
+      // mockudp = require('mock-udp'),
       request = require('supertest');
 
 const storage = require('../lib/storage');
 const app = express();
 
 suite('storage', () => {
+  suiteTeardown(() => {
+    setTimeout(() => {
+      app.close();
+    }, 2100);
+  });
+
   app.use(bodyParser.json());
+
+  // mockudp.revert();
 
   suite('options', () => {
     test('throws an error if Options are missing.', done => {
@@ -153,6 +163,48 @@ suite('storage', () => {
               done();
             });
         }, 100);
+      });
+    });
+  });
+
+  suite('GET /schedule', () => {
+    test('returns a status code 404 with wrong uuid.', done => {
+      app.use('/', storage({
+        storage: 'File',
+        options: { directory: '/wrxl' }
+      }));
+
+      request(app).
+        get('/schedule').
+        send({ id: '0' }).
+        set({ 'Content-Type': 'application/json' }).
+        end((err, res) => {
+          assert.that(err).is.null();
+          assert.that(res.statusCode).is.equalTo(404);
+          done();
+        });
+    });
+
+    test('returns a status code 200.', done => {
+      isolated({ files: path.join(__dirname, '..', 'data', 'binaries') }, (errIsolated, directory) => {
+        assert.that(errIsolated).is.null();
+
+        app.use('/', storage({
+          storage: 'File',
+          options: { directory }
+        }));
+
+        setTimeout(() => {
+          request(app).
+            get('/schedule').
+            send({ id: '81feca70-b5f8-4384-af0c-61c2b1824865' }).
+            end((err, res) => {
+              assert.that(err).is.null();
+              assert.that(res.statusCode).is.equalTo(200);
+              assert.that('schedule', res.text).is.not.null();
+              done();
+            });
+        }, 1000);
       });
     });
   });
