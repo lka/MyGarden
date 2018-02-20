@@ -9433,10 +9433,15 @@ const style = {
 const RefreshIndicatorLoading = () => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
   __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog___default.a,
   {
-    fullScreen: true,
+    fullScreen: false,
     open: true,
     'aria-labelledby': 'responsive-dialog-title'
   },
+  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogTitle"],
+    { id: 'responsive-dialog-title' },
+    "Waiting for data........"
+  ),
   __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContent"],
     null,

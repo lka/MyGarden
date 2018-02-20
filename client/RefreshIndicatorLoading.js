@@ -1,5 +1,5 @@
 import React from 'react';
-import Dialog, { DialogContent } from 'material-ui/Dialog';
+import Dialog, { DialogTitle, DialogContent } from 'material-ui/Dialog';
 import { CircularProgress } from 'material-ui/Progress';
 
 const style = {
@@ -14,10 +14,11 @@ const style = {
 
 const RefreshIndicatorLoading = () => (
   <Dialog
-    fullScreen={true}
+    fullScreen={false}
     open={true}
     aria-labelledby="responsive-dialog-title"
   >
+    <DialogTitle id="responsive-dialog-title">{"Waiting for data........"}</DialogTitle>
     <DialogContent>
       <div style={style.container}>
         <CircularProgress
