@@ -12,14 +12,13 @@ export default class Schedule extends React.Component {
 
   handleClick(e, value) {
     fetch(urlForSwitchesFromStorage('schedule')+'?id='+this.props.id, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      method: 'GET'
     })
+    .then(res => res.json())
     .then(data => {
       if (!data.ok) {
         // this.setState({ val: DefaultSwitch });
+        console.log('Request succeeded, but ', data);
       }
       console.log('Request succeeded with response', data);
     })
