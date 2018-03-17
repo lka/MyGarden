@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import urlForSwitchesFromStorage from './urlForSwitches';
 import Button from 'material-ui/Button';
 import Table, {TableCell} from 'material-ui/Table';
 import Scheduler from './scheduler';
