@@ -71,6 +71,7 @@ export default class Switches extends React.Component {
         return (
           <Schedule
             id = {item.id}
+            name = {item.name}
           />
         );
       default:
