@@ -32,6 +32,7 @@ export default class Scheduler extends React.Component {
         disableButtons: false,
         open: true,
         id: this.props.id,
+        modified: false,
         values: [],
         times: [],
       };
@@ -63,14 +64,16 @@ export default class Scheduler extends React.Component {
       .then(res => res.json())
       .then(data => {
         if (!data.ok) {
-          console.log('Request succeeded, but ', data);
+          console.log('GET Request succeeded, but ', data);
         }
-        this.setState({ values: data[0].val });
+        this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
         this.setTimes();
-        console.log('Request succeeded with response', data[0].val);
+        console.log('GET Request succeeded with response', data);
+        console.log('GET Request succeeded with response', data[0]);
+        console.log('GET Request succeeded with response', data[0].val);
       })
       .catch(error => {
-        console.log('Request failed', error);
+        console.log('GET Request failed', error);
       })
     }
 
@@ -96,6 +99,22 @@ export default class Scheduler extends React.Component {
     handleClose() {
       console.log('handleClose', this.state)
       // save all modified data
+      if (this.state.modified) {
+        fetch(urlForSwitchesFromStorage('schedule'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: this.state.id, name: this.state.name, val: this.state.values })
+        })
+        .then(data => {
+          console.log('POST Request succeeded with response', data);
+        })
+        .catch(error => {
+          this.setState({ val: DefaultSwitch });
+          console.log('POST Request failed', error);
+        })
+      }
       this.props.toggle();
     };
 
@@ -116,7 +135,6 @@ export default class Scheduler extends React.Component {
     }
 
     dayFilter(day, val) {
-      console.log('dayFilter called')
       if (day !== undefined) {
         const retval = day.filter(d => d.time === val);
         if (retval.length > 0) {
@@ -141,13 +159,24 @@ export default class Scheduler extends React.Component {
       this.setState({ times, values });
     }
 
-    handleChangeSelect(e, x, y) {
+    handleChangeSelect(e, time, day) {
       const { value } = e.target;
-      console.log(`handleChange ${x}, ${y} = `, value);
+      const val = parseInt(value);
+      const values = this.state.values;
+      const entry = values[day] !== undefined ? values[day].findIndex(x => x.time == time) : -1;
+      if (entry === -1) {
+        values[day].push({ time, type: 9, value: val });
+        values[day] = values[day].sort((x, y) => {return (new Date(x.time)) - (new Date(y.time))})
+      } else {
+        values[day][entry].value = val;
+      }
+      this.setState({ values, modified: true });
+
+      console.log(`handleChange ${time}, ${day} = `, value);
+      console.log('handleChange', values);
     }
 
     render() {
-      console.log('Scheduler::render called')
       return (
           <Dialog
             open={this.state.open}
@@ -176,13 +205,14 @@ export default class Scheduler extends React.Component {
                 <TableBody>
                   {this.state.times.map((time, i) => (
                     <TableRow key={`tr-${i}`}>
-                      <TableCell>{this.pad((new Date(time)).getHours())+':'+this.pad((new Date(time)).getMinutes())}</TableCell>
+                      <TableCell key={`tc-${i}.first`}>{this.pad((new Date(time)).getHours())+':'+this.pad((new Date(time)).getMinutes())}</TableCell>
                       {this.state.values.map((day, j) => (
                         <TableCell
                           key={`tc-${i}.${j}`}
                           padding='none'
                         >
                           <Select native
+                            key={`sel-${time}.${j}`}
                             onChange={e => this.handleChangeSelect(e, time, j)}
                             defaultValue={this.dayFilter(day, time)}>
                             <option value=""> </option>
@@ -192,10 +222,10 @@ export default class Scheduler extends React.Component {
                         </TableCell>
                       ))}
                       <TableCell
-                        key={`tc-${i+1}`}
+                        key={`tc-${i}.last`}
                       >
                         <Button
-                          data_del={time}
+                          key={`btn-${time}.last`}
                           color='secondary'
                           aria-label="delete"
                           onClick={e => this.handleDelete(e, time)}

@@ -47810,6 +47810,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
       disableButtons: false,
       open: true,
       id: this.props.id,
+      modified: false,
       values: [],
       times: []
     };
@@ -47829,13 +47830,15 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
       method: 'GET'
     }).then(res => res.json()).then(data => {
       if (!data.ok) {
-        console.log('Request succeeded, but ', data);
+        console.log('GET Request succeeded, but ', data);
       }
-      this.setState({ values: data[0].val });
+      this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
       this.setTimes();
-      console.log('Request succeeded with response', data[0].val);
+      console.log('GET Request succeeded with response', data);
+      console.log('GET Request succeeded with response', data[0]);
+      console.log('GET Request succeeded with response', data[0].val);
     }).catch(error => {
-      console.log('Request failed', error);
+      console.log('GET Request failed', error);
     });
   }
 
@@ -47861,6 +47864,20 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   handleClose() {
     console.log('handleClose', this.state);
     // save all modified data
+    if (this.state.modified) {
+      fetch(Object(__WEBPACK_IMPORTED_MODULE_6__urlForSwitches__["a" /* default */])('schedule'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: this.state.id, name: this.state.name, val: this.state.values })
+      }).then(data => {
+        console.log('POST Request succeeded with response', data);
+      }).catch(error => {
+        this.setState({ val: DefaultSwitch });
+        console.log('POST Request failed', error);
+      });
+    }
     this.props.toggle();
   }
 
@@ -47881,7 +47898,6 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   }
 
   dayFilter(day, val) {
-    console.log('dayFilter called');
     if (day !== undefined) {
       const retval = day.filter(d => d.time === val);
       if (retval.length > 0) {
@@ -47906,13 +47922,26 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
     this.setState({ times, values });
   }
 
-  handleChangeSelect(e, x, y) {
+  handleChangeSelect(e, time, day) {
     const { value } = e.target;
-    console.log(`handleChange ${x}, ${y} = `, value);
+    const val = parseInt(value);
+    const values = this.state.values;
+    const entry = values[day] !== undefined ? values[day].findIndex(x => x.time == time) : -1;
+    if (entry === -1) {
+      values[day].push({ time, type: 9, value: val });
+      values[day] = values[day].sort((x, y) => {
+        return new Date(x.time) - new Date(y.time);
+      });
+    } else {
+      values[day][entry].value = val;
+    }
+    this.setState({ values, modified: true });
+
+    console.log(`handleChange ${time}, ${day} = `, value);
+    console.log('handleChange', values);
   }
 
   render() {
-    console.log('Scheduler::render called');
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       __WEBPACK_IMPORTED_MODULE_2_material_ui_Dialog___default.a,
       {
@@ -47961,7 +47990,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
               { key: `tr-${i}` },
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
-                null,
+                { key: `tc-${i}.first` },
                 this.pad(new Date(time).getHours()) + ':' + this.pad(new Date(time).getMinutes())
               ),
               this.state.values.map((day, j) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -47973,6 +48002,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                   __WEBPACK_IMPORTED_MODULE_5_material_ui_Select___default.a,
                   { native: true,
+                    key: `sel-${time}.${j}`,
                     onChange: e => this.handleChangeSelect(e, time, j),
                     defaultValue: this.dayFilter(day, time) },
                   __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -47995,12 +48025,12 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
                 {
-                  key: `tc-${i + 1}`
+                  key: `tc-${i}.last`
                 },
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                   __WEBPACK_IMPORTED_MODULE_3_material_ui_Button___default.a,
                   {
-                    data_del: time,
+                    key: `btn-${time}.last`,
                     color: 'secondary',
                     'aria-label': 'delete',
                     onClick: e => this.handleDelete(e, time)
