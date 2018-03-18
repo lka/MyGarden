@@ -15,6 +15,9 @@ import Dialog, {
     DialogTitle
   } from 'material-ui/Dialog';
   import Button from 'material-ui/Button';
+  import DeleteIcon from 'material-ui-icons/Delete';
+  import Select from 'material-ui/Select';
+
   import urlForSwitchesFromStorage from './urlForSwitches';
   import MyTable from './MyTable';
   import TimePicker from './TimePicker';
@@ -43,14 +46,14 @@ export default class Scheduler extends React.Component {
         { numeric: false, disablePadding: true, label: 'Fr'},
         { numeric: false, disablePadding: true, label: 'Sa'},
         { numeric: false, disablePadding: true, label: 'So'},
-        { numeric: false, disablePadding: false, label: 'X'}
+        { numeric: false, disablePadding: false, label: ''}
 ]
       this.handleClose = this.handleClose.bind(this);
       this.handleCancel = this.handleCancel.bind(this);
       this.handleAddTime = this.handleAddTime.bind(this);
-      this.startEditing = this.startEditing.bind(this);
-      this.stopEditing = this.stopEditing.bind(this);
       this.timePickerOnChange = this.timePickerOnChange.bind(this);
+      this.handleDelete = this.handleDelete.bind(this);
+      this.handleChangeSelect = this.handleChangeSelect.bind(this);
     }
 
     componentDidMount(){
@@ -96,16 +99,6 @@ export default class Scheduler extends React.Component {
       this.props.toggle();
     };
 
-    startEditing(i) {
-      this.setState({disableButtons: true})
-      this.props.startEditing(i);
-    }
-
-    stopEditing() {
-      this.setState({disableButtons: false})
-      this.props.stopEditing();
-    }
-
     handleAddTime() {
       const hm = this.timePicker.split(":");
       const times = this.state.times;
@@ -123,18 +116,34 @@ export default class Scheduler extends React.Component {
     }
 
     dayFilter(day, val) {
+      console.log('dayFilter called')
       if (day !== undefined) {
         const retval = day.filter(d => d.time === val);
         if (retval.length > 0) {
           return retval[0].value;
         }
       }
-      return '';
+      return "";
     }
 
-    timePickerOnChange(e) {
+    timePickerOnChange(e, value) {
+      this.timePicker = e.target.value;
+    }
+
+    handleDelete(e, value) {
+      const times = this.state.times.filter(x => x !== value);
+      const values = this.state.values;
+      for (let i = 0; i < values.length; ++i) {
+        if (values[i] !== undefined) {
+          values[i] = values[i].filter(x => x.time !== value);
+        }
+      }
+      this.setState({ times, values });
+    }
+
+    handleChangeSelect(e, x, y) {
       const { value } = e.target;
-      this.timePicker = value;
+      console.log(`handleChange ${x}, ${y} = `, value);
     }
 
     render() {
@@ -172,8 +181,28 @@ export default class Scheduler extends React.Component {
                         <TableCell
                           key={`tc-${i}.${j}`}
                           padding='none'
-                        >{this.dayFilter(day, time)}</TableCell>
+                        >
+                          <Select native
+                            onChange={e => this.handleChangeSelect(e, time, j)}
+                            defaultValue={this.dayFilter(day, time)}>
+                            <option value=""> </option>
+                            <option value={0}>0</option>
+                            <option value={1}>1</option>
+                          </Select>
+                        </TableCell>
                       ))}
+                      <TableCell
+                        key={`tc-${i+1}`}
+                      >
+                        <Button
+                          data_del={time}
+                          color='secondary'
+                          aria-label="delete"
+                          onClick={e => this.handleDelete(e, time)}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   )
                   )}
@@ -182,7 +211,7 @@ export default class Scheduler extends React.Component {
             </DialogContent>
             <DialogActions>
               <TimePicker
-                onChange = {this.timePickerOnChange}
+                onChange={e => this.timePickerOnChange(e)}
               />
               <Button
                 color='secondary'
