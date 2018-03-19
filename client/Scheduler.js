@@ -60,21 +60,21 @@ export default class Scheduler extends React.Component {
     componentDidMount(){
       fetch(urlForSwitchesFromStorage('schedule')+'?id='+this.props.id, {
         method: 'GET'
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.ok) {
-          console.log('GET Request succeeded, but ', data);
-        }
-        this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
-        this.setTimes();
-        console.log('GET Request succeeded with response', data);
-        console.log('GET Request succeeded with response', data[0]);
-        console.log('GET Request succeeded with response', data[0].val);
-      })
-      .catch(error => {
-        console.log('GET Request failed', error);
-      })
+      });
+      setTimeout(()=>{
+        fetch(urlForSwitchesFromStorage('schedule')+'?id='+this.props.id, {
+          method: 'GET'
+        })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
+          this.setTimes();
+          console.log('GET Request succeeded with response', data[0].val);
+        })
+        .catch(error => {
+          console.log('GET Request failed', error);
+        })
+      }, 500);
     }
 
     setTimes() {

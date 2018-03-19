@@ -47828,18 +47828,18 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   componentDidMount() {
     fetch(Object(__WEBPACK_IMPORTED_MODULE_6__urlForSwitches__["a" /* default */])('schedule') + '?id=' + this.props.id, {
       method: 'GET'
-    }).then(res => res.json()).then(data => {
-      if (!data.ok) {
-        console.log('GET Request succeeded, but ', data);
-      }
-      this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
-      this.setTimes();
-      console.log('GET Request succeeded with response', data);
-      console.log('GET Request succeeded with response', data[0]);
-      console.log('GET Request succeeded with response', data[0].val);
-    }).catch(error => {
-      console.log('GET Request failed', error);
     });
+    setTimeout(() => {
+      fetch(Object(__WEBPACK_IMPORTED_MODULE_6__urlForSwitches__["a" /* default */])('schedule') + '?id=' + this.props.id, {
+        method: 'GET'
+      }).then(res => res.json()).then(data => {
+        this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
+        this.setTimes();
+        console.log('GET Request succeeded with response', data[0].val);
+      }).catch(error => {
+        console.log('GET Request failed', error);
+      });
+    }, 500);
   }
 
   setTimes() {
