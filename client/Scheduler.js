@@ -156,7 +156,7 @@ export default class Scheduler extends React.Component {
           values[i] = values[i].filter(x => x.time !== value);
         }
       }
-      this.setState({ times, values });
+      this.setState({ times, values, modified: true });
     }
 
     handleChangeSelect(e, time, day) {

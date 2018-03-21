@@ -47919,7 +47919,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
         values[i] = values[i].filter(x => x.time !== value);
       }
     }
-    this.setState({ times, values });
+    this.setState({ times, values, modified: true });
   }
 
   handleChangeSelect(e, time, day) {
