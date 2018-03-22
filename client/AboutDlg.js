@@ -30,10 +30,10 @@ export default class AboutDlg extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">About</DialogTitle>
+          <DialogTitle id="alert-dialog-title">{this.props.texts.About}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Copyright H.Lischka, 2018
+              {this.props.texts.Copyright}
             </DialogContentText>
           </DialogContent>
           <DialogActions>

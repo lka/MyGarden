@@ -168,11 +168,17 @@ export default class Scheduler extends React.Component {
         values[day].push({ time, type: 9, value: val });
         values[day] = values[day].sort((x, y) => {return (new Date(x.time)) - (new Date(y.time))})
       } else {
-        values[day][entry].value = val;
+        if (isNaN(val)) {
+          console.log(`handleChangeSelect Day:${day}[${time}] isNaN`, val);
+          values[day].splice(entry, 1);
+        } else {
+          console.log(`handleChangeSelect Day:[${day}][${entry}](${time}) = `, val);
+          values[day][entry].type = 9;
+          values[day][entry].value = val;
+        }
       }
       this.setState({ values, modified: true });
 
-      console.log(`handleChange ${time}, ${day} = `, value);
       console.log('handleChange', values);
     }
 

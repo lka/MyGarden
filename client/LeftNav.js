@@ -31,15 +31,15 @@ render() {
             <NavigationClose />
           </IconButton>
           <Typography variant="title" color="inherit" >
-            MyGarden
+            {this.props.texts.application}
           </Typography>
         </Toolbar>
       </AppBar>
       <MenuList role="menu">
-        <MenuItem onClick={this.props.showSelectObjects}>Configure</MenuItem>
-        <MenuItem onClick={this.props.showHelp}>Help</MenuItem>
+        <MenuItem onClick={this.props.showSelectObjects}>{this.props.texts.Configure}</MenuItem>
+        <MenuItem onClick={this.props.showHelp}>{this.props.texts.Help}</MenuItem>
         <Divider />
-        <MenuItem onClick={this.props.showAbout}>About</MenuItem>
+        <MenuItem onClick={this.props.showAbout}>{this.props.texts.About}</MenuItem>
       </MenuList>
     </Drawer>
     );

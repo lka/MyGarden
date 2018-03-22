@@ -11054,6 +11054,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Switches__ = __webpack_require__(397);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__urlForSwitches__ = __webpack_require__(107);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__RefreshIndicatorLoading__ = __webpack_require__(161);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__Texts__ = __webpack_require__(408);
+
 
 
 
@@ -11090,6 +11092,8 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
       triggerView: false
     };
     this.switches = [];
+    this.texts = __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].find(x => x.language === this.props.language).texts;
+    console.log('App', this.texts);
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -11180,16 +11184,25 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
           ref: 'leftNav',
           showAbout: this._showAbout,
           showHelp: this._showHelp,
-          showSelectObjects: this._showSelectObjects
+          showSelectObjects: this._showSelectObjects,
+          texts: this.texts
         }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__AboutDlg__["a" /* default */], { ref: 'aboutDlg' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__HelpDlg__["a" /* default */], { ref: 'helpDlg' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__AboutDlg__["a" /* default */], {
+          ref: 'aboutDlg',
+          texts: this.texts
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__HelpDlg__["a" /* default */], {
+          ref: 'helpDlg',
+          texts: this.texts
+        }),
         this.renderOverlays(),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__AppBarIcon__["a" /* default */], {
-          onLeftIconButtonClick: this._handleClick
+          onLeftIconButtonClick: this._handleClick,
+          texts: this.texts
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_9__Switches__["a" /* default */], {
-          switches: this.switches
+          switches: this.switches,
+          texts: this.texts
         })
       )
     );
@@ -11249,7 +11262,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   }
 }
 
-__WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(App, null), app);
+__WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(App, { language: 'de_DE' }), app);
 
 /***/ }),
 /* 173 */
@@ -34087,7 +34100,7 @@ class AppBarIcon extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             __WEBPACK_IMPORTED_MODULE_5_material_ui_Typography___default.a,
             { variant: 'title', color: 'inherit' },
-            'MyGarden'
+            this.props.texts.application
           )
         )
       )
@@ -36843,7 +36856,7 @@ class LeftNav extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             __WEBPACK_IMPORTED_MODULE_5_material_ui_Typography___default.a,
             { variant: 'title', color: 'inherit' },
-            'MyGarden'
+            this.props.texts.application
           )
         )
       ),
@@ -36853,18 +36866,18 @@ class LeftNav extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_2_material_ui_Menu__["MenuItem"],
           { onClick: this.props.showSelectObjects },
-          'Configure'
+          this.props.texts.Configure
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_2_material_ui_Menu__["MenuItem"],
           { onClick: this.props.showHelp },
-          'Help'
+          this.props.texts.Help
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_8_material_ui_Divider___default.a, null),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_2_material_ui_Menu__["MenuItem"],
           { onClick: this.props.showAbout },
-          'About'
+          this.props.texts.About
         )
       )
     );
@@ -41367,7 +41380,7 @@ class AboutDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogTitle"],
         { id: 'alert-dialog-title' },
-        'About'
+        this.props.texts.About
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContent"],
@@ -41375,7 +41388,7 @@ class AboutDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContentText"],
           { id: 'alert-dialog-description' },
-          'Copyright H.Lischka, 2018'
+          this.props.texts.Copyright
         )
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -42700,7 +42713,7 @@ class HelpDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogTitle"],
         { id: 'alert-dialog-title' },
-        'Help'
+        this.props.texts.Help
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContent"],
@@ -42708,7 +42721,7 @@ class HelpDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContentText"],
           { id: 'alert-dialog-description' },
-          'use configuration to select objects that will be presented'
+          this.props.texts.HelpText
         )
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -47933,11 +47946,17 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
         return new Date(x.time) - new Date(y.time);
       });
     } else {
-      values[day][entry].value = val;
+      if (isNaN(val)) {
+        console.log(`handleChangeSelect Day:${day}[${time}] isNaN`, val);
+        values[day].splice(entry, 1);
+      } else {
+        console.log(`handleChangeSelect Day:[${day}][${entry}](${time}) = `, val);
+        values[day][entry].type = 9;
+        values[day][entry].value = val;
+      }
     }
     this.setState({ values, modified: true });
 
-    console.log(`handleChange ${time}, ${day} = `, value);
     console.log('handleChange', values);
   }
 
@@ -48179,6 +48198,33 @@ TimePickers.propTypes = {
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_2_material_ui_styles__["withStyles"])(styles)(TimePickers));
+
+/***/ }),
+/* 408 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const Text = [{
+  language: 'en_EN', texts: {
+    application: 'Micro-BMS',
+    Configure: 'Konfigurieren',
+    Help: 'Help',
+    About: 'About',
+    Copyright: 'Copyright H.Lischka, 2018',
+    HelpText: 'use configuration to select objects that will be presented'
+  }
+}, {
+  language: 'de_DE', texts: {
+    application: 'Gartenbewässerung',
+    Configure: 'Konfigurieren',
+    Help: 'Hilfe',
+    About: 'Über',
+    Copyright: 'Copyright H.Lischka, 2018',
+    HelpText: 'benutzen Sie bitte die Konfiguration um die darzustellenden Objekte auszuwählen'
+  }
+}];
+
+/* harmony default export */ __webpack_exports__["a"] = (Text);
 
 /***/ })
 /******/ ]);

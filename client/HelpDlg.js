@@ -38,10 +38,10 @@ export default class HelpDlg extends React.Component {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Help</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{this.props.texts.Help}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            use configuration to select objects that will be presented
+            {this.props.texts.HelpText}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

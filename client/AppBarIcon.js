@@ -21,7 +21,7 @@ export default class AppBarIcon extends React.Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="title" color="inherit" >
-              MyGarden
+              {this.props.texts.application}
             </Typography>
           </Toolbar>
         </AppBar>

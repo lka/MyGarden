@@ -11,6 +11,7 @@ import SelectObjectsDlg from './SelectObjectsDlg';
 import Switches from './Switches';
 import urlForSwitchesFromStorage from './urlForSwitches';
 import RefreshIndicatorLoading from './RefreshIndicatorLoading';
+import Text from './Texts';
 
 // This container is a sibling in the DOM
 const app = document.getElementById('app');
@@ -34,6 +35,8 @@ class App extends React.PureComponent {
       triggerView: false
     };
     this.switches = [];
+    this.texts = Text.find(x => x.language === this.props.language).texts;
+    console.log('App', this.texts);
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -119,15 +122,24 @@ class App extends React.PureComponent {
             showAbout={this._showAbout}
             showHelp={this._showHelp}
             showSelectObjects={this._showSelectObjects}
+            texts={this.texts}
              />
-          <AboutDlg ref='aboutDlg' />
-          <HelpDlg ref='helpDlg' />
+          <AboutDlg
+            ref='aboutDlg'
+            texts={this.texts}
+          />
+          <HelpDlg
+            ref='helpDlg'
+            texts={this.texts}
+          />
           {this.renderOverlays()}
           <AppBarIcon
             onLeftIconButtonClick={this._handleClick}
+            texts={this.texts}
           />
           <Switches
             switches={this.switches}
+            texts={this.texts}
           />
         </div>
         </MuiThemeProvider>
@@ -190,4 +202,4 @@ class App extends React.PureComponent {
   }
 }
 
-ReactDOM.render(  <App />, app );
+ReactDOM.render(  <App language='de_DE' />, app );
