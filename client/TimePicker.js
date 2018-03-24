@@ -16,13 +16,13 @@ const styles = theme => ({
 });
 
 function TimePickers(props) {
-  const { classes } = props;
+  const { classes, texts } = props;
 
   return (
     <form className={classes.container} noValidate>
       <TextField
         id="time"
-        label="Time"
+        label={texts.Time}
         type="time"
         defaultValue="07:30"
         onChange = {props.onChange}

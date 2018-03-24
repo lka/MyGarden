@@ -28,6 +28,7 @@ export default class Schedule extends React.Component {
           id={ this.props.id }
           toggle={ this.handleToggle }
           name={ this.props.name }
+          texts = { this.props.texts }
         />
       )
     } else return (
@@ -35,7 +36,7 @@ export default class Schedule extends React.Component {
         <Button
           color='primary'
           onClick={this.handleClick}>
-          Modify Program
+          {this.props.texts.ModifyProgram}
         </Button>
       </TableCell>
     )
