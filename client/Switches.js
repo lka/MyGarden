@@ -11,7 +11,6 @@ import Paper from 'material-ui/Paper';
 import Switch from './Switch';
 import Schedule from './Schedule';
 
-const valueText = ['Off ', 'On ', '---'];
 const DefaultState = 2;
 
 export default class Switches extends React.Component {
@@ -29,9 +28,9 @@ export default class Switches extends React.Component {
               // displaySelectAll={false}
             >
               <TableRow>
-                <TableCell>Object Name</TableCell>
-                <TableCell>Set Value To</TableCell>
-                <TableCell>Value</TableCell>
+                <TableCell>{this.props.texts.ObjectName}</TableCell>
+                <TableCell>{this.props.texts.SetValueTo}</TableCell>
+                <TableCell>{this.props.texts.Value}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody
@@ -41,14 +40,14 @@ export default class Switches extends React.Component {
               <TableRow key={index}>
                 <TableCell>{item.name}</TableCell>
                 {this.renderObject(item)}
-                <TableCell>{valueText[item.state]}</TableCell>
+                <TableCell>{this.props.texts.valueTexts[item.state]}</TableCell>
               </TableRow>
             ))}
             </TableBody>
             <TableFooter>
               <TableRow>
                 <TableCell colSpan="3" style={{textAlign: 'center'}}>
-                H.Lischka, 2018
+                {this.props.texts.Copyright}
                 </TableCell>
               </TableRow>
             </TableFooter>
@@ -58,13 +57,13 @@ export default class Switches extends React.Component {
   }
 
   renderObject(item) {
-    console.log('Switches.renderObject: ', item);
     switch (item.objectType) {
       case 4: // Binary-Output
         return (
           <Switch
             id = {item.id}
             status = {item.val}
+            texts = {this.props.texts}
           />
         );
       case 17: // Schedule
@@ -72,6 +71,7 @@ export default class Switches extends React.Component {
           <Schedule
             id = {item.id}
             name = {item.name}
+            texts = {this.props.texts}
           />
         );
       default:

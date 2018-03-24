@@ -105,7 +105,7 @@ class App extends React.PureComponent {
         return <RefreshIndicatorLoading />
         break;
       case this.state.showSelectObjects:
-        return <SelectObjectsWrapper />
+        return <SelectObjectsWrapper texts = {this.texts}/>
         break;
       default:
       return null;

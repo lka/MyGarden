@@ -63,7 +63,7 @@ export default class Switch extends React.Component {
             onChange={this.handleClick}
             value="0"
           />}
-          label="Off"
+          label={this.props.texts.valueTexts[0]}
           style={styles.radioButton}
         />
         <FormControlLabel control={
@@ -72,7 +72,7 @@ export default class Switch extends React.Component {
             onChange={this.handleClick}
             value="1"
           />}
-          label="On"
+          label={this.props.texts.valueTexts[1]}
           style={styles.radioButton}
         />
         <FormControlLabel control={
@@ -81,7 +81,7 @@ export default class Switch extends React.Component {
             onChange={this.handleClick}
             value="2"
           />}
-          label="Auto"
+          label={this.props.texts.valueTexts[3]}
         />
       </div>
       </TableCell>

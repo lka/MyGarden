@@ -53,10 +53,10 @@ export default class SelectObjectsDlg extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Configuration</DialogTitle>
+          <DialogTitle id="alert-dialog-title">{this.props.texts.Configure}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-            Select objects to be presented
+            {this.props.texts.SelectObjects}
             </DialogContentText>
             <MyTable
               data={this.props.data}
@@ -67,6 +67,7 @@ export default class SelectObjectsDlg extends React.Component {
               handleChange={this.props.handleChange}
               stopEditing={this.stopEditing}
               selections={this.props.selections}
+              texts={this.props.texts}
             />
           </DialogContent>
           <DialogActions>
@@ -74,12 +75,12 @@ export default class SelectObjectsDlg extends React.Component {
               color='primary'
               disabled={this.state.disableButtons}
               onClick={this.handleCancel}>
-              Cancel
+              {this.props.texts.Cancel}
             </Button>
             <Button
               disabled={this.state.disableButtons}
               onClick={this.handleClose}>
-              Submit
+              {this.props.texts.Submit}
             </Button>
           </DialogActions>
         </Dialog>

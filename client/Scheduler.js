@@ -192,7 +192,7 @@ export default class Scheduler extends React.Component {
             <DialogTitle id="alert-dialog-title">{this.props.name}</DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-              Add, change or delete entries
+              {this.props.texts.ModifyContent}
               </DialogContentText>
               <Table>
                 <TableHead>
@@ -248,23 +248,24 @@ export default class Scheduler extends React.Component {
             <DialogActions>
               <TimePicker
                 onChange={e => this.timePickerOnChange(e)}
+                texts={this.props.texts}
               />
               <Button
                 color='secondary'
                 disabled={this.state.disableButtons}
                 onClick={this.handleAddTime}>
-                Add Time
+                {this.props.texts.AddTime}
               </Button>
               <Button
                 color='primary'
                 disabled={this.state.disableButtons}
                 onClick={this.handleCancel}>
-                Cancel
+                {this.props.texts.Cancel}
               </Button>
               <Button
                 disabled={this.state.disableButtons}
                 onClick={this.handleClose}>
-                Submit
+                {this.props.texts.Submit}
               </Button>
             </DialogActions>
           </Dialog>

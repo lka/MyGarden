@@ -11165,7 +11165,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_11__RefreshIndicatorLoading__["a" /* default */], null);
         break;
       case this.state.showSelectObjects:
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, null);
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, { texts: this.texts });
         break;
       default:
         return null;
@@ -42851,7 +42851,8 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
           handleChange: this.handleChange,
           stopEditing: this.stopEditing,
           editIdx: this.state.editIdx,
-          startEditing: this.startEditing
+          startEditing: this.startEditing,
+          texts: this.props.texts
         });
       } else {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__RefreshIndicatorLoading__["a" /* default */], null);
@@ -43460,7 +43461,7 @@ class SelectObjectsDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Com
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogTitle"],
         { id: 'alert-dialog-title' },
-        'Configuration'
+        this.props.texts.Configure
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContent"],
@@ -43468,7 +43469,7 @@ class SelectObjectsDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Com
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_1_material_ui_Dialog__["DialogContentText"],
           { id: 'alert-dialog-description' },
-          'Select objects to be presented'
+          this.props.texts.SelectObjects
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__MyTable__["a" /* default */], {
           data: this.props.data,
@@ -43490,14 +43491,14 @@ class SelectObjectsDlg extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Com
             color: 'primary',
             disabled: this.state.disableButtons,
             onClick: this.handleCancel },
-          'Cancel'
+          this.props.texts.Cancel
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_2_material_ui_Button___default.a,
           {
             disabled: this.state.disableButtons,
             onClick: this.handleClose },
-          'Submit'
+          this.props.texts.Submit
         )
       )
     );
@@ -47048,7 +47049,6 @@ exports.default = TextField;
 
 
 
-const valueText = ['Off ', 'On ', '---'];
 const DefaultState = 2;
 
 class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
@@ -47076,17 +47076,17 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
               null,
-              'Object Name'
+              this.props.texts.ObjectName
             ),
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
               null,
-              'Set Value To'
+              this.props.texts.SetValueTo
             ),
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
               null,
-              'Value'
+              this.props.texts.Value
             )
           )
         ),
@@ -47107,7 +47107,7 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
               null,
-              valueText[item.state]
+              this.props.texts.valueTexts[item.state]
             )
           ))
         ),
@@ -47120,7 +47120,7 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
               __WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"],
               { colSpan: '3', style: { textAlign: 'center' } },
-              'H.Lischka, 2018'
+              this.props.texts.Copyright
             )
           )
         )
@@ -47129,19 +47129,20 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
   }
 
   renderObject(item) {
-    console.log('Switches.renderObject: ', item);
     switch (item.objectType) {
       case 4:
         // Binary-Output
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Switch__["a" /* default */], {
           id: item.id,
-          status: item.val
+          status: item.val,
+          texts: this.props.texts
         });
       case 17:
         // Schedule
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Schedule__["a" /* default */], {
           id: item.id,
-          name: item.name
+          name: item.name,
+          texts: this.props.texts
         });
       default:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"], null);
@@ -47230,7 +47231,7 @@ class Switch extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             onChange: this.handleClick,
             value: '0'
           }),
-          label: 'Off',
+          label: this.props.texts.valueTexts[0],
           style: styles.radioButton
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_material_ui_Form__["FormControlLabel"], { control: __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_Radio___default.a, {
@@ -47238,7 +47239,7 @@ class Switch extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             onChange: this.handleClick,
             value: '1'
           }),
-          label: 'On',
+          label: this.props.texts.valueTexts[1],
           style: styles.radioButton
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_material_ui_Form__["FormControlLabel"], { control: __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_Radio___default.a, {
@@ -47246,7 +47247,7 @@ class Switch extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
             onChange: this.handleClick,
             value: '2'
           }),
-          label: 'Auto'
+          label: this.props.texts.valueTexts[3]
         })
       )
     );
@@ -47763,7 +47764,8 @@ class Schedule extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__scheduler__["a" /* default */], {
         id: this.props.id,
         toggle: this.handleToggle,
-        name: this.props.name
+        name: this.props.name,
+        texts: this.props.texts
       });
     } else return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       __WEBPACK_IMPORTED_MODULE_2_material_ui_Table__["TableCell"],
@@ -47773,7 +47775,7 @@ class Schedule extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         {
           color: 'primary',
           onClick: this.handleClick },
-        'Modify Program'
+        this.props.texts.ModifyProgram
       )
     );
   }
@@ -47979,7 +47981,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_2_material_ui_Dialog__["DialogContentText"],
           { id: 'alert-dialog-description' },
-          'Add, change or delete entries'
+          this.props.texts.ModifyContent
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_1_material_ui_Table___default.a,
@@ -48065,7 +48067,8 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
         __WEBPACK_IMPORTED_MODULE_2_material_ui_Dialog__["DialogActions"],
         null,
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_8__TimePicker__["a" /* default */], {
-          onChange: e => this.timePickerOnChange(e)
+          onChange: e => this.timePickerOnChange(e),
+          texts: this.props.texts
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_3_material_ui_Button___default.a,
@@ -48073,7 +48076,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
             color: 'secondary',
             disabled: this.state.disableButtons,
             onClick: this.handleAddTime },
-          'Add Time'
+          this.props.texts.AddTime
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_3_material_ui_Button___default.a,
@@ -48081,14 +48084,14 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
             color: 'primary',
             disabled: this.state.disableButtons,
             onClick: this.handleCancel },
-          'Cancel'
+          this.props.texts.Cancel
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_3_material_ui_Button___default.a,
           {
             disabled: this.state.disableButtons,
             onClick: this.handleClose },
-          'Submit'
+          this.props.texts.Submit
         )
       )
     );
@@ -48171,14 +48174,14 @@ const styles = theme => ({
 });
 
 function TimePickers(props) {
-  const { classes } = props;
+  const { classes, texts } = props;
 
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     'form',
     { className: classes.container, noValidate: true },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3_material_ui_TextField___default.a, {
       id: 'time',
-      label: 'Time',
+      label: texts.Time,
       type: 'time',
       defaultValue: '07:30',
       onChange: props.onChange,
@@ -48211,7 +48214,18 @@ const Text = [{
     Help: 'Help',
     About: 'About',
     Copyright: 'Copyright H.Lischka, 2018',
-    HelpText: 'use configuration to select objects that will be presented'
+    HelpText: 'use configuration to select objects that will be presented',
+    ObjectName: 'Object Name',
+    SetValueTo: 'Set Value To',
+    Value: 'Value',
+    valueTexts: ['Off ', 'On ', '---', 'Auto'],
+    ModifyProgram: 'modify weekly schedule',
+    ModifyContent: 'Add, change or delete entries',
+    AddTime: 'Add Time',
+    Cancel: 'Cancel',
+    Submit: 'Submit',
+    Time: 'Time',
+    SelectObjects: 'Select objects to be presented'
   }
 }, {
   language: 'de_DE', texts: {
@@ -48220,7 +48234,18 @@ const Text = [{
     Help: 'Hilfe',
     About: 'Über',
     Copyright: 'Copyright H.Lischka, 2018',
-    HelpText: 'benutzen Sie bitte die Konfiguration um die darzustellenden Objekte auszuwählen'
+    HelpText: 'benutzen Sie bitte die Konfiguration um die darzustellenden Objekte auszuwählen',
+    ObjectName: 'Bezeichnung',
+    SetValueTo: 'Schaltvorgang',
+    Value: 'aktueller Wert',
+    valueTexts: ['Aus ', 'Ein ', '---', 'Auto'],
+    ModifyProgram: 'Wochenprogramm ändern',
+    ModifyContent: 'ändern, hinzufügen oder entfernen von Einträgen',
+    AddTime: 'Schaltzeit hinzufügen',
+    Cancel: 'Abbruch',
+    Submit: 'Eintragen',
+    Time: 'Uhrzeit',
+    SelectObjects: 'Wählen Sie die darzustellenden Objekte aus'
   }
 }];
 

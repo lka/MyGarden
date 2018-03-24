@@ -111,6 +111,7 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
           stopEditing={this.stopEditing}
           editIdx={this.state.editIdx}
           startEditing={this.startEditing}
+          texts={this.props.texts}
          />
        )
      } else { return (<RefreshIndicatorLoading />)}
