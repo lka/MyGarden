@@ -81,28 +81,29 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
 
     render() {
       if (this.state.data.length > 0) {
+        const header = [
+          {
+            name: "Object Name",
+            prop: "name",
+            key: "name",
+            numeric: false,
+            padding: false,
+            label: this.props.texts.ObjectName
+          },
+          {
+            name: "",
+            prop: "edit",
+            key: "edit",
+            numeric: false,
+            padding: false,
+            label: this.props.texts.Edit
+          }
+        ];
       return (
         <WrappedComponent
           data={ this.state.data }
           selections={this.state.data.length > 0 ? this.state.data.filter(n => n.val === true).map(m => m.id) : []}
-          header={[
-            {
-              name: "Object Name",
-              prop: "name",
-              key: "name",
-              numeric: false,
-              padding: false,
-              label: "Object Name"
-            },
-            {
-              name: "",
-              prop: "edit",
-              key: "edit",
-              numeric: false,
-              padding: false,
-              label: "Edit"
-            }
-          ]}
+          header={header}
           toggle={toggle}
           handleRowSelection={this.handleRowSelection}
           handleCancel={this.handleCancel}

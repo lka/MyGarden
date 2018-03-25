@@ -4,7 +4,9 @@ const Text = [
       application: 'Micro-BMS',
       Configure: 'Konfigurieren',
       Help: 'Help',
-      About: 'About',
+      About: 'About...',
+      Edit: 'Edit',
+      Of: 'of',
       Copyright: 'Copyright H.Lischka, 2018',
       HelpText: 'use configuration to select objects that will be presented',
       ObjectName: 'Object Name',
@@ -17,15 +19,18 @@ const Text = [
       Cancel: 'Cancel',
       Submit: 'Submit',
       Time: 'Time',
-      SelectObjects: 'Select objects to be presented'
+      SelectObjects: 'Select objects to be presented',
+      RowsPerPage: 'Rows per page:'
     }
   },
   {
     language: 'de_DE', texts: {
-      application: 'Gartenbewässerung',
+      application: 'Mikro-GLT',
       Configure: 'Konfigurieren',
       Help: 'Hilfe',
-      About: 'Über',
+      About: 'Über...',
+      Edit: 'Bearbeiten',
+      Of: 'von',
       Copyright: 'Copyright H.Lischka, 2018',
       HelpText: 'benutzen Sie bitte die Konfiguration um die darzustellenden Objekte auszuwählen',
       ObjectName: 'Bezeichnung',
@@ -33,12 +38,13 @@ const Text = [
       Value: 'aktueller Wert',
       valueTexts: ['Aus ', 'Ein ', '---', 'Auto'],
       ModifyProgram: 'Wochenprogramm ändern',
-      ModifyContent: 'ändern, hinzufügen oder entfernen von Einträgen',
+      ModifyContent: 'Einträge ändern, hinzufügen oder entfernen...',
       AddTime: 'Schaltzeit hinzufügen',
-      Cancel: 'Abbruch',
+      Cancel: 'Abbrechen',
       Submit: 'Eintragen',
       Time: 'Uhrzeit',
-      SelectObjects: 'Wählen Sie die darzustellenden Objekte aus'
+      SelectObjects: 'Wählen Sie die darzustellenden Objekte aus',
+      RowsPerPage: 'Zeilen pro Seite:'
     }
   }
 ];

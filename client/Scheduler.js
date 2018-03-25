@@ -17,6 +17,7 @@ import Dialog, {
   import Button from 'material-ui/Button';
   import DeleteIcon from 'material-ui-icons/Delete';
   import Select from 'material-ui/Select';
+  import { MenuItem } from 'material-ui/Menu';
 
   import urlForSwitchesFromStorage from './urlForSwitches';
   import MyTable from './MyTable';
@@ -217,13 +218,15 @@ export default class Scheduler extends React.Component {
                           key={`tc-${i}.${j}`}
                           padding='none'
                         >
-                          <Select native
+                          <Select
                             key={`sel-${time}.${j}`}
                             onChange={e => this.handleChangeSelect(e, time, j)}
-                            defaultValue={this.dayFilter(day, time)}>
-                            <option value=""> </option>
-                            <option value={0}>0</option>
-                            <option value={1}>1</option>
+                            value={this.dayFilter(day, time)}
+                            displayEmpty
+                          >
+                            <MenuItem value=""> </MenuItem>
+                            <MenuItem value={0}>{this.props.texts.valueTexts[0]}</MenuItem>
+                            <MenuItem value={1}>{this.props.texts.valueTexts[1]}</MenuItem>
                           </Select>
                         </TableCell>
                       ))}

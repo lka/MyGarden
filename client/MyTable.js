@@ -56,6 +56,7 @@ export default class MyTable extends React.Component {
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.handleChangePage = this.handleChangePage.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.displayRows = this.displayRows.bind(this);
   }
 
   handleClick(event, id) {
@@ -91,6 +92,7 @@ export default class MyTable extends React.Component {
   };
 
   isSelected(id) {return this.state.selected.indexOf(id) !== -1};
+  displayRows( v ) {return (parseInt(v.from)+'-'+parseInt(v.to)+' '+this.props.texts.Of+' '+parseInt(v.count))};
 
   render() {
   const { selected, rowsPerPage, page } = this.state;
@@ -152,6 +154,8 @@ export default class MyTable extends React.Component {
           <TablePagination
             colSpan={3}
             count={this.props.data.length}
+            labelRowsPerPage={this.props.texts.RowsPerPage}
+            labelDisplayedRows={this.displayRows}
             rowsPerPage={rowsPerPage}
             page={page}
             backIconButtonProps={{
