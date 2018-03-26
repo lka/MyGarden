@@ -18,6 +18,8 @@ import Dialog, {
   import DeleteIcon from 'material-ui-icons/Delete';
   import Select from 'material-ui/Select';
   import { MenuItem } from 'material-ui/Menu';
+  import EditIcon from "material-ui-icons/Edit";
+  import CheckIcon from "material-ui-icons/Check";
 
   import urlForSwitchesFromStorage from './urlForSwitches';
   import MyTable from './MyTable';
@@ -36,6 +38,7 @@ export default class Scheduler extends React.Component {
         modified: false,
         values: [],
         times: [],
+        editing: undefined
       };
       this.timePicker = '07:30';
 
@@ -48,7 +51,8 @@ export default class Scheduler extends React.Component {
         { numeric: false, disablePadding: true, label: 'Fr'},
         { numeric: false, disablePadding: true, label: 'Sa'},
         { numeric: false, disablePadding: true, label: 'So'},
-        { numeric: false, disablePadding: false, label: ''}
+        { numeric: false, disablePadding: true, label: 'Edit'},
+        { numeric: false, disablePadding: true, label: 'Delete'}
 ]
       this.handleClose = this.handleClose.bind(this);
       this.handleCancel = this.handleCancel.bind(this);
@@ -56,6 +60,8 @@ export default class Scheduler extends React.Component {
       this.timePickerOnChange = this.timePickerOnChange.bind(this);
       this.handleDelete = this.handleDelete.bind(this);
       this.handleChangeSelect = this.handleChangeSelect.bind(this);
+      this.startEditing = this.startEditing.bind(this);
+      this.stopEditing = this.stopEditing.bind(this);
     }
 
     componentDidMount(){
@@ -86,7 +92,7 @@ export default class Scheduler extends React.Component {
             times.push(this.state.values[i][index].time);
           }
         }
-        times.sort();
+        times.sort().filter((item, pos, arr) => {return !pos || arr[pos - 1];});
       }
       this.setState({ times });
     }
@@ -183,6 +189,15 @@ export default class Scheduler extends React.Component {
       console.log('handleChange', values);
     }
 
+    startEditing() {
+      this.setState({ disableButtons: true });
+    }
+
+    stopEditing(props) {
+      this.setState({ disableButtons: false });
+
+    }
+
     render() {
       return (
           <Dialog
@@ -218,20 +233,33 @@ export default class Scheduler extends React.Component {
                           key={`tc-${i}.${j}`}
                           padding='none'
                         >
-                          <Select
-                            key={`sel-${time}.${j}`}
-                            onChange={e => this.handleChangeSelect(e, time, j)}
-                            value={this.dayFilter(day, time)}
-                            displayEmpty
-                          >
-                            <MenuItem value=""> </MenuItem>
-                            <MenuItem value={0}>{this.props.texts.valueTexts[0]}</MenuItem>
-                            <MenuItem value={1}>{this.props.texts.valueTexts[1]}</MenuItem>
-                          </Select>
+                          {(this.state.editing === time) ? (
+                            <Select
+                              key={`sel-${time}.${j}`}
+                              onChange={e => this.handleChangeSelect(e, time, j)}
+                              value={this.dayFilter(day, time)}
+                              displayEmpty
+                            >
+                              <MenuItem value=""> </MenuItem>
+                              <MenuItem value={0}>{this.props.texts.valueTexts[0]}</MenuItem>
+                              <MenuItem value={1}>{this.props.texts.valueTexts[1]}</MenuItem>
+                            </Select>
+                          ) : ( this.props.texts.valueTexts[this.dayFilter(day, time)] )}
                         </TableCell>
                       ))}
                       <TableCell
+                        key={`tc-${i}.edit`}
+                        padding='none'
+                      >
+                        {(this.state.editing === time) ? (
+                          <CheckIcon key={`ico-${i}.ed`} onClick={() => {this.setState({ editing: undefined }); this.stopEditing();}} />
+                        ) : (
+                          <EditIcon key={`ico-${i}.ed`} onClick={() => {this.setState({ editing: time }); this.startEditing(time);}} />
+                        )}
+                      </TableCell>
+                      <TableCell
                         key={`tc-${i}.last`}
+                        padding='none'
                       >
                         <Button
                           key={`btn-${time}.last`}
