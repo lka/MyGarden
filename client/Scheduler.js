@@ -92,7 +92,8 @@ export default class Scheduler extends React.Component {
             times.push(this.state.values[i][index].time);
           }
         }
-        times.sort().filter((item, pos, arr) => {return !pos || arr[pos - 1];});
+        times.sort();
+        times = times.filter((item, pos, arr) => {return !pos || arr[pos - 1];});
       }
       this.setState({ times });
     }
