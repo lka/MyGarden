@@ -32,11 +32,12 @@ class App extends React.PureComponent {
       showSelectObjects: false,
       error: null,
       isLoaded: false,
-      triggerView: false
+      triggerView: false,
+      language: 'de_DE'
     };
     this.switches = [];
-    this.texts = Text.find(x => x.language === this.props.language).texts;
-    console.log('App', this.texts);
+    this.texts = [];
+    this.language = {};
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -44,6 +45,9 @@ class App extends React.PureComponent {
     this._showHelp = this._showHelp.bind(this);
     this._showSelectObjects = this._showSelectObjects.bind(this);
     this._selectedObjectsChanged = this._selectedObjectsChanged.bind(this);
+    this.setLanguage = this.setLanguage.bind(this);
+
+    this.setLanguage(this.state.language);
   }
 
   componentDidCatch(error, info) {
@@ -93,6 +97,14 @@ class App extends React.PureComponent {
     this.readBinaries();
   }
 
+  setLanguage(val) {
+    this.texts = Text.find(x => x.language === val).texts;
+    this.language = { language: Text.map(x => x.language), langSelected: val };
+    if (this.state.language !== val) {
+      this.setState({ language: val});
+    }
+  }
+
   renderOverlays() {
     const SelectObjectsWrapper = withDataFetching(SelectObjectsDlg,
       urlForSwitchesFromStorage('objects'),
@@ -123,7 +135,9 @@ class App extends React.PureComponent {
             showHelp={this._showHelp}
             showSelectObjects={this._showSelectObjects}
             texts={this.texts}
-             />
+            setLanguage={this.setLanguage}
+            language={this.language}
+          />
           <AboutDlg
             ref='aboutDlg'
             texts={this.texts}
@@ -172,7 +186,6 @@ class App extends React.PureComponent {
     .then(d => d.json())
     .then(d => {
       if (d.length > 0) {
-        console.log('getUpdatedValues succeeded with response', d);
         d.forEach(x => {
           const i = this.switches.findIndex(z => z.id === x.id);
           if (i != -1) {
@@ -194,7 +207,6 @@ class App extends React.PureComponent {
       method: 'PUT'
     })
     .then(data => {
-      console.log('Request succeeded with response', data);
     })
     .catch(error => {
       console.log('Request failed', error);
@@ -202,4 +214,4 @@ class App extends React.PureComponent {
   }
 }
 
-ReactDOM.render(  <App language='de_DE' />, app );
+ReactDOM.render(  <App />, app );

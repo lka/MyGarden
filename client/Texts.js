@@ -2,7 +2,7 @@ const Text = [
   {
     language: 'en_EN', texts: {
       application: 'Micro-BMS',
-      Configure: 'Konfigurieren',
+      Configure: 'Configure',
       Help: 'Help',
       About: 'About...',
       Edit: 'Edit',
@@ -18,9 +18,11 @@ const Text = [
       AddTime: 'Add Time',
       Cancel: 'Cancel',
       Submit: 'Submit',
+      Delete: 'Delete',
       Time: 'Time',
       SelectObjects: 'Select objects to be presented',
-      RowsPerPage: 'Rows per page:'
+      RowsPerPage: 'Rows per page:',
+      Week: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
     }
   },
   {
@@ -42,9 +44,11 @@ const Text = [
       AddTime: 'Schaltzeit hinzufügen',
       Cancel: 'Abbrechen',
       Submit: 'Eintragen',
+      Delete: 'Löschen',
       Time: 'Uhrzeit',
       SelectObjects: 'Wählen Sie die darzustellenden Objekte aus',
-      RowsPerPage: 'Zeilen pro Seite:'
+      RowsPerPage: 'Zeilen pro Seite:',
+      Week: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
     }
   }
 ];

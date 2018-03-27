@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Drawer from 'material-ui/Drawer';
+import Select from 'material-ui/Select';
 import {MenuList, MenuItem} from 'material-ui/Menu';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
@@ -23,6 +24,7 @@ export default class LeftNav extends React.Component {
   }
 
 render() {
+  const { language, langSelected } = this.props.language;
   return (
     <Drawer open={this.state.open}>
       <AppBar position="static">
@@ -38,6 +40,15 @@ render() {
       <MenuList role="menu">
         <MenuItem onClick={this.props.showSelectObjects}>{this.props.texts.Configure}</MenuItem>
         <MenuItem onClick={this.props.showHelp}>{this.props.texts.Help}</MenuItem>
+        <Select
+          key={`sel-lang`}
+          onChange={e => this.props.setLanguage(e.target.value)}
+          value={langSelected}
+        >
+        {language.map((lang, i) => (
+          <MenuItem key={`mi-${i}`} value={lang}>{lang}</MenuItem>
+        ))}
+        </Select>
         <Divider />
         <MenuItem onClick={this.props.showAbout}>{this.props.texts.About}</MenuItem>
       </MenuList>

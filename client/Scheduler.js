@@ -43,16 +43,16 @@ export default class Scheduler extends React.Component {
       this.timePicker = '07:30';
 
       this.header = [
-        { numeric: false, disablePadding: false, label: 'Time'},
-        { numeric: false, disablePadding: true, label: 'Mo'},
-        { numeric: false, disablePadding: true, label: 'Tu'},
-        { numeric: false, disablePadding: true, label: 'We'},
-        { numeric: false, disablePadding: true, label: 'Th'},
-        { numeric: false, disablePadding: true, label: 'Fr'},
-        { numeric: false, disablePadding: true, label: 'Sa'},
-        { numeric: false, disablePadding: true, label: 'So'},
-        { numeric: false, disablePadding: true, label: 'Edit'},
-        { numeric: false, disablePadding: true, label: 'Delete'}
+        { numeric: false, disablePadding: false, label: this.props.texts.Time },
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[0]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[1]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[2]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[3]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[4]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[5]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Week[6]},
+        { numeric: false, disablePadding: true, label: this.props.texts.Edit},
+        { numeric: false, disablePadding: true, label: this.props.texts.Delete}
 ]
       this.handleClose = this.handleClose.bind(this);
       this.handleCancel = this.handleCancel.bind(this);
