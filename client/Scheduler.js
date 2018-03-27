@@ -85,17 +85,19 @@ export default class Scheduler extends React.Component {
     }
 
     setTimes() {
-      const times = [];
+      let times = [];
       if (this.state.values.length > 0) {
         for (let i = 0; i < this.state.values.length; ++i) {
           for (let index = 0; index < this.state.values[i].length; ++index) {
-            times.push(this.state.values[i][index].time);
+            if (times.findIndex(x => x==this.state.values[i][index].time) === -1) {
+              times.push(this.state.values[i][index].time);
+            }
           }
         }
         times.sort();
-        times = times.filter((item, pos, arr) => {return !pos || arr[pos - 1];});
       }
       this.setState({ times });
+      console.log('setTimes', times)
     }
 
     handleCancel(){
