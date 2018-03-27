@@ -97,17 +97,14 @@ export default class Scheduler extends React.Component {
         times.sort();
       }
       this.setState({ times });
-      console.log('setTimes', times)
     }
 
     handleCancel(){
-      console.log('handleCancel', this.state)
       // do nothing but close
       setTimeout(this.props.toggle,50);
     };
 
     handleClose() {
-      console.log('handleClose', this.state)
       // save all modified data
       if (this.state.modified) {
         fetch(urlForSwitchesFromStorage('schedule'), {
