@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
@@ -10,6 +10,7 @@ import withDataFetching from './withDataFetching';
 import SelectObjectsDlg from './SelectObjectsDlg';
 import Switches from './Switches';
 import urlForSwitchesFromStorage from './urlForSwitches';
+import urlForWebSocket from './urlForWebSocket';
 import RefreshIndicatorLoading from './RefreshIndicatorLoading';
 import Text from './Texts';
 
@@ -37,6 +38,7 @@ class App extends React.PureComponent {
     };
     this.switches = [];
     this.texts = [];
+    this.ws = undefined;
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -82,10 +84,16 @@ class App extends React.PureComponent {
   }
 
   componentDidMount() {
+    this.ws = new WebSocket(urlForWebSocket(''));
+    this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onmessage = e => console.log(e.data);
+    // this.ws.onmessage = e => console.log(JSON.parse(e.data));
+    this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
     this.readBinaries();
   }
 
   componentWillUnmount() {
+    this.ws.close();
     this.cancelObservation();
     clearInterval(this.timer);
   }

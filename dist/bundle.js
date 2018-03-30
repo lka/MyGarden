@@ -11145,8 +11145,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SelectObjectsDlg__ = __webpack_require__(379);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Switches__ = __webpack_require__(397);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__urlForSwitches__ = __webpack_require__(109);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__RefreshIndicatorLoading__ = __webpack_require__(167);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__Texts__ = __webpack_require__(408);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__urlForWebSocket__ = __webpack_require__(408);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__RefreshIndicatorLoading__ = __webpack_require__(167);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__Texts__ = __webpack_require__(409);
+
 
 
 
@@ -11186,6 +11188,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     };
     this.switches = [];
     this.texts = [];
+    this.ws = undefined;
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -11231,10 +11234,16 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   }
 
   componentDidMount() {
+    this.ws = new WebSocket(Object(__WEBPACK_IMPORTED_MODULE_11__urlForWebSocket__["a" /* default */])(''));
+    this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onmessage = e => console.log(e.data);
+    // this.ws.onmessage = e => console.log(JSON.parse(e.data));
+    this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
     this.readBinaries();
   }
 
   componentWillUnmount() {
+    this.ws.close();
     this.cancelObservation();
     clearInterval(this.timer);
   }
@@ -11257,7 +11266,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
         );
         break;
       case !this.state.isLoaded:
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_11__RefreshIndicatorLoading__["a" /* default */], null);
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_12__RefreshIndicatorLoading__["a" /* default */], null);
         break;
       case this.state.showSelectObjects:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, { texts: this.texts });
@@ -11359,8 +11368,8 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   }
 
   setLanguage(val) {
-    this.texts = __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].find(x => x.language === val).texts;
-    this.language = { language: __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].map(x => x.language), langSelected: val };
+    this.texts = __WEBPACK_IMPORTED_MODULE_13__Texts__["a" /* default */].find(x => x.language === val).texts;
+    this.language = { language: __WEBPACK_IMPORTED_MODULE_13__Texts__["a" /* default */].map(x => x.language), langSelected: val };
     if (this.state.language !== val) {
       this.setState({ language: val });
       fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('language'), {
@@ -48284,6 +48293,15 @@ TimePickers.propTypes = {
 
 /***/ }),
 /* 408 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const urlForWebSocket = objects => `ws://localhost:3000/${objects}`;
+
+/* harmony default export */ __webpack_exports__["a"] = (urlForWebSocket);
+
+/***/ }),
+/* 409 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
