@@ -11186,7 +11186,6 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     };
     this.switches = [];
     this.texts = [];
-    this.language = {};
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -11244,14 +11243,6 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     this.cancelObservation();
     clearInterval(this.timer);
     this.readBinaries();
-  }
-
-  setLanguage(val) {
-    this.texts = __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].find(x => x.language === val).texts;
-    this.language = { language: __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].map(x => x.language), langSelected: val };
-    if (this.state.language !== val) {
-      this.setState({ language: val });
-    }
   }
 
   renderOverlays() {
@@ -11317,9 +11308,12 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   // the helpers
   readBinaries() {
     fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('binaries')).then(d => d.json()).then(d => {
-      this.switches = d.map(v => {
+      this.switches = d.objects.map(v => {
         return { 'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1 };
       });
+      if (d.language !== undefined) {
+        this.setLanguage(d.language);
+      }
       this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
       this.setState({ isLoaded: true });
@@ -11362,6 +11356,21 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     }).then(data => {}).catch(error => {
       console.log('Request failed', error);
     });
+  }
+
+  setLanguage(val) {
+    this.texts = __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].find(x => x.language === val).texts;
+    this.language = { language: __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].map(x => x.language), langSelected: val };
+    if (this.state.language !== val) {
+      this.setState({ language: val });
+      fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('language'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ language: val })
+      });
+    }
   }
 }
 

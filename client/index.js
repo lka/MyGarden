@@ -37,7 +37,6 @@ class App extends React.PureComponent {
     };
     this.switches = [];
     this.texts = [];
-    this.language = {};
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -95,14 +94,6 @@ class App extends React.PureComponent {
     this.cancelObservation();
     clearInterval(this.timer);
     this.readBinaries();
-  }
-
-  setLanguage(val) {
-    this.texts = Text.find(x => x.language === val).texts;
-    this.language = { language: Text.map(x => x.language), langSelected: val };
-    if (this.state.language !== val) {
-      this.setState({ language: val});
-    }
   }
 
   renderOverlays() {
@@ -165,7 +156,10 @@ class App extends React.PureComponent {
     fetch(urlForSwitchesFromStorage('binaries'))
     .then(d => d.json())
     .then(d => {
-      this.switches = d.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1}; })
+      this.switches = d.objects.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1}; });
+      if (d.language !== undefined){
+        this.setLanguage(d.language);
+      }
       this.getUpdatedValues();
       this.timer = setInterval(this.getUpdatedValues, 5000);
       this.setState({ isLoaded: true });
@@ -211,6 +205,21 @@ class App extends React.PureComponent {
     .catch(error => {
       console.log('Request failed', error);
     })
+  }
+
+  setLanguage(val) {
+    this.texts = Text.find(x => x.language === val).texts;
+    this.language = { language: Text.map(x => x.language), langSelected: val };
+    if (this.state.language !== val) {
+      this.setState({ language: val});
+      fetch(urlForSwitchesFromStorage('language'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ language: val })
+      })
+    }
   }
 }
 
