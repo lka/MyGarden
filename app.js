@@ -21,16 +21,17 @@ const storage = require('./storage');
 const app = getApp();
 // ToDo: this part should be in the websocket.io part
 
-  storage({
-    storage: 'File',
-    options: { directory: path.join(__dirname, '..', 'data'), transmitWhoIs: true }
-  });
-
-// end: this part should be in the websocket.io part
-
 const bacnetProcess = childProcess.fork('bacnetProcess.js', [ options.options ], { cwd: __dirname });
 
+process.on('exit', () => {
+  bacnetProcess.send({ cmd: 'exit' });
+});
 
+const theStorage = storage({
+    storage: 'File',
+    bacnetProcess: bacnetProcess,
+    options: { directory: path.join(__dirname, '..', 'data'), transmitWhoIs: true }
+  });
 
 const server = http.createServer(app);
 const wss = new ws.Server({ server, path: '/', clientTrackin: false, maxPayload: 1024 });
