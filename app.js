@@ -3,8 +3,7 @@
 const http = require('http');
 const ws = require("ws");
 
-const childProcess = require('child_process'),
-      flaschenpost = require('flaschenpost'),
+const flaschenpost = require('flaschenpost'),
       processenv = require('processenv'),
       path = require('path');
 
@@ -12,7 +11,6 @@ const port = processenv('PORT') || 3000;
 const logger = flaschenpost.getLogger();
 
 const getApp = require('./lib/getApp');
-const handleWsConnection = require('./lib/handleWsConnection');
 
 const storage = require('./storage');
 
@@ -21,13 +19,7 @@ const storage = require('./storage');
 const app = getApp();
 // ToDo: this part should be in the websocket.io part
 
-const bacnetProcess = childProcess.fork('bacnetProcess.js', [ options.options ], { cwd: __dirname });
-
-process.on('exit', () => {
-  bacnetProcess.send({ cmd: 'exit' });
-});
-
-const theStorage = storage({
+const handleToWSS = storage({
     storage: 'File',
     bacnetProcess: bacnetProcess,
     options: { directory: path.join(__dirname, '..', 'data'), transmitWhoIs: true }
@@ -41,7 +33,7 @@ wss.on("connection", socket => {
   userCount++;
 
   logger.info("New client connected");
-  handleWsConnection(socket, theStorage, bacnetProcess, switches, languageSet);
+  handleToWSS(socket);
   socket.once('close', () => {
     logger.info("Client disconnected");
     userCount--;
