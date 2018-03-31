@@ -12,7 +12,7 @@ const logger = flaschenpost.getLogger();
 
 const getApp = require('./lib/getApp');
 
-const storeAndTransferData = require('./storeAndTransferData');
+const storeAndTransferData = require('./lib/storeAndTransferData');
 
 //      getBacnetClient = require('./lib/getBacnetClient');
 
@@ -21,7 +21,7 @@ const app = getApp();
 
 const handleToWSS = storeAndTransferData({
     storage: 'File',
-    options: { directory: path.join(__dirname, '..', 'data'), transmitWhoIs: true }
+    options: { directory: path.join(__dirname, 'data'), transmitWhoIs: true }
   });
 
 const server = http.createServer(app);

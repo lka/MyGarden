@@ -86,10 +86,26 @@ class App extends React.PureComponent {
   componentDidMount() {
     this.ws = new WebSocket(urlForWebSocket(''));
     this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
-    this.ws.onmessage = e => console.log(e.data);
     // this.ws.onmessage = e => console.log(JSON.parse(e.data));
     this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
-    this.readBinaries();
+    this.ws.onmessage = e => {
+      const message = JSON.parse(e.data);
+      console.log(message);
+      switch (message.type) {
+        case 'Connection established': {
+          this.ws.send(JSON.stringify({ type: 'readBinaries' }));
+          break;
+        }
+        case 'readBinaries': {
+          this.readBinaries(message.value);
+          break;
+        }
+        case 'changes': {
+          this.getUpdatedValues(message.value);
+          break;
+        }
+      }
+    };
   }
 
   componentWillUnmount() {
@@ -160,33 +176,19 @@ class App extends React.PureComponent {
   }
 
   // the helpers
-  readBinaries() {
-    fetch(urlForSwitchesFromStorage('binaries'))
-    .then(d => d.json())
-    .then(d => {
+  readBinaries(d) {
       this.switches = d.objects.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1}; });
       if (d.language !== undefined){
         this.setLanguage(d.language);
       }
-      this.getUpdatedValues();
-      this.timer = setInterval(this.getUpdatedValues, 5000);
+      this.ws.send(JSON.stringify({ type: 'readBinaries' }));
       this.setState({ isLoaded: true });
       this.setState(prevState => ({ triggerView: !prevState.triggerView }))
-    },
-    error => {
-      this.setState({
-        isLoaded: true,
-        error
-      })
-    });
   }
 
-  getUpdatedValues() {
+  getUpdatedValues(d) {
     const DefaultState = 2;
 
-    fetch(urlForSwitchesFromStorage('changes'))
-    .then(d => d.json())
-    .then(d => {
       if (d.length > 0) {
         d.forEach(x => {
           const i = this.switches.findIndex(z => z.id === x.id);
@@ -196,12 +198,6 @@ class App extends React.PureComponent {
         });
         this.setState(prevState => ({ toggleView: !prevState.toggleView }));
       }
-    },
-    error => {
-      console.log('getUpdatedValues has error response', error);
-      this.switches.forEach(item => { if (item.state !== DefaultState) { item.state = DefaultState; item.val = DefaultSwitch; } });
-      this.setState(prevState => ({ toggleView: !prevState.toggleView }));
-    });
   }
 
   cancelObservation() {
