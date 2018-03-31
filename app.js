@@ -12,16 +12,15 @@ const logger = flaschenpost.getLogger();
 
 const getApp = require('./lib/getApp');
 
-const storage = require('./storage');
+const storeAndTransferData = require('./storeAndTransferData');
 
 //      getBacnetClient = require('./lib/getBacnetClient');
 
 const app = getApp();
 // ToDo: this part should be in the websocket.io part
 
-const handleToWSS = storage({
+const handleToWSS = storeAndTransferData({
     storage: 'File',
-    bacnetProcess: bacnetProcess,
     options: { directory: path.join(__dirname, '..', 'data'), transmitWhoIs: true }
   });
 
