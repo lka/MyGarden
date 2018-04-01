@@ -11238,15 +11238,13 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
     // this.ws.onmessage = e => console.log(JSON.parse(e.data));
     this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onopen = () => {
+      this.ws.send(JSON.stringify({ type: 'readBinaries' }));
+    };
     this.ws.onmessage = e => {
       const message = JSON.parse(e.data);
       console.log(message);
       switch (message.type) {
-        case 'Connection established':
-          {
-            this.ws.send(JSON.stringify({ type: 'readBinaries' }));
-            break;
-          }
         case 'readBinaries':
           {
             this.readBinaries(message.value);
@@ -11257,6 +11255,8 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
             this.getUpdatedValues(message.value);
             break;
           }
+        default:
+          break;
       }
     };
   }
@@ -11341,7 +11341,6 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     if (d.language !== undefined) {
       this.setLanguage(d.language);
     }
-    this.ws.send(JSON.stringify({ type: 'readBinaries' }));
     this.setState({ isLoaded: true });
     this.setState(prevState => ({ triggerView: !prevState.triggerView }));
   }

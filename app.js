@@ -30,8 +30,9 @@ let userCount = 0;
 
 wss.on("connection", socket => {
   userCount++;
-
   logger.info("New client connected");
+  // socket.send(JSON.stringify({ type: 'Connection established' }));
+
   handleToWSS(socket);
   socket.once('close', () => {
     logger.info("Client disconnected");
