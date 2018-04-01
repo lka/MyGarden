@@ -11236,7 +11236,6 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   componentDidMount() {
     this.ws = new WebSocket(Object(__WEBPACK_IMPORTED_MODULE_11__urlForWebSocket__["a" /* default */])(''));
     this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
-    // this.ws.onmessage = e => console.log(JSON.parse(e.data));
     this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
     this.ws.onopen = () => {
       this.ws.send(JSON.stringify({ type: 'readBinaries' }));
@@ -11264,13 +11263,11 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   componentWillUnmount() {
     this.ws.close();
     this.cancelObservation();
-    clearInterval(this.timer);
   }
 
   _selectedObjectsChanged() {
     this.cancelObservation();
-    clearInterval(this.timer);
-    this.readBinaries();
+    this.ws.send(JSON.stringify({ type: 'readBinaries' }));
   }
 
   renderOverlays() {
@@ -11327,7 +11324,8 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_9__Switches__["a" /* default */], {
           switches: this.switches,
-          texts: this.texts
+          texts: this.texts,
+          webSock: this.ws
         })
       )
     );
@@ -47189,7 +47187,8 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Switch__["a" /* default */], {
           id: item.id,
           status: item.val,
-          texts: this.props.texts
+          texts: this.props.texts,
+          webSock: this.props.webSock
         });
       case 17:
         // Schedule
@@ -47250,27 +47249,11 @@ class Switch extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
   handleClick(e, value) {
     // this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
+    this.props.webSock.send(JSON.stringify({ type: 'writeBinary', value: {
+        id: this.props.id,
+        val: parseInt(e.target.value)
+      } }));
     this.setState({ val: e.target.value });
-    setTimeout(() => {
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_1__urlForSwitches__["a" /* default */])('binary'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id: this.props.id,
-          val: parseInt(this.state.val)
-        })
-      }).then(data => {
-        if (!data.ok) {
-          this.setState({ val: DefaultSwitch });
-        }
-        console.log('Request succeeded with response', data);
-      }).catch(error => {
-        this.setState({ val: DefaultSwitch });
-        console.log('Request failed', error);
-      });
-    }, 100);
   }
 
   render() {

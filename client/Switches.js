@@ -64,6 +64,7 @@ export default class Switches extends React.Component {
             id = {item.id}
             status = {item.val}
             texts = {this.props.texts}
+            webSock= {this.props.webSock}
           />
         );
       case 17: // Schedule

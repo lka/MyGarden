@@ -86,7 +86,6 @@ class App extends React.PureComponent {
   componentDidMount() {
     this.ws = new WebSocket(urlForWebSocket(''));
     this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
-    // this.ws.onmessage = e => console.log(JSON.parse(e.data));
     this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
     this.ws.onopen = () => {
       this.ws.send(JSON.stringify({ type: 'readBinaries' }));
@@ -112,13 +111,11 @@ class App extends React.PureComponent {
   componentWillUnmount() {
     this.ws.close();
     this.cancelObservation();
-    clearInterval(this.timer);
   }
 
   _selectedObjectsChanged() {
     this.cancelObservation();
-    clearInterval(this.timer);
-    this.readBinaries();
+    this.ws.send(JSON.stringify({ type: 'readBinaries' }));
   }
 
   renderOverlays() {
@@ -170,6 +167,7 @@ class App extends React.PureComponent {
           <Switches
             switches={this.switches}
             texts={this.texts}
+            webSock={this.ws}
           />
         </div>
         </MuiThemeProvider>
