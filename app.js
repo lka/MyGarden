@@ -25,7 +25,7 @@ const handleToWSS = storeAndTransferData({
   });
 
 const server = http.createServer(app);
-const wss = new ws.Server({ server, path: '/', clientTrackin: false, maxPayload: 1024 });
+const wss = new ws.Server({ server, path: '/', clientTrackin: false, maxPayload: 10240 });
 let userCount = 0;
 
 wss.on("connection", socket => {

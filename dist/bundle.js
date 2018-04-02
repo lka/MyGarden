@@ -44357,7 +44357,7 @@ const withDataFetching = (WrappedComponent, webSock, toggle, objectsChanged) => 
         switch (message.type) {
           case 'readObjects':
             {
-              this.setState({ date: message.value });
+              this.setState({ data: message.value });
               break;
             }
           default:
