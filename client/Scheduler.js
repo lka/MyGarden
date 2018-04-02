@@ -65,23 +65,22 @@ export default class Scheduler extends React.Component {
     }
 
     componentDidMount(){
-      fetch(urlForSwitchesFromStorage('schedule')+'?id='+this.props.id, {
-        method: 'GET'
-      });
-      setTimeout(()=>{
-        fetch(urlForSwitchesFromStorage('schedule')+'?id='+this.props.id, {
-          method: 'GET'
-        })
-        .then(res => res.json())
-        .then(data => {
-          this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
-          this.setTimes();
-          console.log('GET Request succeeded with response', data[0].val);
-        })
-        .catch(error => {
-          console.log('GET Request failed', error);
-        })
-      }, 500);
+      this.props.webSock.onmessage = e => {
+        const message = JSON.parse(e.data);
+        console.log(message);
+        switch (message.type) {
+          case 'readSchedule': {
+            this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
+            setTimeout(()=>{
+              this.setTimes();
+            },25);
+            break;
+          }
+          default:
+            break;
+        }
+      };
+      this.props.webSock.send(JSON.stringify({ type: 'readSchedule', value: { id: this.props.id }}));
     }
 
     setTimes() {
@@ -107,20 +106,7 @@ export default class Scheduler extends React.Component {
     handleClose() {
       // save all modified data
       if (this.state.modified) {
-        fetch(urlForSwitchesFromStorage('schedule'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ id: this.state.id, name: this.state.name, val: this.state.values })
-        })
-        .then(data => {
-          console.log('POST Request succeeded with response', data);
-        })
-        .catch(error => {
-          this.setState({ val: DefaultSwitch });
-          console.log('POST Request failed', error);
-        })
+        this.props.webSock.send(JSON.stringify({ type: 'writeSchedule', value: { id: this.state.id, name: this.state.name, val: this.state.values }}));
       }
       this.props.toggle();
     };

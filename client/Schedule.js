@@ -29,6 +29,7 @@ export default class Schedule extends React.Component {
           toggle={ this.handleToggle }
           name={ this.props.name }
           texts = { this.props.texts }
+          webSock= {this.props.webSock}
         />
       )
     } else return (

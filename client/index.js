@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
@@ -10,6 +10,7 @@ import withDataFetching from './withDataFetching';
 import SelectObjectsDlg from './SelectObjectsDlg';
 import Switches from './Switches';
 import urlForSwitchesFromStorage from './urlForSwitches';
+import urlForWebSocket from './urlForWebSocket';
 import RefreshIndicatorLoading from './RefreshIndicatorLoading';
 import Text from './Texts';
 
@@ -37,6 +38,7 @@ class App extends React.PureComponent {
     };
     this.switches = [];
     this.texts = [];
+    this.ws = undefined;
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -82,23 +84,43 @@ class App extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.readBinaries();
+    this.ws = new WebSocket(urlForWebSocket(''));
+    this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onopen = () => {
+      this.ws.send(JSON.stringify({ type: 'readBinaries' }));
+    };
+    this.ws.onmessage = e => {
+      const message = JSON.parse(e.data);
+      console.log(message);
+      switch (message.type) {
+        case 'readBinaries': {
+          this.readBinaries(message.value);
+          break;
+        }
+        case 'changes': {
+          this.getUpdatedValues(message.value);
+          break;
+        }
+        default:
+          break;
+      }
+    };
   }
 
   componentWillUnmount() {
+    this.ws.close();
     this.cancelObservation();
-    clearInterval(this.timer);
   }
 
   _selectedObjectsChanged() {
     this.cancelObservation();
-    clearInterval(this.timer);
-    this.readBinaries();
+    this.ws.send(JSON.stringify({ type: 'readBinaries' }));
   }
 
   renderOverlays() {
     const SelectObjectsWrapper = withDataFetching(SelectObjectsDlg,
-      urlForSwitchesFromStorage('objects'),
+      this.ws,
       this._showSelectObjects, this._selectedObjectsChanged);
     switch (true) {
       case this.state.error:
@@ -108,7 +130,9 @@ class App extends React.PureComponent {
         return <RefreshIndicatorLoading />
         break;
       case this.state.showSelectObjects:
-        return <SelectObjectsWrapper texts = {this.texts}/>
+        return <SelectObjectsWrapper
+          texts = {this.texts}
+          />
         break;
       default:
       return null;
@@ -145,6 +169,7 @@ class App extends React.PureComponent {
           <Switches
             switches={this.switches}
             texts={this.texts}
+            webSock={this.ws}
           />
         </div>
         </MuiThemeProvider>
@@ -152,33 +177,18 @@ class App extends React.PureComponent {
   }
 
   // the helpers
-  readBinaries() {
-    fetch(urlForSwitchesFromStorage('binaries'))
-    .then(d => d.json())
-    .then(d => {
-      this.switches = d.objects.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1}; });
+  readBinaries(d) {
+      this.switches = d.objects.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': v.state || 2}; });
       if (d.language !== undefined){
         this.setLanguage(d.language);
       }
-      this.getUpdatedValues();
-      this.timer = setInterval(this.getUpdatedValues, 5000);
       this.setState({ isLoaded: true });
       this.setState(prevState => ({ triggerView: !prevState.triggerView }))
-    },
-    error => {
-      this.setState({
-        isLoaded: true,
-        error
-      })
-    });
   }
 
-  getUpdatedValues() {
+  getUpdatedValues(d) {
     const DefaultState = 2;
 
-    fetch(urlForSwitchesFromStorage('changes'))
-    .then(d => d.json())
-    .then(d => {
       if (d.length > 0) {
         d.forEach(x => {
           const i = this.switches.findIndex(z => z.id === x.id);
@@ -188,23 +198,10 @@ class App extends React.PureComponent {
         });
         this.setState(prevState => ({ toggleView: !prevState.toggleView }));
       }
-    },
-    error => {
-      console.log('getUpdatedValues has error response', error);
-      this.switches.forEach(item => { if (item.state !== DefaultState) { item.state = DefaultState; item.val = DefaultSwitch; } });
-      this.setState(prevState => ({ toggleView: !prevState.toggleView }));
-    });
   }
 
   cancelObservation() {
-    fetch(urlForSwitchesFromStorage('cancel'), {
-      method: 'PUT'
-    })
-    .then(data => {
-    })
-    .catch(error => {
-      console.log('Request failed', error);
-    })
+    this.ws.send(JSON.stringify({ type: 'cancel' }));
   }
 
   setLanguage(val) {
@@ -212,13 +209,7 @@ class App extends React.PureComponent {
     this.language = { language: Text.map(x => x.language), langSelected: val };
     if (this.state.language !== val) {
       this.setState({ language: val});
-      fetch(urlForSwitchesFromStorage('language'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ language: val })
-      })
+      this.ws.send(JSON.stringify({ type: 'writeLanguage', value: { language: val }}));
     }
   }
 }
