@@ -6535,7 +6535,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 const urlForSwitchesFromStorage = switches => `http://localhost:3000/${switches}`;
 
-/* harmony default export */ __webpack_exports__["a"] = (urlForSwitchesFromStorage);
+/* unused harmony default export */ var _unused_webpack_default_export = (urlForSwitchesFromStorage);
 
 /***/ }),
 /* 110 */
@@ -11145,8 +11145,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SelectObjectsDlg__ = __webpack_require__(379);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Switches__ = __webpack_require__(397);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__urlForSwitches__ = __webpack_require__(109);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__RefreshIndicatorLoading__ = __webpack_require__(167);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__Texts__ = __webpack_require__(408);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__urlForWebSocket__ = __webpack_require__(408);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__RefreshIndicatorLoading__ = __webpack_require__(167);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__Texts__ = __webpack_require__(409);
+
 
 
 
@@ -11186,6 +11188,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     };
     this.switches = [];
     this.texts = [];
+    this.ws = undefined;
 
     this.getUpdatedValues = this.getUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
@@ -11231,22 +11234,44 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   }
 
   componentDidMount() {
-    this.readBinaries();
+    this.ws = new WebSocket(Object(__WEBPACK_IMPORTED_MODULE_11__urlForWebSocket__["a" /* default */])(''));
+    this.ws.onerror = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onclose = e => this.setState({ error: `WebSocketError ${e.code} ${e.reason}` });
+    this.ws.onopen = () => {
+      this.ws.send(JSON.stringify({ type: 'readBinaries' }));
+    };
+    this.ws.onmessage = e => {
+      const message = JSON.parse(e.data);
+      console.log(message);
+      switch (message.type) {
+        case 'readBinaries':
+          {
+            this.readBinaries(message.value);
+            break;
+          }
+        case 'changes':
+          {
+            this.getUpdatedValues(message.value);
+            break;
+          }
+        default:
+          break;
+      }
+    };
   }
 
   componentWillUnmount() {
+    this.ws.close();
     this.cancelObservation();
-    clearInterval(this.timer);
   }
 
   _selectedObjectsChanged() {
     this.cancelObservation();
-    clearInterval(this.timer);
-    this.readBinaries();
+    this.ws.send(JSON.stringify({ type: 'readBinaries' }));
   }
 
   renderOverlays() {
-    const SelectObjectsWrapper = Object(__WEBPACK_IMPORTED_MODULE_7__withDataFetching__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_8__SelectObjectsDlg__["a" /* default */], Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('objects'), this._showSelectObjects, this._selectedObjectsChanged);
+    const SelectObjectsWrapper = Object(__WEBPACK_IMPORTED_MODULE_7__withDataFetching__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_8__SelectObjectsDlg__["a" /* default */], this.ws, this._showSelectObjects, this._selectedObjectsChanged);
     switch (true) {
       case this.state.error:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -11257,10 +11282,12 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
         );
         break;
       case !this.state.isLoaded:
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_11__RefreshIndicatorLoading__["a" /* default */], null);
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_12__RefreshIndicatorLoading__["a" /* default */], null);
         break;
       case this.state.showSelectObjects:
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, { texts: this.texts });
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, {
+          texts: this.texts
+        });
         break;
       default:
         return null;
@@ -11299,77 +11326,49 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_9__Switches__["a" /* default */], {
           switches: this.switches,
-          texts: this.texts
+          texts: this.texts,
+          webSock: this.ws
         })
       )
     );
   }
 
   // the helpers
-  readBinaries() {
-    fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('binaries')).then(d => d.json()).then(d => {
-      this.switches = d.objects.map(v => {
-        return { 'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1 };
-      });
-      if (d.language !== undefined) {
-        this.setLanguage(d.language);
-      }
-      this.getUpdatedValues();
-      this.timer = setInterval(this.getUpdatedValues, 5000);
-      this.setState({ isLoaded: true });
-      this.setState(prevState => ({ triggerView: !prevState.triggerView }));
-    }, error => {
-      this.setState({
-        isLoaded: true,
-        error
-      });
+  readBinaries(d) {
+    this.switches = d.objects.map(v => {
+      return { 'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': v.state || 2 };
     });
+    if (d.language !== undefined) {
+      this.setLanguage(d.language);
+    }
+    this.setState({ isLoaded: true });
+    this.setState(prevState => ({ triggerView: !prevState.triggerView }));
   }
 
-  getUpdatedValues() {
+  getUpdatedValues(d) {
     const DefaultState = 2;
 
-    fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('changes')).then(d => d.json()).then(d => {
-      if (d.length > 0) {
-        d.forEach(x => {
-          const i = this.switches.findIndex(z => z.id === x.id);
-          if (i != -1) {
-            this.switches[i].state = x.state;
-          }
-        });
-        this.setState(prevState => ({ toggleView: !prevState.toggleView }));
-      }
-    }, error => {
-      console.log('getUpdatedValues has error response', error);
-      this.switches.forEach(item => {
-        if (item.state !== DefaultState) {
-          item.state = DefaultState;item.val = DefaultSwitch;
+    if (d.length > 0) {
+      d.forEach(x => {
+        const i = this.switches.findIndex(z => z.id === x.id);
+        if (i != -1) {
+          this.switches[i].state = x.state;
         }
       });
       this.setState(prevState => ({ toggleView: !prevState.toggleView }));
-    });
+    }
   }
 
   cancelObservation() {
-    fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('cancel'), {
-      method: 'PUT'
-    }).then(data => {}).catch(error => {
-      console.log('Request failed', error);
-    });
+    this.ws.send(JSON.stringify({ type: 'cancel' }));
   }
 
   setLanguage(val) {
-    this.texts = __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].find(x => x.language === val).texts;
-    this.language = { language: __WEBPACK_IMPORTED_MODULE_12__Texts__["a" /* default */].map(x => x.language), langSelected: val };
+    this.texts = __WEBPACK_IMPORTED_MODULE_13__Texts__["a" /* default */].find(x => x.language === val).texts;
+    this.language = { language: __WEBPACK_IMPORTED_MODULE_13__Texts__["a" /* default */].map(x => x.language), langSelected: val };
     if (this.state.language !== val) {
       this.setState({ language: val });
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('language'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ language: val })
-      });
+      this.ws.send(JSON.stringify({ type: 'writeLanguage', value: { language: val } }));
     }
   }
 }
@@ -44339,7 +44338,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
+const withDataFetching = (WrappedComponent, webSock, toggle, objectsChanged) => {
   return class extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     constructor() {
       super();
@@ -44352,27 +44351,25 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
     }
 
     componentDidMount() {
-      fetch(url).then(res => res.json()).then(data => {
-        this.setState({ data });
-      }).catch(error => {
-        console.log('GET Request failed', error);
-      });
+      webSock.onmessage = e => {
+        const message = JSON.parse(e.data);
+        console.log(message);
+        switch (message.type) {
+          case 'readObjects':
+            {
+              this.setState({ data: message.value });
+              break;
+            }
+          default:
+            break;
+        }
+      };
+      webSock.send(JSON.stringify({ type: 'readObjects' }));
     }
 
     componentWillUnmount() {
       if (this.state.dataChanged) {
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.state.data)
-        }).then(data => {
-          console.log('POST Request succeeded with response', data);
-          objectsChanged();
-        }).catch(error => {
-          console.log('POST Request failed', error);
-        });
+        webSock.send(JSON.stringify({ type: 'writeObjects', value: this.state.data }));
       }
     }
 
@@ -47180,14 +47177,16 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Switch__["a" /* default */], {
           id: item.id,
           status: item.val,
-          texts: this.props.texts
+          texts: this.props.texts,
+          webSock: this.props.webSock
         });
       case 17:
         // Schedule
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Schedule__["a" /* default */], {
           id: item.id,
           name: item.name,
-          texts: this.props.texts
+          texts: this.props.texts,
+          webSock: this.props.webSock
         });
       default:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"], null);
@@ -47241,27 +47240,11 @@ class Switch extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
   handleClick(e, value) {
     // this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
+    this.props.webSock.send(JSON.stringify({ type: 'writeBinary', value: {
+        id: this.props.id,
+        val: parseInt(e.target.value)
+      } }));
     this.setState({ val: e.target.value });
-    setTimeout(() => {
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_1__urlForSwitches__["a" /* default */])('binary'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id: this.props.id,
-          val: parseInt(this.state.val)
-        })
-      }).then(data => {
-        if (!data.ok) {
-          this.setState({ val: DefaultSwitch });
-        }
-        console.log('Request succeeded with response', data);
-      }).catch(error => {
-        this.setState({ val: DefaultSwitch });
-        console.log('Request failed', error);
-      });
-    }, 100);
   }
 
   render() {
@@ -47810,7 +47793,8 @@ class Schedule extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         id: this.props.id,
         toggle: this.handleToggle,
         name: this.props.name,
-        texts: this.props.texts
+        texts: this.props.texts,
+        webSock: this.props.webSock
       });
     } else return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       __WEBPACK_IMPORTED_MODULE_2_material_ui_Table__["TableCell"],
@@ -47898,20 +47882,23 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   }
 
   componentDidMount() {
-    fetch(Object(__WEBPACK_IMPORTED_MODULE_9__urlForSwitches__["a" /* default */])('schedule') + '?id=' + this.props.id, {
-      method: 'GET'
-    });
-    setTimeout(() => {
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_9__urlForSwitches__["a" /* default */])('schedule') + '?id=' + this.props.id, {
-        method: 'GET'
-      }).then(res => res.json()).then(data => {
-        this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
-        this.setTimes();
-        console.log('GET Request succeeded with response', data[0].val);
-      }).catch(error => {
-        console.log('GET Request failed', error);
-      });
-    }, 500);
+    this.props.webSock.onmessage = e => {
+      const message = JSON.parse(e.data);
+      console.log(message);
+      switch (message.type) {
+        case 'readSchedule':
+          {
+            this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
+            setTimeout(() => {
+              this.setTimes();
+            }, 25);
+            break;
+          }
+        default:
+          break;
+      }
+    };
+    this.props.webSock.send(JSON.stringify({ type: 'readSchedule', value: { id: this.props.id } }));
   }
 
   setTimes() {
@@ -47937,18 +47924,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   handleClose() {
     // save all modified data
     if (this.state.modified) {
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_9__urlForSwitches__["a" /* default */])('schedule'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: this.state.id, name: this.state.name, val: this.state.values })
-      }).then(data => {
-        console.log('POST Request succeeded with response', data);
-      }).catch(error => {
-        this.setState({ val: DefaultSwitch });
-        console.log('POST Request failed', error);
-      });
+      this.props.webSock.send(JSON.stringify({ type: 'writeSchedule', value: { id: this.state.id, name: this.state.name, val: this.state.values } }));
     }
     this.props.toggle();
   }
@@ -48284,6 +48260,15 @@ TimePickers.propTypes = {
 
 /***/ }),
 /* 408 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const urlForWebSocket = objects => `ws://localhost:3000/${objects}`;
+
+/* harmony default export */ __webpack_exports__["a"] = (urlForWebSocket);
+
+/***/ }),
+/* 409 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

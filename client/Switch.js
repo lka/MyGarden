@@ -28,29 +28,11 @@ export default class Switch extends React.Component {
 
   handleClick(e, value) {
     // this.setState(prevState => ({ val: (prevState.val + 1) % buttonText.length}))
+    this.props.webSock.send(JSON.stringify({ type: 'writeBinary', value: {
+      id: this.props.id,
+      val: parseInt(e.target.value)
+    }}));
     this.setState({ val: e.target.value });
-    setTimeout(() => {
-      fetch(urlForSwitchesFromStorage('binary'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id: this.props.id,
-          val: parseInt(this.state.val)
-        })
-      })
-      .then(data => {
-        if (!data.ok) {
-          this.setState({ val: DefaultSwitch });
-        }
-        console.log('Request succeeded with response', data);
-      })
-      .catch(error => {
-        this.setState({ val: DefaultSwitch });
-        console.log('Request failed', error);
-      })
-    }, 100);
   }
 
   render() {

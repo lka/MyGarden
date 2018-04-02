@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import RefreshIndicatorLoading from './RefreshIndicatorLoading';
 
-const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
+const withDataFetching = (WrappedComponent, webSock, toggle, objectsChanged) => {
   return class extends React.Component {
     constructor() {
       super();
@@ -14,32 +14,24 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
     }
 
     componentDidMount() {
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          this.setState({ data });
-        })
-        .catch(error => {
-          console.log('GET Request failed', error);
-        })
+      webSock.onmessage = e => {
+        const message = JSON.parse(e.data);
+        console.log(message);
+        switch (message.type) {
+          case 'readObjects': {
+            this.setState({ data: message.value });
+            break;
+          }
+          default:
+            break;
+        }
+      };
+      webSock.send(JSON.stringify({ type: 'readObjects'}));
     }
 
     componentWillUnmount() {
       if (this.state.dataChanged) {
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.state.data)
-        })
-        .then(data => {
-          console.log('POST Request succeeded with response', data);
-          objectsChanged();
-        })
-        .catch(error => {
-          console.log('POST Request failed', error);
-        })
+        webSock.send(JSON.stringify({ type: 'writeObjects', value: this.state.data }));
       }
     }
 
