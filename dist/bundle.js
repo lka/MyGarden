@@ -6535,7 +6535,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 "use strict";
 const urlForSwitchesFromStorage = switches => `http://localhost:3000/${switches}`;
 
-/* harmony default export */ __webpack_exports__["a"] = (urlForSwitchesFromStorage);
+/* unused harmony default export */ var _unused_webpack_default_export = (urlForSwitchesFromStorage);
 
 /***/ }),
 /* 110 */
@@ -11271,7 +11271,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   }
 
   renderOverlays() {
-    const SelectObjectsWrapper = Object(__WEBPACK_IMPORTED_MODULE_7__withDataFetching__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_8__SelectObjectsDlg__["a" /* default */], Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('objects'), this._showSelectObjects, this._selectedObjectsChanged);
+    const SelectObjectsWrapper = Object(__WEBPACK_IMPORTED_MODULE_7__withDataFetching__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_8__SelectObjectsDlg__["a" /* default */], this.ws, this._showSelectObjects, this._selectedObjectsChanged);
     switch (true) {
       case this.state.error:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -11285,7 +11285,9 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_12__RefreshIndicatorLoading__["a" /* default */], null);
         break;
       case this.state.showSelectObjects:
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, { texts: this.texts });
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SelectObjectsWrapper, {
+          texts: this.texts
+        });
         break;
       default:
         return null;
@@ -44336,7 +44338,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
+const withDataFetching = (WrappedComponent, webSock, toggle, objectsChanged) => {
   return class extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     constructor() {
       super();
@@ -44349,27 +44351,25 @@ const withDataFetching = (WrappedComponent, url, toggle, objectsChanged) => {
     }
 
     componentDidMount() {
-      fetch(url).then(res => res.json()).then(data => {
-        this.setState({ data });
-      }).catch(error => {
-        console.log('GET Request failed', error);
-      });
+      webSock.onmessage = e => {
+        const message = JSON.parse(e.data);
+        console.log(message);
+        switch (message.type) {
+          case 'readObjects':
+            {
+              this.setState({ date: message.value });
+              break;
+            }
+          default:
+            break;
+        }
+      };
+      webSock.send(JSON.stringify({ type: 'readObjects' }));
     }
 
     componentWillUnmount() {
       if (this.state.dataChanged) {
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.state.data)
-        }).then(data => {
-          console.log('POST Request succeeded with response', data);
-          objectsChanged();
-        }).catch(error => {
-          console.log('POST Request failed', error);
-        });
+        webSock.send(JSON.stringify({ type: 'writeObjects', value: this.state.data }));
       }
     }
 
@@ -47888,7 +47888,10 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
       switch (message.type) {
         case 'readSchedule':
           {
-            this.setState({ id: message.value[0].id, name: message.value[0].name, values: new Array(message.value[0].val) });
+            this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
+            setTimeout(() => {
+              this.setTimes();
+            }, 25);
             break;
           }
         default:

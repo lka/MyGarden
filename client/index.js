@@ -120,7 +120,7 @@ class App extends React.PureComponent {
 
   renderOverlays() {
     const SelectObjectsWrapper = withDataFetching(SelectObjectsDlg,
-      urlForSwitchesFromStorage('objects'),
+      this.ws,
       this._showSelectObjects, this._selectedObjectsChanged);
     switch (true) {
       case this.state.error:
@@ -130,7 +130,9 @@ class App extends React.PureComponent {
         return <RefreshIndicatorLoading />
         break;
       case this.state.showSelectObjects:
-        return <SelectObjectsWrapper texts = {this.texts}/>
+        return <SelectObjectsWrapper
+          texts = {this.texts}
+          />
         break;
       default:
       return null;

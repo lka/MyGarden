@@ -70,8 +70,10 @@ export default class Scheduler extends React.Component {
         console.log(message);
         switch (message.type) {
           case 'readSchedule': {
-            this.setState({ id: message.value[0].id, name: message.value[0].name, values: new Array(message.value[0].val) });
-            setTimeout()
+            this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
+            setTimeout(()=>{
+              this.setTimes();
+            },25);
             break;
           }
           default:
