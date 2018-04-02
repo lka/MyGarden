@@ -67,7 +67,7 @@ export default class Scheduler extends React.Component {
     componentDidMount(){
       this.props.webSock.onmessage = e => {
         const message = JSON.parse(e.data);
-        console.log(message);
+        console.log('Scheduler::componentDidMount', message);
         switch (message.type) {
           case 'readSchedule': {
             this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });

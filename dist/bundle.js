@@ -11190,7 +11190,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     this.texts = [];
     this.ws = undefined;
 
-    this.getUpdatedValues = this.getUpdatedValues.bind(this);
+    this.setUpdatedValues = this.setUpdatedValues.bind(this);
     this._handleClick = this._handleClick.bind(this);
     this._showAbout = this._showAbout.bind(this);
     this._showHelp = this._showHelp.bind(this);
@@ -11242,7 +11242,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     };
     this.ws.onmessage = e => {
       const message = JSON.parse(e.data);
-      console.log(message);
+      console.log('index:componentDidMount', message);
       switch (message.type) {
         case 'readBinaries':
           {
@@ -11251,7 +11251,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
           }
         case 'changes':
           {
-            this.getUpdatedValues(message.value);
+            this.setUpdatedValues(message.value);
             break;
           }
         default:
@@ -11345,17 +11345,15 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     this.setState(prevState => ({ triggerView: !prevState.triggerView }));
   }
 
-  getUpdatedValues(d) {
-    const DefaultState = 2;
-
+  setUpdatedValues(d) {
     if (d.length > 0) {
       d.forEach(x => {
         const i = this.switches.findIndex(z => z.id === x.id);
-        if (i != -1) {
+        if (i !== -1) {
           this.switches[i].state = x.state;
         }
       });
-      this.setState(prevState => ({ toggleView: !prevState.toggleView }));
+      this.setState(prevState => ({ triggerView: !prevState.triggerView }));
     }
   }
 
@@ -47884,7 +47882,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   componentDidMount() {
     this.props.webSock.onmessage = e => {
       const message = JSON.parse(e.data);
-      console.log(message);
+      console.log('Scheduler::componentDidMount', message);
       switch (message.type) {
         case 'readSchedule':
           {
