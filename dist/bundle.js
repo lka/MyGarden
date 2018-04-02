@@ -11334,7 +11334,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   // the helpers
   readBinaries(d) {
     this.switches = d.objects.map(v => {
-      return { 'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1 };
+      return { 'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': v.state || 2 };
     });
     if (d.language !== undefined) {
       this.setLanguage(d.language);
@@ -11358,11 +11358,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
   }
 
   cancelObservation() {
-    fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('cancel'), {
-      method: 'PUT'
-    }).then(data => {}).catch(error => {
-      console.log('Request failed', error);
-    });
+    this.ws.send(JSON.stringify({ type: 'cancel' }));
   }
 
   setLanguage(val) {
@@ -11370,13 +11366,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.PureComponent {
     this.language = { language: __WEBPACK_IMPORTED_MODULE_13__Texts__["a" /* default */].map(x => x.language), langSelected: val };
     if (this.state.language !== val) {
       this.setState({ language: val });
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_10__urlForSwitches__["a" /* default */])('language'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ language: val })
-      });
+      this.ws.send(JSON.stringify({ type: 'writeLanguage', value: { language: val } }));
     }
   }
 }
@@ -47195,7 +47185,8 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Schedule__["a" /* default */], {
           id: item.id,
           name: item.name,
-          texts: this.props.texts
+          texts: this.props.texts,
+          webSock: this.props.webSock
         });
       default:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"], null);
@@ -47802,7 +47793,8 @@ class Schedule extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         id: this.props.id,
         toggle: this.handleToggle,
         name: this.props.name,
-        texts: this.props.texts
+        texts: this.props.texts,
+        webSock: this.props.webSock
       });
     } else return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       __WEBPACK_IMPORTED_MODULE_2_material_ui_Table__["TableCell"],
@@ -47890,20 +47882,20 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   }
 
   componentDidMount() {
-    fetch(Object(__WEBPACK_IMPORTED_MODULE_9__urlForSwitches__["a" /* default */])('schedule') + '?id=' + this.props.id, {
-      method: 'GET'
-    });
-    setTimeout(() => {
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_9__urlForSwitches__["a" /* default */])('schedule') + '?id=' + this.props.id, {
-        method: 'GET'
-      }).then(res => res.json()).then(data => {
-        this.setState({ id: data[0].id, name: data[0].name, values: data[0].val });
-        this.setTimes();
-        console.log('GET Request succeeded with response', data[0].val);
-      }).catch(error => {
-        console.log('GET Request failed', error);
-      });
-    }, 500);
+    this.props.webSock.onmessage = e => {
+      const message = JSON.parse(e.data);
+      console.log(message);
+      switch (message.type) {
+        case 'readSchedule':
+          {
+            this.setState({ id: message.value[0].id, name: message.value[0].name, values: new Array(message.value[0].val) });
+            break;
+          }
+        default:
+          break;
+      }
+    };
+    this.props.webSock.send(JSON.stringify({ type: 'readSchedule', value: { id: this.props.id } }));
   }
 
   setTimes() {
@@ -47929,18 +47921,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
   handleClose() {
     // save all modified data
     if (this.state.modified) {
-      fetch(Object(__WEBPACK_IMPORTED_MODULE_9__urlForSwitches__["a" /* default */])('schedule'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: this.state.id, name: this.state.name, val: this.state.values })
-      }).then(data => {
-        console.log('POST Request succeeded with response', data);
-      }).catch(error => {
-        this.setState({ val: DefaultSwitch });
-        console.log('POST Request failed', error);
-      });
+      this.props.webSock.send(JSON.stringify({ type: 'writeSchedule', value: { id: this.state.id, name: this.state.name, val: this.state.values } }));
     }
     this.props.toggle();
   }

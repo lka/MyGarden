@@ -176,7 +176,7 @@ class App extends React.PureComponent {
 
   // the helpers
   readBinaries(d) {
-      this.switches = d.objects.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': -1}; });
+      this.switches = d.objects.map(v => { return {'id': v.id, 'name': v.name, 'objectType': v.objectType, 'state': v.state || 2}; });
       if (d.language !== undefined){
         this.setLanguage(d.language);
       }
@@ -199,14 +199,7 @@ class App extends React.PureComponent {
   }
 
   cancelObservation() {
-    fetch(urlForSwitchesFromStorage('cancel'), {
-      method: 'PUT'
-    })
-    .then(data => {
-    })
-    .catch(error => {
-      console.log('Request failed', error);
-    })
+    this.ws.send(JSON.stringify({ type: 'cancel' }));
   }
 
   setLanguage(val) {
@@ -214,13 +207,7 @@ class App extends React.PureComponent {
     this.language = { language: Text.map(x => x.language), langSelected: val };
     if (this.state.language !== val) {
       this.setState({ language: val});
-      fetch(urlForSwitchesFromStorage('language'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ language: val })
-      })
+      this.ws.send(JSON.stringify({ type: 'writeLanguage', value: { language: val }}));
     }
   }
 }

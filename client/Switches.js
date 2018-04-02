@@ -73,6 +73,7 @@ export default class Switches extends React.Component {
             id = {item.id}
             name = {item.name}
             texts = {this.props.texts}
+            webSock= {this.props.webSock}
           />
         );
       default:
