@@ -21,7 +21,7 @@ import Dialog, {
   import EditIcon from "material-ui-icons/Edit";
   import CheckIcon from "material-ui-icons/Check";
 
-  import urlForSwitchesFromStorage from './urlForSwitches';
+  import urlForWebSocket from './urlForWebSocket';
   import MyTable from './MyTable';
   import TimePicker from './TimePicker';
 
@@ -34,8 +34,9 @@ export default class Scheduler extends React.Component {
       this.state = {
         disableButtons: false,
         open: true,
-        id: this.props.id,
         modified: false,
+        id: this.props.id,
+        name: '',
         values: [],
         times: [],
         editing: undefined
@@ -65,22 +66,26 @@ export default class Scheduler extends React.Component {
     }
 
     componentDidMount(){
-      this.props.webSock.onmessage = e => {
-        const message = JSON.parse(e.data);
-        console.log('Scheduler::componentDidMount', message);
-        switch (message.type) {
-          case 'readSchedule': {
-            this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
-            setTimeout(()=>{
-              this.setTimes();
-            },25);
-            break;
+      console.log('Scheduler::didMount');
+      this.webSock = new WebSocket(urlForWebSocket(''));
+      this.webSock.onopen = () => {
+        this.webSock.onmessage = e => {
+          const message = JSON.parse(e.data);
+          console.log('Scheduler::componentDidMount', message);
+          switch (message.type) {
+            case 'readScheduleResponse': {
+              this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
+              setTimeout(()=>{
+                this.setTimes();
+              },25);
+              break;
+            }
+            default:
+              break;
           }
-          default:
-            break;
-        }
-      };
-      this.props.webSock.send(JSON.stringify({ type: 'readSchedule', value: { id: this.props.id }}));
+        };
+        this.webSock.send(JSON.stringify({ type: 'readSchedule', value: { id: this.props.id }}));
+      }
     }
 
     setTimes() {
@@ -106,9 +111,11 @@ export default class Scheduler extends React.Component {
     handleClose() {
       // save all modified data
       if (this.state.modified) {
-        this.props.webSock.send(JSON.stringify({ type: 'writeSchedule', value: { id: this.state.id, name: this.state.name, val: this.state.values }}));
+        this.webSock.send(JSON.stringify({ type: 'writeSchedule', value: { id: this.state.id, name: this.state.name, val: this.state.values }}));
       }
-      this.props.toggle();
+      this.webSock.close();
+      setTimeout(this.props.toggle,50);
+      // this.props.toggle();
     };
 
     handleAddTime() {

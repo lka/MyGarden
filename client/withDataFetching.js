@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import RefreshIndicatorLoading from './RefreshIndicatorLoading';
+import urlForWebSocket from './urlForWebSocket';
 
-const withDataFetching = (WrappedComponent, webSock, toggle, objectsChanged) => {
+const withDataFetching = (WrappedComponent, toggle, objectsChanged) => {
   return class extends React.Component {
     constructor() {
       super();
@@ -14,25 +15,29 @@ const withDataFetching = (WrappedComponent, webSock, toggle, objectsChanged) => 
     }
 
     componentDidMount() {
-      webSock.onmessage = e => {
-        const message = JSON.parse(e.data);
-        console.log(message);
-        switch (message.type) {
-          case 'readObjects': {
-            this.setState({ data: message.value });
-            break;
+      this.webSock = new WebSocket(urlForWebSocket(''));
+      this.webSock.onopen = () => {
+        this.webSock.onmessage = e => {
+          const message = JSON.parse(e.data);
+          console.log(message);
+          switch (message.type) {
+            case 'readObjects': {
+              this.setState({ data: message.value });
+              break;
+            }
+            default:
+              break;
           }
-          default:
-            break;
-        }
-      };
-      webSock.send(JSON.stringify({ type: 'readObjects'}));
+        };
+        this.webSock.send(JSON.stringify({ type: 'readObjects'}));
+      }
     }
 
     componentWillUnmount() {
       if (this.state.dataChanged) {
-        webSock.send(JSON.stringify({ type: 'writeObjects', value: this.state.data }));
+        this.webSock.send(JSON.stringify({ type: 'writeObjects', value: this.state.data }));
       }
+      this.webSock.close();
     }
 
     handleRowSelection(selections) {

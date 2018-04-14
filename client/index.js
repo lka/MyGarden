@@ -109,8 +109,8 @@ class App extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    this.ws.close();
     this.cancelObservation();
+    this.ws.close();
   }
 
   _selectedObjectsChanged() {
@@ -120,7 +120,6 @@ class App extends React.PureComponent {
 
   renderOverlays() {
     const SelectObjectsWrapper = withDataFetching(SelectObjectsDlg,
-      this.ws,
       this._showSelectObjects, this._selectedObjectsChanged);
     switch (true) {
       case this.state.error:

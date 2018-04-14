@@ -26,17 +26,14 @@ const handleToWSS = storeAndTransferData({
 
 const server = http.createServer(app);
 const wss = new ws.Server({ server, path: '/', clientTrackin: false, maxPayload: 10240 });
-let userCount = 0;
 
 wss.on("connection", socket => {
-  userCount++;
   logger.info("New client connected");
   // socket.send(JSON.stringify({ type: 'Connection established' }));
 
-  handleToWSS(socket);
-  socket.once('close', () => {
-    logger.info("Client disconnected");
-    userCount--;
+  handleToWSS(socket, wss);
+  socket.on('close', () => {
+    logger.info("client disconnected");
   });
 });
 
