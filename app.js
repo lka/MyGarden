@@ -26,15 +26,19 @@ const handleToWSS = storeAndTransferData({
 
 const server = http.createServer(app);
 const wss = new ws.Server({ server, path: '/', clientTrackin: false, maxPayload: 10240 });
+let userCount = 0;
 
 wss.on("connection", socket => {
-  logger.info("New client connected");
-  // socket.send(JSON.stringify({ type: 'Connection established' }));
+  userCount += 1;
+  logger.info("New client connected, userCount:", userCount);
+
+  socket.on('close', () => {
+    userCount -= 1;
+    logger.info("client disconnected, userCount", userCount);
+  });
 
   handleToWSS(socket, wss);
-  socket.on('close', () => {
-    logger.info("client disconnected");
-  });
+
 });
 
 wss.on('error', err => logger.info(err))
@@ -42,5 +46,3 @@ wss.on('error', err => logger.info(err))
 server.listen(port, () => {
   logger.info('HTTP-Server listening', { port });
 });
-
-// const client = getBacnetClient();
