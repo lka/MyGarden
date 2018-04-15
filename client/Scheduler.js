@@ -74,10 +74,7 @@ export default class Scheduler extends React.Component {
           console.log('Scheduler::componentDidMount', message);
           switch (message.type) {
             case 'readScheduleResponse': {
-              this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
-              setTimeout(()=>{
-                this.setTimes();
-              },25);
+              this.setTimes(message);
               break;
             }
             default:
@@ -88,23 +85,24 @@ export default class Scheduler extends React.Component {
       }
     }
 
-    setTimes() {
+    setTimes(message) {
       let times = [];
-      if (this.state.values.length > 0) {
-        for (let i = 0; i < this.state.values.length; ++i) {
-          for (let index = 0; index < this.state.values[i].length; ++index) {
-            if (times.findIndex(x => x==this.state.values[i][index].time) === -1) {
-              times.push(this.state.values[i][index].time);
+      if (message.value.val.length > 0) {
+        for (let i = 0; i < message.value.val.length; ++i) {
+          for (let index = 0; index < message.value.val[i].length; ++index) {
+            if (times.findIndex(x => x==message.value.val[i][index].time) === -1) {
+              times.push(message.value.val[i][index].time);
             }
           }
         }
         times.sort();
       }
-      this.setState({ times });
+      this.setState({ id: message.value.id, name: message.value.name, values: message.value.val, times });
     }
 
     handleCancel(){
       // do nothing but close
+      this.webSock.close();
       setTimeout(this.props.toggle,50);
     };
 

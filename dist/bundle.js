@@ -47198,8 +47198,7 @@ class Switches extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Schedule__["a" /* default */], {
           id: item.id,
           name: item.name,
-          texts: this.props.texts,
-          webSock: this.props.webSock
+          texts: this.props.texts
         });
       default:
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_material_ui_Table__["TableCell"], null);
@@ -47806,8 +47805,7 @@ class Schedule extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         id: this.props.id,
         toggle: this.handleToggle,
         name: this.props.name,
-        texts: this.props.texts,
-        webSock: this.props.webSock
+        texts: this.props.texts
       });
     } else return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       __WEBPACK_IMPORTED_MODULE_2_material_ui_Table__["TableCell"],
@@ -47905,10 +47903,7 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
         switch (message.type) {
           case 'readScheduleResponse':
             {
-              this.setState({ id: message.value.id, name: message.value.name, values: message.value.val });
-              setTimeout(() => {
-                this.setTimes();
-              }, 25);
+              this.setTimes(message);
               break;
             }
           default:
@@ -47919,23 +47914,24 @@ class Scheduler extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component 
     };
   }
 
-  setTimes() {
+  setTimes(message) {
     let times = [];
-    if (this.state.values.length > 0) {
-      for (let i = 0; i < this.state.values.length; ++i) {
-        for (let index = 0; index < this.state.values[i].length; ++index) {
-          if (times.findIndex(x => x == this.state.values[i][index].time) === -1) {
-            times.push(this.state.values[i][index].time);
+    if (message.value.val.length > 0) {
+      for (let i = 0; i < message.value.val.length; ++i) {
+        for (let index = 0; index < message.value.val[i].length; ++index) {
+          if (times.findIndex(x => x == message.value.val[i][index].time) === -1) {
+            times.push(message.value.val[i][index].time);
           }
         }
       }
       times.sort();
     }
-    this.setState({ times });
+    this.setState({ id: message.value.id, name: message.value.name, values: message.value.val, times });
   }
 
   handleCancel() {
     // do nothing but close
+    this.webSock.close();
     setTimeout(this.props.toggle, 50);
   }
 
